@@ -1,0 +1,53 @@
+.AliasReg{
+  position: absolute; 
+  top: 80px;
+  left: 500px;
+}
+
+.aliasInReg{
+  position: absolute; 
+  top: 110px;
+  left: 500px;
+}
+
+.CorreoReg{
+  position: absolute; 
+  top: 150px;
+  left: 500px;
+}
+
+.correoInReg{
+  position: absolute; 
+  top: 180px;
+  left: 500px;
+}
+
+.ContraReg{
+  position: absolute; 
+  top: 220px;
+  left: 500px;
+}
+
+.contraInReg{
+  position: absolute; 
+  top: 250px;
+  left: 500px;
+}
+
+.RepContraReg{
+  position: absolute; 
+  top: 290px;
+  left: 500px;
+}
+
+.repcontraInReg{
+  position: absolute; 
+  top: 320px;
+  left: 500px;
+}
+
+.LogPreguntaReg{
+  position: absolute; 
+  top: 425px;
+  left: 615px;
+}

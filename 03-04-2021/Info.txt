@@ -1,0 +1,10 @@
+Alias de 15 caracteres maximo
+
+Pantalla crear partida
+	Primera pantalla:
+		maxPlayers?
+		numBots?
+	Segunda pantalla:
+		jugadores
+		
+Apuestas en partidas en las que no haya boys
