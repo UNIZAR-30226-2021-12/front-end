@@ -1,38 +1,50 @@
-/*import './MenuPrincipal.css';
-import React, {useState, Component} from 'react';
-import { Button, StyleSheet, View, Text } from 'react-native';
+import React, {Component} from 'react';
+import './Menuprincipal.css';
+import { Button, StyleSheet, View, Alert} from 'react-native';
+import {Persona} from './service/Persona';
+import {DataTable} from 'primereact/DataTable';
+import {Column} from 'primereact/Column';
+import Inicio from './Inicio.js'
 
-import IconButton from '@material-ui/core/IconButton';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-*/
-import React from 'react';
-import { Text } from 'react-native';
-import {
-  Menu,
-  MenuProvider,
-  MenuOptions,
-  MenuOption,
-  MenuTrigger,
-} from 'react-native-popup-menu';
-class MenuPrincipal extends React.Component {
+export default class MenuPrincipal extends Component{
+	constructor(){
+		super();
+		this.state = {}; 
+		this.persona = new Persona();
+	}
 	
-	render(){
+	componentDidMount(){
+		this.persona.getPersona().then(data => this.setState({persona: data}))
+	} 
+	
+	logger = () => {  
+			console.log(this._Inicio.getUser());
+	}
+	/*componentDidMount(){
+		this.persona.postPersona().then(data => this.setState({persona: data}))
+		this.setState({
+			visible: false
+		
+		})
+		
+	}*/
+	/*render(){ //Descomentar para visualizar en tablas
 		return(
-			<MenuProvider style={{flexDirection: 'column', padding: 30}}>
-			<Text>Hello world!</Text>
-			<Menu>
-			  <MenuTrigger text='Select option' />
-			  <MenuOptions>
-				<MenuOption value={1} text='One' />
-				<MenuOption value={2} text='2' />
-				<MenuOption value={3} text='3' onClick= {() => this.props.navigation.navigate('Registro')}/>
-			  </MenuOptions>
-			</Menu>
-		  </MenuProvider>
-		)	
+			<DataTable value={this.state.persona}> // Las columnas son los campos del JSON
+				<Column field="id" header="id"></Column>
+				<Column field="Alias" header="Alias"></Column>
+				<Column field="Nombre" header="Nombre"></Column>
+				<Column field="Apellidos" header="Apellidos"></Column>
+				<Column field="Correo" header="Correo"></Column>
+			</DataTable>
+		);
+	}*/
+	render(){ //Borrar al descomentar la de arriba
+		return(
+		<>
+			<h1>Hola mundo</h1>
+			<Button title="Consola"  onPress={this.logger} />
+		</>
+		);
 	}
 }
-
-export default MenuPrincipal;

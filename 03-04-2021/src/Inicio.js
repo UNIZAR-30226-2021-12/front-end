@@ -2,13 +2,14 @@ import './Inicio.css';
 import React, {useState, Component} from 'react';
 import { Button, StyleSheet, View, Alert} from 'react-native';
 
-class Inicio extends React.Component {
+export default class Inicio extends React.Component {
 	  constructor(props) {
 		super(props);
 		this.state = {
 		  username: "",
 		  password: ""
 		};
+		this.getUser = this.getUser.bind(this);
 	  }
 		getUser = () => {
 			return this.state.username
@@ -82,4 +83,3 @@ const styles = StyleSheet.create({
   }
  });
 
-export default Inicio;
