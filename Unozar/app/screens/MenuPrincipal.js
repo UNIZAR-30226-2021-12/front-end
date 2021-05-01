@@ -13,12 +13,10 @@ export default class MenuPrincipal extends Component {
   constructor(props) {
     super(props);
     this.state = {
-		show: false,
-		email: "",
-		alias: "",
-		password: "",
-		token: "",
-		id: "",
+		show1: false,
+		show2: false,
+		show3: false,
+		bots: 0,
 	};
 	this.items = [
 					{
@@ -102,37 +100,100 @@ export default class MenuPrincipal extends Component {
   render() {
     return (
       <>
-		
 		<View style={styles.screen}>
 			<View style={styles.formContainer}>
-				<View>
-					<Text> UNOZAR </Text>
+				<View style={styles.tituloContainer}>
+					<Text style={styles.titulo}> UNOZAR </Text>
 				</View>
 			</View>
 			<View style={styles.menu}>
 					<div>
 				<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
-                <button icon="pi pi-bars" onClick={() => this.setState({ show: !this.state.show })}><i className="fa fa-bars"></i></button>
-                { this.state.show && (
+                <button icon="pi pi-bars" onClick={() => this.setState({ show1: !this.state.show1 })}><i className="fa fa-bars"></i></button>
+                { this.state.show1 && (
 					<Menu model={this.items} />
                 )}
 				</div>  
-		
-    				
 			</View>
+			<View style={styles.split}>
+				 <View style={styles.containerButtons}>
+					<View style={styles.containerButtonBuscar}>
+						<View style={styles.buttonBuscar} >
+							<Button title="Buscar Partida" onPress={() => this.setState({ show2: !this.state.show2, show3: false})}/>
+						</View>
+							{ this.state.show2 && 
+								<>
+									<View style={styles.containerBots}>
+										<View style={styles.buttonBots}>
+											<Button title="Con Bots" onPress={() => this.setState({ show3: !this.state.show3 , bots: 0})} />
+											<Button title="PvP" onPress={() => this.setState({ show3: false , bots: 0})} />
+										</View>
+										{ this.state.show3 && 
+											<>
+											<View style={styles.containtertextBots}>
+												<Text style={styles.textBots}> ¿Cuantos bots quieres añadir? </Text>
+												<View style={styles.containterMasMenos}>
+													<View style={styles.buttonMas1}>
+														{ this.state.bots < 4 && 
+															<Button title ="+1" onPress={() => this.setState({ bots: this.state.bots + 1 })}/>
+														}
+													</View>
+													<View style={styles.buttonMas1}>
+														{ this.state.bots > 0 &&
+															<Button title ="-1" onPress={() => this.setState({ bots: this.state.bots - 1 })}/>
+														}
+													</View>
+													<View style={styles.buttonCrear}>
+														{ this.state.bots >= 1 && 
+															<Button title="Crear Partida" 
+																onPress={() => this.props.navigation.navigate("PartidaBots", { bots: this.state.bots })} />
+														}
+													</View>
+												</View>
+												
+											</View>
+											
+											</>
+										}
+									</View>
+									
+								</>
+							}
+						
+					</View> 
+					<View style={styles.otro} >
+						<Button title="Otro" />	
+					</View>
+					
+				</View>
+				{ this.state.show3 && 
+						<>
+							<View style={styles.partidaContainer}>
+										<Text > Partida </Text>
+										<Text > Nº bots: {this.state.bots} </Text>
+										<Text > Partida </Text>
+										<Text > Partida </Text>
+										<Text > Partida </Text>
+										<Text > Partida </Text>
+										<Text > Partida </Text>
+							</View>
+						</>
+					}
+			</View> 
 		</View>
-			
-		 
+
       </>
 	  
     );
   }
 }
 
+
 const styles = StyleSheet.create({
   screen: { padding: 50 },
   formContainer: {
-    alignSelf: "center",
+	 
+    alignSelf: "left",
     width: "30%",
     justifyContent: "center",
     alignContent: "center",
@@ -141,6 +202,68 @@ const styles = StyleSheet.create({
 	position: 'absolute', 
 	top: 20,
 	left: 1200
-  }
+  },
+  split: {
+	 flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-start'
+  },
+  containerButtonBuscar: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-start'
+  },
+  containerButtons: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'flex-start'
+  },
+   containerBots: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-start'
+  },
+	buttonBuscar: {
+    width: '15%',
+    height: 40
+  },
+  buttonBots: {
+	left: 60,
+    width: '10%',
+    height: 40
+  },
+  tituloContainer:{
+	   alignSelf: "top",
+  },
+  titulo:{
+	  fontStyle: "Roboto",
+	  fontSize: 30
+  },
+  containtertextBots:{
+	left: 120
+  },
+  textBots:{
+	  left: 500,
+	  fontStyle: "Roboto",
+  },
+  partidaContainer:{
+	  alignSelf: "right",
+  },
+  otro:{
+	 width: '10%',
+  },
+  buttonMas1: {
+	  alignSelf: "center",
+	width: '30%',  
+  },
+  containterMasMenos: {
+	flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-evenly'
+  },
+  buttonCrear: {
+	  alignSelf: "center",
+	  width: '50%',  
+  },
 });
 

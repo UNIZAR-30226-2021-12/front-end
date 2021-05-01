@@ -9,7 +9,9 @@ export default class Inicio extends Component {
       password: "",
     };
   }
-
+	log = () => {
+		console.log(this.state.email);
+	};
   loginHandler = () => {
     if (this.state.email.length < 6) {
       alert("Debe ingresar el correo");
@@ -31,32 +33,52 @@ export default class Inicio extends Component {
       }),
     };
 
-    fetch(`http://localhost:8080/player/authentication`, requestOptions)
-      .then(async (response) => {
-        const data = JSON.stringify(response);
+    fetch(`https://unozargon.herokuapp.com/player/authentication`, requestOptions)
+      .then(
+	  function(response) {
+      if (response.status !== 200) {
+        console.log('Looks like there was a problem. Status Code: ' +
+          response.status);
+        return;
+      }
+
+      // Examine the text in the response
+      response.json().then(function(data) {
         console.log(data);
-
-        // check for error response
-        if (!response.ok) {
-          // get error message from body or default to response status
-          const error = (data && data.message) || response.status;
-          alert("El correo electrónico o la contraseña no son válidos");
-          this.setState({ password: "" });
-          this.textInput.clear();
-          return Promise.reject(error);
-        }
-
-        this.props.navigation.navigate("MenuPrincipal");
-      })
-      .catch((error) => {
-        console.error("There was an error!", error);
+		 //this.props.navigation.navigate("MenuPrincipal");
       });
+    })
   };
 
+	refreshHandler = () => {
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        token: "",
+      }),
+    };
+
+    fetch(`https://unozargon.herokuapp.com/player/refreshToken`, requestOptions)
+      .then(
+	  function(response) {
+      if (response.status !== 200) {
+        console.log('Looks like there was a problem. Status Code: ' +
+          response.status);
+        return;
+      }
+
+      // Examine the text in the response
+      response.json().then(function(data) {
+        console.log(data);
+      });
+    })
+  };
   render() {
     return (
       <View style={styles.screen}>
         <View style={styles.formContainer}>
+		<form>
           <View>
             <Text>Correo electrónico</Text>
             <TextInput
@@ -78,9 +100,11 @@ export default class Inicio extends Component {
           </View>
           <View style={styles.container}>
             <View style={styles.buttonLog}>
-              <Button title="Login" onPress={() => this.loginHandler()} />
+              <Button title="Login" /*onPress={() => this.loginHandler()}*/ 
+									onPress={() => this.props.navigation.navigate("MenuPrincipal", { user: this.state.email, pass: this.state.password })}/>
             </View>
           </View>
+		  </form>
         </View>
         <View style={styles.regContainer}>
           <Text style={styles.regText}> ¿No está registrado? </Text>
@@ -90,6 +114,9 @@ export default class Inicio extends Component {
               title="Registrarse"
             />
           </View>
+		  <View style={styles.buttonLog}>
+              <Button title="Logger" onPress={() => this.log()}/>
+            </View>
         </View>
       </View>
     );

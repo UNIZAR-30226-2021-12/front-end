@@ -1,6 +1,7 @@
 import React from "react";
 import { Button, StyleSheet, View, Text, TextInput } from "react-native";
 
+
 class Registro extends React.Component {
   constructor(props) {
     super(props);
@@ -9,7 +10,12 @@ class Registro extends React.Component {
       email: "",
       firstPassword: "",
       secondPassword: "",
+	  dataId: "",
     };
+	
+  }
+  returnData = () => {
+	  return this.state.data;
   }
   registerHandler = () => {
     if (this.state.email.length < 6) {
@@ -33,37 +39,34 @@ class Registro extends React.Component {
       }),
     };
 
-    fetch(`http://localhost:8080/player/createPlayer`, requestOptions)
-      .then(async (response) => {
-        const data = JSON.stringify(response);
-        console.log(data);
+    fetch(`https://unozargon.herokuapp.com/player/createPlayer`, requestOptions)
+      .then(
+	  function(response) {
+      if (response.status !== 200) {
+        console.log('Looks like there was a problem. Status Code: ' +
+          response.status);
+        return;
+      }
 
-        // check for error response
-        if (!response.ok) {
-          // get error message from body or default to response status
-          const error = (data && data.message) || response.status;
-          alert("El correo electrónico o la contraseña no son válidos");
-          this.setState({ password: "" });
-          this.pass1Input.clear();
-          this.pass2Input.clear();
-          return Promise.reject(error);
-        }
-        console.log("heeeeeyy");
-        this.props.navigation.navigate("Inicio");
-      })
-      .catch((error) => {
-        console.error("There was an error!", error);
+      // Examine the text in the response
+      response.json().then(function(responseData) {
+			//this.setState({ dataId: responseData});
+			console.log(responseData);
       });
+    })
   };
   render() {
     return (
+	<>
       <View style={styles.screen}>
         <View style={styles.formContainer}>
+		<form>
           <Text> Alias </Text>
           <TextInput
             style={styles.input}
             onChangeText={(alias) => this.setState({ alias })}
           />
+		  
           <Text> Correo </Text>
           <TextInput
             style={styles.input}
@@ -94,6 +97,7 @@ class Registro extends React.Component {
               onPress={() => this.registerHandler()}
             />
           </View>
+		  </form>
         </View>
         <View style={styles.logContainer}>
           <Text style={styles.logText}> ¿Ya está registrado? </Text>
@@ -105,6 +109,7 @@ class Registro extends React.Component {
           </View>
         </View>
       </View>
+	  </>
     );
   }
 }

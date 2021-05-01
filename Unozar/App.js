@@ -6,9 +6,10 @@ import { createStackNavigator } from "@react-navigation/stack";
 import InicioScreen from "./app/screens/Inicio";
 import RegistroScreen from "./app/screens/Registro";
 import MenuPrincipalScreen from "./app/screens/MenuPrincipal";
-
+import PerfilScreen from "./app/screens/Perfil";
+import PartidaBotsScreen from "./app/screens/PartidaBots";
 import { configureFakeBackend } from "./app/test/FakeBackend";
-configureFakeBackend();
+//configureFakeBackend();
 
 const Stack = createStackNavigator();
 
@@ -24,6 +25,8 @@ class App extends React.Component {
           <Stack.Screen name="Inicio" component={InicioScreen} />
           <Stack.Screen name="Registro" component={RegistroScreen} />
           <Stack.Screen name="MenuPrincipal" component={MenuPrincipalScreen} />
+		  <Stack.Screen name="Perfil" component={PerfilScreen} />
+		  <Stack.Screen name="PartidaBots" component={PartidaBotsScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     );
