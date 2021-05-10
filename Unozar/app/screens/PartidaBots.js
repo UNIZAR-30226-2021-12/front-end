@@ -19,14 +19,14 @@ class PartidaBots extends React.Component {
 					<Text> Partida </Text>
 				</View>
 				<View>
-					<Text> Nº Bots: {JSON.stringify(bots).slice(1, -1)} </Text>
+					<Text> Nº Bots: {JSON.stringify(bots)} </Text>
 				</View>
 			</View>
 		</View>
     );
   }
 }
-
+	
 const styles = StyleSheet.create({
   screen: { padding: 50 },
   titulo: {

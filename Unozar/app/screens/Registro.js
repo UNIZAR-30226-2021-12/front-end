@@ -39,7 +39,7 @@ class Registro extends React.Component {
       }),
     };
 
-    fetch(`https://unozargon.herokuapp.com/player/createPlayer`, requestOptions)
+    fetch(`https://unozar.herokuapp.com/player/create`, requestOptions)
       .then(
 	  function(response) {
       if (response.status !== 200) {

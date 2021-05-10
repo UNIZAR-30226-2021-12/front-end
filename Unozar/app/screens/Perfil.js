@@ -7,6 +7,7 @@ class Perfil extends React.Component {
     super(props);
     this.state = {
 		show: false,
+		id: '',
     };
 	this.items = [
 					{
@@ -32,7 +33,23 @@ class Perfil extends React.Component {
 		this.setState({showMenu: !this.state.showMenu})
 		
 	}
-	
+	readHandler = () => {
+		var link = 'https://unozar.herokuapp.com/player/read/$(this.sate.id)';
+		fetch(link, requestOptions)
+		  .then(
+		  function(response) {
+		  if (response.status !== 200) {
+			console.log('Looks like there was a problem. Status Code: ' +
+			  response.status);
+			return;
+		  }
+
+		  // Examine the text in the response
+		  response.json().then(function(data) {
+			console.log(data);
+		  });
+		})
+	};
   render() {
 	const { user } = this.props.route.params;
 	const { pass } = this.props.route.params;  
@@ -68,6 +85,12 @@ class Perfil extends React.Component {
 					<Text> Partidas Perdidas:  </Text>
 				</View>
 			</View>
+			<Text>Read function</Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={(id) => this.setState({ id })}
+            />
+			<Button title="Login" onPress={() => this.readHandler()} />
 		</View>
     );
   }

@@ -7,12 +7,18 @@ export default class Inicio extends Component {
     this.state = {
       email: "",
       password: "",
+	  data: [],
     };
   }
 	log = () => {
 		console.log(this.state.email);
+		
 	};
-  loginHandler = () => {
+	loginHandler = () => {
+		this.login();
+		this.props.navigation.navigate("MenuPrincipal", { user: this.state.email, pass: this.state.password });
+	};
+  login = () => {
     if (this.state.email.length < 6) {
       alert("Debe ingresar el correo");
       return;
@@ -33,7 +39,7 @@ export default class Inicio extends Component {
       }),
     };
 
-    fetch(`https://unozargon.herokuapp.com/player/authentication`, requestOptions)
+    fetch(`https://unozar.herokuapp.com/player/authentication`, requestOptions)
       .then(
 	  function(response) {
       if (response.status !== 200) {
@@ -44,8 +50,7 @@ export default class Inicio extends Component {
 
       // Examine the text in the response
       response.json().then(function(data) {
-        console.log(data);
-		 //this.props.navigation.navigate("MenuPrincipal");
+		console.log(data);
       });
     })
   };
@@ -59,7 +64,7 @@ export default class Inicio extends Component {
       }),
     };
 
-    fetch(`https://unozargon.herokuapp.com/player/refreshToken`, requestOptions)
+    fetch(`https://unozar.herokuapp.com/player/refreshToken`, requestOptions)
       .then(
 	  function(response) {
       if (response.status !== 200) {
@@ -71,6 +76,7 @@ export default class Inicio extends Component {
       // Examine the text in the response
       response.json().then(function(data) {
         console.log(data);
+		this.data = data;
       });
     })
   };
@@ -100,8 +106,8 @@ export default class Inicio extends Component {
           </View>
           <View style={styles.container}>
             <View style={styles.buttonLog}>
-              <Button title="Login" /*onPress={() => this.loginHandler()}*/ 
-									onPress={() => this.props.navigation.navigate("MenuPrincipal", { user: this.state.email, pass: this.state.password })}/>
+              <Button title="Login" onPress={() => this.loginHandler()} 
+									/*onPress={() => this.props.navigation.navigate("MenuPrincipal", { user: this.state.email, pass: this.state.password })}*//>
             </View>
           </View>
 		  </form>
@@ -117,6 +123,7 @@ export default class Inicio extends Component {
 		  <View style={styles.buttonLog}>
               <Button title="Logger" onPress={() => this.log()}/>
             </View>
+			<Button title="Partida" onPress={() => this.props.navigation.navigate("Partida")}/>
         </View>
       </View>
     );
