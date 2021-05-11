@@ -8,17 +8,25 @@ export default class Inicio extends Component {
       email: "",
       password: "",
 	  data: [],
+	  playerId: "5",
+	  token: "5",
     };
+	this.login=this.login.bind(this)
   }
+  
 	log = () => {
 		console.log(this.state.email);
-		
+		console.log(this.state.password);
+		console.log(this.state.playerId);
+		console.log(this.state.token);
 	};
-	loginHandler = () => {
-		this.login();
-		this.props.navigation.navigate("MenuPrincipal", { user: this.state.email, pass: this.state.password });
+	loginHandler = async () => {
+
+		await this.login();
+		await this.log();
+		this.props.navigation.navigate("MenuPrincipal", { user: this.state.email, pass: this.state.password, playerId: this.state.playerId, token: this.state.token })
 	};
-  login = () => {
+  login = async () => {
     if (this.state.email.length < 6) {
       alert("Debe ingresar el correo");
       return;
@@ -27,8 +35,7 @@ export default class Inicio extends Component {
       alert("Debe ingresar la contraseña");
       return;
     }
-    console.log(this.state.email);
-    console.log(this.state.password);
+    
 
     const requestOptions = {
       method: "POST",
@@ -38,21 +45,11 @@ export default class Inicio extends Component {
         password: this.state.password,
       }),
     };
-
-    fetch(`https://unozar.herokuapp.com/player/authentication`, requestOptions)
-      .then(
-	  function(response) {
-      if (response.status !== 200) {
-        console.log('Looks like there was a problem. Status Code: ' +
-          response.status);
-        return;
-      }
-
-      // Examine the text in the response
-      response.json().then(function(data) {
-		console.log(data);
-      });
-    })
+	let datas;
+     const response = await fetch(`https://unozar.herokuapp.com/player/authentication`, requestOptions)
+	datas = await response.json();
+	await this.setState({ playerId: datas.id });
+	await this.setState({ token: datas.token});
   };
 
 	refreshHandler = () => {
@@ -76,11 +73,12 @@ export default class Inicio extends Component {
       // Examine the text in the response
       response.json().then(function(data) {
         console.log(data);
-		this.data = data;
+		
       });
     })
   };
   render() {
+	  <login callback={this.addid} />
     return (
       <View style={styles.screen}>
         <View style={styles.formContainer}>

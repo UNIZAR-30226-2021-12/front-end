@@ -1,5 +1,5 @@
 import React, {useRef, Component } from "react";
-import { Button, StyleSheet, View, Alert, TextInput, Text } from "react-native";
+import { Button, StyleSheet, View, Alert, TextInput, Text, Timer } from "react-native";
 import {Column} from 'primereact/Column';
 import Inicio from './Inicio.js'
 import { Menu } from 'primereact/menu';
@@ -12,6 +12,8 @@ import Registro from './Registro.js';
 export default class MenuPrincipal extends Component {
   constructor(props) {
     super(props);
+	const { playerId } = this.props.route.params;
+	const { token } = this.props.route.params;
     this.state = {
 		show1: false,
 		show2: false,
@@ -19,11 +21,14 @@ export default class MenuPrincipal extends Component {
 		isprivate: false,
 		maxPlayers: 2,
 		numBots: 0,
-		token: '',
-		playerId: '',
 		alias: null,
 		password: null,
 		email: null,
+		playerId: playerId,
+		token: token,
+		gameId: '',
+		gameStarted: false,
+		playersIds: [],
 	};
 	this.items = [
 					{
@@ -44,7 +49,9 @@ export default class MenuPrincipal extends Component {
 					
 		];
 	}
-	
+	componentDidMount(){
+		//let timer = setInterval(() => alert("aux"), 3000);
+	}
 	readUser = () => {
 		const requestOptions = {
 		  method: "POST",
@@ -103,8 +110,11 @@ export default class MenuPrincipal extends Component {
 		this.setState({showMenu: !this.state.showMenu})
 		
   }
-
-createHandler = () => {
+crearPartida = async() =>{
+	await this.createHandler();
+	await this.readHandler();
+};
+createHandler = async() => {
 	const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -115,19 +125,15 @@ createHandler = () => {
 		token: this.state.token
       }),
     };
-		fetch('https://unozar.herokuapp.com/game/create', requestOptions)
-		  .then(
-		  function(response) {
-		  if (response.status !== 200) {
-			console.log('Looks like there was a problem. Status Code: ' +
-			  response.status);
-			return;
-		  } else{
-			  console.log('Create game OK');
-		  }
-		})
-	};
-salirHandler = () => {
+		let data;
+		const response = await fetch('https://unozar.herokuapp.com/game/create', requestOptions)
+		data = await response.json();
+		await this.setState({ token: data.token });
+		console.log("entrado " + this.state.token);
+		
+};
+
+readHandler = async () => {
 	const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -135,22 +141,14 @@ salirHandler = () => {
 		token: this.state.token
       }),
     };
-		fetch('https://unozar.herokuapp.com/game/quit', requestOptions)
-		  .then(
-		  function(response) {
-		  if (response.status !== 200) {
-			console.log('Looks like there was a problem. Status Code: ' +
-			  response.status);
-			return;
-		  }else{
-			  console.log('Quit game OK');
-			   response.json().then(function(data) {
-				console.log(data);
-			  });
-		  }
-		})
-	};
-readHandler = () => {
+	let data;
+	const response = await fetch('https://unozar.herokuapp.com/game/readRoom', requestOptions);
+	data = await response.json();
+	console.log(data);
+		
+};
+
+salirHandler = async () => {
 	const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -158,19 +156,14 @@ readHandler = () => {
 		token: this.state.token
       }),
     };
-		fetch('https://unozar.herokuapp.com/game/read', requestOptions)
-		  .then(
-		  function(response) {
-		  if (response.status !== 200) {
-			console.log('Looks like there was a problem. Status Code: ' +
-			  response.status + response.statusText);
-			return;
-		  }
-		  response.json().then(function(data) {
-			console.log(data);
-		  });
-		})
-	};
+	let data;
+	const response = await fetch('https://unozar.herokuapp.com/game/quit', requestOptions)
+	data = await response.json();
+	await this.setState({ token: data.token});
+	console.log("salido");
+};
+
+	
 	readPlayerHandler = () => {
 	const requestOptions = {
       method: "POST",
@@ -225,6 +218,27 @@ updatePlayerHandler = () => {
 		  }),
 		};
 		fetch('https://unozar.herokuapp.com/player/delete', requestOptions)
+		  .then(
+		  function(response) {
+		  if (response.status !== 200) {
+			console.log('Looks like there was a problem. Status Code: ' +
+			  response.status + response.statusText);
+			return;
+		  }
+		  response.json().then(function(data) {
+			console.log(data);
+		  });
+		})
+	};
+	refreshPlayer = () => {
+		const requestOptions = {
+		  method: "POST",
+		  headers: { "Content-Type": "application/json" },
+		  body: JSON.stringify({
+			token: this.state.token,
+		  }),
+		};
+		fetch('https://unozar.herokuapp.com/player/refreshToken', requestOptions)
 		  .then(
 		  function(response) {
 		  if (response.status !== 200) {
@@ -327,20 +341,8 @@ updatePlayerHandler = () => {
 			</View>
 			<Text>Create Game function</Text>
            
-			<Button title="Create" onPress={() => this.createHandler()} />
+			<Button title="Create" onPress={() => this.crearPartida()} />
 			<Button title="Salir Juego" onPress={() => this.salirHandler()} />
-			 <TextInput
-              style={styles.input}
-			  placeholder="token"
-              onChangeText={(token) => this.setState({ token })}
-            />
-			<Button title="ReadGame" onPress={() => this.readHandler()} />
-			<TextInput
-              style={styles.input}
-			  placeholder="playerId"
-              onChangeText={(playerId) => this.setState({ playerId })}
-            />
-			<Button title="ReadPlayer" onPress={() => this.readPlayerHandler()} />
 			<TextInput
               style={styles.input}
 			  placeholder="updateEmail"

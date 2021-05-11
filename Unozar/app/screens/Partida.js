@@ -22,8 +22,12 @@ class Partida extends React.Component {
 		nombreJugador4: "Gonzalo4",
 		numCartasJugador4: 0,
 		movs: 0,
+		token: '',
     };
   }
+	logger = () => {
+		console.log("Mano actual: "+ this.state.mano);
+	}
 	componentDidMount(){
 	  this.setState({ movs: this.state.movs=this.state.numCartasJugador1-6 });
 	 }

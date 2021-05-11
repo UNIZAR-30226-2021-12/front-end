@@ -52,7 +52,8 @@ class Perfil extends React.Component {
 	};
   render() {
 	const { user } = this.props.route.params;
-	const { pass } = this.props.route.params;  
+	const { pass } = this.props.route.params; 
+	const { id } = this.props.route.params;
     return (
 		<View style={styles.screen}>
 			<View style={styles.menu}>
@@ -74,6 +75,9 @@ class Perfil extends React.Component {
 				</View>
 				<View>
 					<Text> Correo: {JSON.stringify(user).slice(1, -1)} </Text>
+				</View>
+				<View>
+					<Text> Id: {JSON.stringify(id)} </Text>
 				</View>
 				<View>
 					<Text> Partidas Jugadas:  </Text>
