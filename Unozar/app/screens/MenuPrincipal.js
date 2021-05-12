@@ -109,12 +109,9 @@ export default class MenuPrincipal extends Component {
   hide(){
 		this.setState({showMenu: !this.state.showMenu})
 		
-  }
-crearPartida = async() =>{
-	await this.createHandler();
-	await this.readHandler();
-};
-createHandler = async() => {
+  };
+  
+crearPartida = async() => {
 	const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -130,23 +127,10 @@ createHandler = async() => {
 		data = await response.json();
 		await this.setState({ token: data.token });
 		console.log("entrado " + this.state.token);
-		
+		this.props.navigation.navigate("Partida", { token: this.state.token});
 };
 
-readHandler = async () => {
-	const requestOptions = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-		token: this.state.token
-      }),
-    };
-	let data;
-	const response = await fetch('https://unozar.herokuapp.com/game/readRoom', requestOptions);
-	data = await response.json();
-	console.log(data);
-		
-};
+
 
 salirHandler = async () => {
 	const requestOptions = {

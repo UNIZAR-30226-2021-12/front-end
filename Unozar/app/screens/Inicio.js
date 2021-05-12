@@ -121,7 +121,7 @@ export default class Inicio extends Component {
 		  <View style={styles.buttonLog}>
               <Button title="Logger" onPress={() => this.log()}/>
             </View>
-			<Button title="Partida" onPress={() => this.props.navigation.navigate("Partida")}/>
+			<Button title="Partida" onPress={() => this.props.navigation.navigate("Partida", { token: this.state.token})}/>
         </View>
       </View>
     );
