@@ -123,10 +123,22 @@ crearPartida = async() => {
       }),
     };
 		let data;
-		const response = await fetch('https://unozar.herokuapp.com/game/create', requestOptions)
+		let response;
+		response = await fetch('https://unozar.herokuapp.com/game/create', requestOptions)
 		data = await response.json();
 		await this.setState({ token: data.token });
-		console.log("entrado " + this.state.token);
+		await console.log("entrado " + this.state.token);
+	const requestOptions1 = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+		token: this.state.token
+      }),
+    };
+		response = await fetch('https://unozar.herokuapp.com/game/start', requestOptions1)
+		data = await response.json();
+		await this.setState({ token: data.token });	
+		await console.log("start " + this.state.token);
 		this.props.navigation.navigate("Partida", { token: this.state.token});
 };
 
