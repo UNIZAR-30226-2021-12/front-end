@@ -122,6 +122,7 @@ export default class Inicio extends Component {
               <Button title="Logger" onPress={() => this.log()}/>
             </View>
 			<Button title="Partida" onPress={() => this.props.navigation.navigate("Partida", { token: this.state.token})}/>
+			<Button title="EsperaPartida" onPress={() => this.props.navigation.navigate("EsperaPartida", { token: this.state.token, miId: this.state.playerId})}/>
         </View>
       </View>
     );

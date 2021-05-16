@@ -29,6 +29,7 @@ export default class MenuPrincipal extends Component {
 		gameId: '',
 		gameStarted: false,
 		playersIds: [],
+		gameId: '',
 	};
 	this.items = [
 					{
@@ -128,20 +129,42 @@ crearPartida = async() => {
 		data = await response.json();
 		await this.setState({ token: data.token });
 		await console.log("entrado " + this.state.token);
-	const requestOptions1 = {
+		if(this.state.numBots==0){
+			this.props.navigation.navigate("EsperaPartida", { token: this.state.token, miId: this.state.playerId});
+		}else{
+			const requestOptions1 = {
+			  method: "POST",
+			  headers: { "Content-Type": "application/json" },
+			  body: JSON.stringify({
+				token: this.state.token
+			  }),
+			};
+			response = await fetch('https://unozar.herokuapp.com/game/start', requestOptions1)
+			data = await response.json();
+			await this.setState({ token: data.token });	
+			await console.log("start " + this.state.token);
+			this.props.navigation.navigate("Partida", { token: this.state.token});
+		}
+};
+
+joinPartida = async() => {
+	const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        gameId: this.state.gameId,
 		token: this.state.token
       }),
     };
-		response = await fetch('https://unozar.herokuapp.com/game/start', requestOptions1)
+		console.log('GAME ID: '+ this.state.gameId);
+		let data;
+		let response;
+		response = await fetch('https://unozar.herokuapp.com/game/joinPrivate', requestOptions)
 		data = await response.json();
-		await this.setState({ token: data.token });	
-		await console.log("start " + this.state.token);
-		this.props.navigation.navigate("Partida", { token: this.state.token});
+		await this.setState({ token: data.token });
+		await console.log("joineado " + this.state.token);
+		await this.props.navigation.navigate("EsperaPartida", { token: this.state.token , miId: this.state.playerId});
 };
-
 
 
 salirHandler = async () => {
@@ -322,6 +345,7 @@ updatePlayerHandler = () => {
 					<Text > MaxPlayer: {this.state.maxPlayers} </Text>
 					<Text > Token: {this.state.token} </Text>
 					<Text > PlayerId: {this.state.playerId} </Text>
+					<Text > Gameid: {this.state.gameId} </Text>
 				</View>
 			</View> 
 			<Button title ="Privado" onPress={() => this.setState({ isprivate: !this.state.isprivate })}/>
@@ -338,6 +362,12 @@ updatePlayerHandler = () => {
 			<Text>Create Game function</Text>
            
 			<Button title="Create" onPress={() => this.crearPartida()} />
+			<TextInput
+              style={styles.input}
+			  placeholder="gameId para unirse a partida"
+              onChangeText={(gameId) => this.setState({ gameId })}
+            />
+			<Button title="Entrar partida" onPress={() => this.joinPartida()} />
 			<Button title="Salir Juego" onPress={() => this.salirHandler()} />
 			<TextInput
               style={styles.input}

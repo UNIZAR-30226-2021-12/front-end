@@ -1,7 +1,6 @@
 import React from "react";
 import { Alert, Button, StyleSheet, View, Text, TextInput, Image, TouchableOpacity, Timer , ScrollView } from "react-native";
 import { Menu } from 'primereact/menu';
-import {RNRestart} from 'react-native-restart';
 
 class Partida extends React.Component {
   constructor(props) {
@@ -29,7 +28,7 @@ class Partida extends React.Component {
 		carta: '',
 		cartaColor: '',
 		restart: 1,
-		topDiscard: '../assets/cartas/reverso.png',
+		topDiscard: 'reverso',
 		turn: 0,
 		gamePaused: '',
 		estado: 1,
@@ -63,13 +62,28 @@ readPlayerHandler = async () => {
 	let response;
 	response = await fetch('https://unozar.herokuapp.com/player/read', requestOptions1);
 	data = await response.json();
-	await this.setState({ nombreJugador2: data.alias });
+	if( await data.status != 200 ){
+		clearInterval(this.timer1);
+		console.log('¡¡¡ERROR FETCH!!!')
+	}else{
+		await this.setState({ nombreJugador2: data.alias });	
+	}
 	response = await fetch('https://unozar.herokuapp.com/player/read', requestOptions2);
 	data = await response.json();
-	await this.setState({ nombreJugador3: data.alias });
+	if( await data.status != 200 ){
+		clearInterval(this.timer1);
+		console.log('¡¡¡ERROR FETCH!!!')
+	}else{
+		await this.setState({ nombreJugador3: data.alias });
+	}
 	response = await fetch('https://unozar.herokuapp.com/player/read', requestOptions3);
 	data = await response.json();
-	await this.setState({ nombreJugador4: data.alias });
+	if( await data.status != 200 ){
+		clearInterval(this.timer1);
+		console.log('¡¡¡ERROR FETCH!!!')
+	}else{
+		await this.setState({ nombreJugador4: data.alias });
+	}
 
 }
 readHandler = async () => {
@@ -83,20 +97,37 @@ readHandler = async () => {
 	let data;
 	const response = await fetch('https://unozar.herokuapp.com/game/readRoom', requestOptions);
 	data = await response.json();
-	await this.setState({ gameId: data.gameId });
-	await this.setState({ maxPlayers: data.maxPlayers });
-	await this.setState({ gameStarted: data.gameStarted });
-	await this.setState({ token: data.token });
-	await this.setState({ playerId1: data.playersIds[0] });
-	await this.setState({ playerId2: data.playersIds[1] });
-	await this.setState({ playerId3: data.playersIds[2] });
-	await this.setState({ playerId4: data.playersIds[3] });
-	await this.setState({ nombreJugador2:this.state.playerId2});
-	await this.setState({ nombreJugador3:this.state.playerId3});
-	await this.setState({ nombreJugador4:this.state.playerId4});
-	console.log('readHandler[' + this.state.gameId,this.state.maxPlayers,this.state.gameStarted,this.state.token,this.state.playerId1,this.state.playerId2,this.state.playerId3,this.state.playerId4 +']');
+	if( await data.status != 200 ){
+		clearInterval(this.timer1);
+		console.log('¡¡¡ERROR FETCH!!!')
+	}else{
+		await this.setState({ gameId: data.gameId });
+		await this.setState({ maxPlayers: data.maxPlayers });
+		await this.setState({ gameStarted: data.gameStarted });
+		await this.setState({ token: data.token });
+		await this.setState({ playerId1: data.playersIds[0] });
+		await this.setState({ playerId2: data.playersIds[1] });
+		await this.setState({ playerId3: data.playersIds[2] });
+		await this.setState({ playerId4: data.playersIds[3] });
+		await this.setState({ nombreJugador2:this.state.playerId2});
+		await this.setState({ nombreJugador3:this.state.playerId3});
+		await this.setState({ nombreJugador4:this.state.playerId4});
+		console.log('readHandler[' + this.state.gameId,this.state.maxPlayers,this.state.gameStarted,this.state.token,this.state.playerId1,this.state.playerId2,this.state.playerId3,this.state.playerId4 +']');
+	}
 };
 playCardHandler = async () => {
+	console.log('PONER CARTA: '+ this.state.mano[this.state.carta]);
+	if(this.state.mano[this.state.carta]=="XXC"){
+		this.setState({ cartaColor: this.state.mano[this.state.carta].slice(1,2) })
+		this.state.topDiscard='X'+this.state.cartaColor+'C'
+	}else if(this.state.mano[this.state.carta]=="XX4"){
+		this.setState({ cartaColor: this.state.mano[this.state.carta].slice(1,2) })
+		this.state.topDiscard='X'+this.state.cartaColor+'C'
+	}else{
+		this.setState({ topDiscard: this.state.mano[this.state.carta]})
+		this.setState({ cartaColor: this.state.mano[this.state.carta].slice(1,2) })
+	}
+	this.setState({ showColor: false })	
 	const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -106,12 +137,17 @@ playCardHandler = async () => {
 		hasSaidUnozar: this.state.hasSaidUnozar,
 		colorSelected: this.state.cartaColor,
       }),
-    };
+    };	
 	let data;
 	const response = await fetch('https://unozar.herokuapp.com/game/playCard', requestOptions);
 	data = await response.json();
-	await this.setState({ token: data.token });
-	await this.setState({hasSaidUnozar: false });
+	if( await data.status != 200 ){
+		clearInterval(this.timer1);
+		console.log('¡¡¡ERROR FETCH!!!')
+	}else{
+		await this.setState({ token: data.token });
+		await this.setState({hasSaidUnozar: false });
+	}
 }
 robarCardHandler = async () => {
 	const requestOptions = {
@@ -124,10 +160,34 @@ robarCardHandler = async () => {
 	let data;
 	const response = await fetch('https://unozar.herokuapp.com/game/draw', requestOptions);
 	data = await response.json();
-	await this.setState({ token: data.token });
-	await this.setState({ numCartasJugador1: this.state.numCartasJugador1 + 1 })
-	await console.log('ROBAR TOKEN: '+this.state.token)
+	if( await data.status != 200 ){
+		clearInterval(this.timer1);
+		console.log('¡¡¡ERROR FETCH!!!')
+	}else{
+		await this.setState({ token: data.token });
+		await this.setState({ numCartasJugador1: this.state.numCartasJugador1 + 1 })
+		await console.log('ROBAR TOKEN: '+this.state.token)
+	}
 }
+salirHandler = async () => {
+	const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+		token: this.state.token
+      }),
+    };
+	let data;
+	const response = await fetch('https://unozar.herokuapp.com/game/quit', requestOptions)
+	data = await response.json();
+	if( await data.status != 200 ){
+		clearInterval(this.timer1);
+		console.log('¡¡¡ERROR FETCH!!!')
+	}else{
+		await this.setState({ token: data.token});
+		console.log("salido");
+	}
+};
 gameResponseHandler = async () => {
 	const requestOptions = {
       method: "POST",
@@ -139,48 +199,58 @@ gameResponseHandler = async () => {
 	let data;
 	const response = await fetch('https://unozar.herokuapp.com/game/readGame', requestOptions);
 	data = await response.json();
-	await this.setState({ token: data.token });
-	await this.setState({ maxPlayers: data.maxPlayers });
-	await this.setState({ topDiscard: data.topDiscard });
-	await this.setState({ mano: data.playerCards });
-	await this.setState({ turn: data.turn });
-	await this.setState({ playersIds: data.playersIds });
-	await this.setState({ gamePaused: data.gamePaused });
-	await this.setState({ numCartasJugador1: this.state.mano.length });
-	await this.setState({ restart: this.state.restart+1 })
-	await this.setState({ numCartasJugador1: datos.playerNumCards[0]})
-	await this.setState({ numCartasJugador2: datos.playerNumCards[1]})
-	await this.setState({ numCartasJugador3: datos.playerNumCards[2]})
-	await this.setState({ numCartasJugador4: datos.playerNumCards[3]})
-	await console.log('readGameResponse [' + 'READ TOKEN: '+this.state.token,this.state.maxPlayers,data.topDiscard,this.state.mano,this.state.turn,this.state.playersIds,this.state.playersNumCards,this.state.gamePaused +']');
+	if( await data.status != 200 ){
+		clearInterval(this.timer1);
+		console.log('¡¡¡ERROR FETCH!!!')
+	}else{
+		await this.setState({ token: data.token });
+		await this.setState({ maxPlayers: data.maxPlayers });
+		await this.setState({ topDiscard: data.topDiscard });
+		await this.setState({ mano: data.playerCards });
+		await this.setState({ turn: data.turn });
+		await this.setState({ playersIds: data.playersIds });
+		await this.setState({ gamePaused: data.gamePaused });
+		await this.setState({ numCartasJugador1: this.state.mano.length });
+		if(await this.state.playersNumcards[0]!= data.playersNumcards[0] || await this.state.playersNumcards[1]!= data.playersNumcards[1]
+		   || await this.state.playersNumcards[2]!= data.playersNumcards[2] || await this.state.playersNumcards[3]!= data.playersNumcards[3]){
+				await this.setState({ restart: this.state.restart+1 })   
+		}
+		await this.setState({ numCartasJugador1: data.playersNumCards[0]})
+		await this.setState({ numCartasJugador2: data.playersNumCards[1]})
+		await this.setState({ numCartasJugador3: data.playersNumCards[2]})
+		await this.setState({ numCartasJugador4: data.playersNumCards[3]})
+		
+		await console.log('readGameResponse [' + 'READ TOKEN: '+this.state.token,this.state.maxPlayers,data.topDiscard,this.state.mano,this.state.turn,this.state.playersIds,this.state.playersNumCards,this.state.gamePaused +']');
+	}
 }	
 
-	estados = () => {
+	estados = async () => {
 		
 		if(this.state.estado==0){
-			console.log('ESTADO TOKEN: '+this.state.token)
-		}else if(this.state.estado==1){
-			console.log('ESTADO ACTUAL: '+this.state.estado);
-			console.log('PLAYERID1: '+this.state.playerId1)
-			this.gameResponseHandler();
-			
-			this.setState({ estado: 0})
-		}else if(this.state.estado==2){
-			console.log('ESTADO ACTUAL: '+this.state.estado);
-			this.playCardHandler();
-			this.setState({ estado: 1})
-			let timer2 = setTimeout(() => this.gameResponseHandler(), 61000);
-		}else if(this.state.estado==3){
-			console.log('ESTADO ACTUAL: '+this.state.estado);
-			this.robarCardHandler();
-			this.setState({ estado: 1})
-			let timer2 = setTimeout(() => this.gameResponseHandler(), 61000);
-		}	
+			await console.log('ESTADO TOKEN0: '+this.state.token)
+		}else if(this.state.estado==1){ //Leer sala
+			await console.log('ESTADO ACTUAL: '+this.state.estado);
+			await this.gameResponseHandler();
+			/*if(this.state.turn!=0){
+				let timer2 = await setTimeout(() => this.gameResponseHandler(), 61000);
+			}*/
+			await this.setState({ estado: 0})
+		}else if(this.state.estado==2){ // Jugar carta
+			await console.log('ESTADO ACTUAL: '+this.state.estado);
+			await this.playCardHandler();
+			await console.log('ESTADO TOKEN TRAS JUGAR CARTA: '+this.state.token)
+			await this.setState({ estado: 1})
+		}else if(this.state.estado==3){ //Robar carta
+			await console.log('ESTADO ACTUAL: '+this.state.estado);
+			await this.robarCardHandler();
+			await this.setState({ estado: 1})
+			//let timer2 = await setTimeout(() => this.gameResponseHandler(), 61000);
+		}		
 	}
 	componentDidMount(){
-		//this.readHandler();
-		//let timer1 = setInterval(() => this.estados(), 2000);
-		this.createMano();
+		this.readHandler();
+		this.timer1 = setInterval(() => this.estados(), 2000);
+		//this.createMano();
 		
 	}
 	createMano = () => {
@@ -190,18 +260,51 @@ gameResponseHandler = async () => {
 		this.state.mano[3]='1BX'
 		this.state.mano[4]='1YX'
 		this.state.mano[5]='1GX'
-		this.state.mano[6]='XR2'
-		this.state.mano[7]='XB2'
-		this.state.mano[8]='XY2'
-		this.state.mano[9]='XG2'
-		this.state.mano[10]='XRR'
-		this.state.mano[11]='XBR'
-		this.state.mano[12]='XYR'
-		this.state.mano[13]='XGR'
-		this.state.mano[14]='XRS'
-		this.state.mano[15]='XBS'
-		this.state.mano[16]='XYS'
-		this.state.mano[17]='XGS'
+		this.state.mano[6]='1RX'
+		this.state.mano[7]='2BX'
+		this.state.mano[8]='2YX'
+		this.state.mano[9]='2GX'
+		this.state.mano[10]='2RX'
+		this.state.mano[11]='3BX'
+		this.state.mano[12]='3YX'
+		this.state.mano[13]='3GX'
+		this.state.mano[14]='3RX'
+		this.state.mano[15]='4BX'
+		this.state.mano[16]='4YX'
+		this.state.mano[17]='4GX'
+		this.state.mano[18]='4RX'
+		this.state.mano[19]='5BX'
+		this.state.mano[20]='5YX'
+		this.state.mano[21]='5GX'
+		this.state.mano[22]='5RX'
+		this.state.mano[23]='6BX'
+		this.state.mano[24]='6YX'
+		this.state.mano[25]='6GX'
+		this.state.mano[26]='6RX'
+		this.state.mano[27]='7BX'
+		this.state.mano[28]='7YX'
+		this.state.mano[29]='7GX'
+		this.state.mano[30]='7RX'
+		this.state.mano[31]='8BX'
+		this.state.mano[32]='8YX'
+		this.state.mano[33]='8GX'
+		this.state.mano[34]='8RX'
+		this.state.mano[35]='9BX'
+		this.state.mano[36]='9YX'
+		this.state.mano[37]='9GX'
+		this.state.mano[38]='XR2'
+		this.state.mano[39]='XB2'
+		this.state.mano[40]='XY2'
+		this.state.mano[41]='XG2'
+		this.state.mano[42]='XRR'
+		this.state.mano[43]='XBR'
+		this.state.mano[44]='XYR'
+		this.state.mano[45]='XGR'
+		this.state.mano[46]='XRS'
+		this.state.mano[47]='XBS'
+		this.state.mano[48]='XYS'
+		this.state.mano[49]='XGS'
+		this.state.mano[50]='9RX'
 		this.state.numCartasJugador1=this.state.mano.length;
 		this.setState({ restart: this.state.restart+1 })
 	 };
@@ -215,7 +318,6 @@ gameResponseHandler = async () => {
 		
 		return table;
 	};
-	
 	seleccionarCarta(i) {
 		this.setState({ cartaSeleccionada: true })
 		this.setState({ carta: i })
@@ -227,14 +329,6 @@ gameResponseHandler = async () => {
 		}else{
 			this.setState({ showColor: false })
 		}
-	}
-	ponerCarta(){
-		if(this.state.mano[this.state.carta]!="XXC" || this.state.mano[this.state.carta]!="XX4"){
-			this.setState({ cartaColor: this.state.mano[this.state.carta].slice(1,2) })
-		}
-		this.setState({ topDiscard: this.state.mano[this.state.carta]})
-		this.setState({ estado: 2 })
-		this.setState({ showColor: false })		
 	}
   render() {
 		return (
@@ -284,14 +378,14 @@ gameResponseHandler = async () => {
 								<View key={this.state.restart} style={styles.containerTablero}>
 									
 									<Image  style={styles.deck} source={require('../assets/cartas/reverso.png')} />
-									<Image  style={styles.carta} source={require('../assets/cartas/reverso.png')} />
+									<Image style={styles.carta} source={require('../assets/cartas/'+this.state.topDiscard+'.png')} />
 									<View style={styles.containerColor}>
 										{this.state.showColor &&
 											<>
 											<Button title="Rojo" color="#f71313" onPress={() => this.setState({ cartaColor: 'R'})}/>
 											<Button title="Azul" color="#1385f7" onPress={() => this.setState({ cartaColor: 'B'})}/>
 											<Button title="Amarillo" color="#f4f713" onPress={() => this.setState({ cartaColor: 'Y'})}/>
-											<Button title="Verde" color="#47f713" onPress={() => this.setState({ cartaColor: 'V'})}/>
+											<Button title="Verde" color="#47f713" onPress={() => this.setState({ cartaColor: 'G'})}/>
 											</>
 										}
 									</View>
@@ -317,9 +411,11 @@ gameResponseHandler = async () => {
 									}
 								</View>
 								<View style={styles.containerBotones}>
-									<Button title="PONER CARTA" disabled={!this.state.cartaSeleccionada&&this.state.turn==1} color="#e1a81a" onPress={() => this.ponerCarta()}/>
-									<Button title="ROBAR CARTA" disabled={this.state.turn==1}color="#e1a81a" onPress={() => this.setState({ estado: 3})}/>
+									<Button title="PONER CARTA" disabled={!this.state.cartaSeleccionada&&this.state.turn==1} color="#e1a81a" onPress={() => this.setState({ estado: 2 })}/>
+									<Button title="ROBAR CARTA" color="#e1a81a" onPress={() => this.setState({ estado: 3})}/>
 									<Button title="UNOZAR" color="#40d81b" onPress={() => this.setState({ hasSaidUnozar: true })}/>
+									<Button title="READ GAME" color="#40d81b" onPress={() => this.gameResponseHandler()}/>
+									<Button title="SALIR" color="#40d81b" onPress={() => this.salirHandler()}/>
 								</View>
 							</View>
 						</View>
