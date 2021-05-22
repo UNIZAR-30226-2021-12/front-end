@@ -5,80 +5,47 @@ export default class Inicio extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      email: "",
+      email: "prueba",
       password: "",
 	  data: [],
-	  playerId: "5",
-	  token: "5",
+	  playerId: "1",
+	  token: "2",
     };
-	this.login=this.login.bind(this)
   }
   
-	log = () => {
-		console.log(this.state.email);
-		console.log(this.state.password);
-		console.log(this.state.playerId);
-		console.log(this.state.token);
+login = async () => {
+	if (this.state.email.length < 6) {
+	  alert("Debe ingresar el correo");
+	  return;
+	}
+	if (this.state.password.length < 6) {
+	  alert("Debe ingresar la contraseña");
+	  return;
+	}
+	const requestOptions = {
+	  method: "POST",
+	  headers: { "Content-Type": "application/json" },
+	  body: JSON.stringify({
+		email: this.state.email,
+		password: this.state.password,
+	  }),
 	};
-	loginHandler = async () => {
-
-		await this.login();
-		await this.log();
-		this.props.navigation.navigate("MenuPrincipal", { user: this.state.email, pass: this.state.password, playerId: this.state.playerId, token: this.state.token })
-	};
-  login = async () => {
-    if (this.state.email.length < 6) {
-      alert("Debe ingresar el correo");
-      return;
-    }
-    if (this.state.password.length < 6) {
-      alert("Debe ingresar la contraseña");
-      return;
-    }
-    
-
-    const requestOptions = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: this.state.email,
-        password: this.state.password,
-      }),
-    };
-	let datas;
-     const response = await fetch(`https://unozar.herokuapp.com/player/authentication`, requestOptions)
-	datas = await response.json();
-	await this.setState({ playerId: datas.id });
-	await this.setState({ token: datas.token});
-  };
-
-	refreshHandler = () => {
-    const requestOptions = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        token: "",
-      }),
-    };
-
-    fetch(`https://unozar.herokuapp.com/player/refreshToken`, requestOptions)
-      .then(
-	  function(response) {
-      if (response.status !== 200) {
-        console.log('Looks like there was a problem. Status Code: ' +
-          response.status);
-        return;
-      }
-
-      // Examine the text in the response
-      response.json().then(function(data) {
-        console.log(data);
-		
-      });
-    })
-  };
+	let data;
+	let response;
+	let statusCode
+	response = await fetch(`https://unozar.herokuapp.com/player/authentication`, requestOptions)
+	data = await response.json();
+	statusCode = response.status;
+	if( await statusCode != 200 ){
+		clearInterval(this.timer1);
+		console.log('¡¡¡ERROR FETCH!!!')
+	}else{
+		await this.setState({ playerId: data.id });
+		await this.setState({ token: data.token});
+		await this.props.navigation.navigate("MenuPrincipal", { pass: this.state.password, playerId: this.state.playerId, token: this.state.token })
+	}
+};
   render() {
-	  <login callback={this.addid} />
     return (
       <View style={styles.screen}>
         <View style={styles.formContainer}>
@@ -104,7 +71,7 @@ export default class Inicio extends Component {
           </View>
           <View style={styles.container}>
             <View style={styles.buttonLog}>
-              <Button title="Login" onPress={() => this.loginHandler()} 
+              <Button title="Login" onPress={() => this.login()} 
 									/*onPress={() => this.props.navigation.navigate("MenuPrincipal", { user: this.state.email, pass: this.state.password })}*//>
             </View>
           </View>
@@ -123,6 +90,7 @@ export default class Inicio extends Component {
             </View>
 			<Button title="Partida" onPress={() => this.props.navigation.navigate("Partida", { token: this.state.token})}/>
 			<Button title="EsperaPartida" onPress={() => this.props.navigation.navigate("EsperaPartida", { token: this.state.token, miId: this.state.playerId})}/>
+			<Button title="ListaAmigos" onPress={() => this.props.navigation.navigate("Amigos", { token: this.state.token, miId: this.state.playerId})}/>
         </View>
       </View>
     );

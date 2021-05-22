@@ -1,6 +1,7 @@
 import React from "react";
 import { Alert, Button, StyleSheet, View, Text, TextInput, Image, TouchableOpacity, Timer , ScrollView } from "react-native";
 import { Menu } from 'primereact/menu';
+import { Linking } from 'react-native';
 
 class EsperaPartida extends React.Component {
   constructor(props) {
@@ -14,7 +15,7 @@ class EsperaPartida extends React.Component {
 		maxPlayers: 2,
 		gameStarted: '',
 		playerId1: 'undefined',
-		nombreJugador1: 'Gonzalo',
+		nombreJugador1: '',
 		playerId2: 'undefined',
 		nombreJugador2: '',
 		playerId3: 'undefined',
@@ -23,6 +24,10 @@ class EsperaPartida extends React.Component {
 		nombreJugador4: '',
 		estado: 0,
 		jugadores: 0,
+		subject: 'Invitación partida Unozar',
+		body: this.state.nombreJugador1+' desea invitarle a una partida de Unozar: '+this.state.gameId,
+		cc: '',
+		bcc: '',
     };
   }
 componentDidMount(){
@@ -36,7 +41,8 @@ estados = async () => {
 			await this.readHandler();
 			if(await this.state.gameStarted==true){
 				clearInterval(this.timer1);
-				await this.props.navigation.navigate("Partida", { token: this.state.token});
+				console.log('PASANDO ID: '+this.state.miId)
+				await this.props.navigation.navigate("Partida", { token: this.state.token, miId: this.state.miId});
 			}
 			await this.setState({ estado: 0})
 		}else if(this.state.estado==2){
@@ -54,13 +60,14 @@ startHandler = async () =>{
 	};
 	let response = await fetch('https://unozar.herokuapp.com/game/start', requestOptions1)
 	let data = await response.json();
-	if( await data.status != 200 ){
+	let statusCode = response.status;
+	if( await statusCode != 200 ){
 		clearInterval(this.timer1);
 		console.log('¡¡¡ERROR FETCH!!!')
 	}else{
 		await this.setState({ token: data.token });	
 		await console.log("start " + this.state.token);
-		await this.props.navigation.navigate("Partida", { token: this.state.token});
+		await this.props.navigation.navigate("Partida", { token: this.state.token, miId: this.state.miId});
 	}
 };	
 readHandler = async () => {
@@ -74,8 +81,8 @@ readHandler = async () => {
 	let data;
 	const response = await fetch('https://unozar.herokuapp.com/game/readRoom', requestOptions);
 	data = await response.json();
-	
-	if( await data.status != 200 ){
+	let statusCode = response.status;
+	if( await statusCode != 200 ){
 		clearInterval(this.timer1);
 		console.log('¡¡¡ERROR FETCH!!!')
 	}else{
@@ -91,9 +98,6 @@ readHandler = async () => {
 			|| await this.state.playerId3 != 'undefined' || await this.state.playerId4 != 'undefined'){
 			await this.readPlayerHandler();
 		}
-		if(await this.state.jugdores==0){
-			await this.setState({ jugadores: this.state.maxPlayers });
-		}
 		await console.log('readHandler[' + this.state.gameId,this.state.maxPlayers,this.state.gameStarted,this.state.token,this.state.playerId1,this.state.playerId2,this.state.playerId3,this.state.playerId4 +']');
 	}
 };
@@ -102,75 +106,113 @@ readPlayerHandler = async () => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-		token: this.state.playerId1
+		playerId: this.state.playerId1
       }),
 	};
 	const requestOptions2 = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-		token: this.state.playerId2
+		playerId: this.state.playerId2
       }),
 	};
 	const requestOptions3 = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-		token: this.state.playerId3
+		playerId: this.state.playerId3
       }),
 	};
 	const requestOptions4 = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-		token: this.state.playerId4
+		playerId: this.state.playerId4
       }),
 	};
 	let data;
 	let response;
-	if(this.state.playerId1!='undefined'&&this.state.nombreJugador1==''){
+	let statusCode
+	console.log('PLAYER IDS:['+this.state.playerId1+', '+this.state.playerId2+', '+this.state.playerId3+' ,'+this.state.playerId4+']')
+	if(this.state.maxPlayers>=2&&this.state.playerId1!='EMPTY'&&this.state.nombreJugador1==''){
 		response = await fetch('https://unozar.herokuapp.com/player/read', requestOptions1);
 		data = await response.json();
-		if( await data.status != 200 ){
+		statusCode = response.status;
+		console.log('READ PLAYER 1')
+		if( await statusCode != 200 ){
 			clearInterval(this.timer1);
 		console.log('¡¡¡ERROR FETCH!!!')
 		}else{
 			await this.setState({ nombreJugador1: data.alias });
-			await this.setState({ jugadores: this.state.jugadores-1})
+			await this.setState({ jugadores: this.state.jugadores+1})
 		}
-	}else if(this.state.playerId2!='undefined'&&this.state.nombreJugador2==''){
+	}
+	if(this.state.maxPlayers>=2&&this.state.playerId2!='EMPTY'&&this.state.nombreJugador2==''){
 		response = await fetch('https://unozar.herokuapp.com/player/read', requestOptions2);
-		data = await response.json();
-		if( await data.status != 200 ){
+		data = await response.json()
+		statusCode = response.status;
+		console.log('READ PLAYER 2')
+		if( await statusCode != 200 ){
 			clearInterval(this.timer1);
 			console.log('¡¡¡ERROR FETCH!!!')
 		}else{
 			await this.setState({ nombreJugador2: data.alias });
-			await this.setState({ jugadores: this.state.jugadores-1})
+			await this.setState({ jugadores: this.state.jugadores+1})
 		}
-	}else if(this.state.playerId3!='undefined'&&this.state.nombreJugador3==''){
+	}
+	if(this.state.maxPlayers>=3&&this.state.playerId3!='EMPTY'&&this.state.nombreJugador3==''){
 		response = await fetch('https://unozar.herokuapp.com/player/read', requestOptions3);
 		data = await response.json();
-		if( await data.status != 200 ){
+		statusCode = response.status;
+		console.log('READ PLAYER 3')
+		if( await statusCode != 200 ){
 			clearInterval(this.timer1);
 			console.log('¡¡¡ERROR FETCH!!!')
 		}else{
 			await this.setState({ nombreJugador3: data.alias });
-			await this.setState({ jugadores: this.state.jugadores-1})
+			await this.setState({ jugadores: this.state.jugadores+1})
 		}
-	}else if(this.state.playerId4!='undefined'&&this.state.nombreJugador4==''){
+	}
+	if(this.state.maxPlayers==4&&this.state.playerId4!='EMPTY'&&this.state.nombreJugador4==''){
 		response = await fetch('https://unozar.herokuapp.com/player/read', requestOptions3);
 		data = await response.json();
-		if( await data.status != 200 ){
+		statusCode = response.status;
+		console.log('READ PLAYER 4')
+		if( await statusCode != 200 ){
 			clearInterval(this.timer1);
 			console.log('¡¡¡ERROR FETCH!!!')
 		}else{
 			await this.setState({ nombreJugador4: data.alias });
-			await this.setState({ jugadores: this.state.jugadores-1})
+			await this.setState({ jugadores: this.state.jugadores+1})
 		}
 	}
 
 }
+
+sendEmail = async (to, subject, body) => {
+    let url = `mailto:${to}`;
+
+    // Create email link query
+    const query = qs.stringify({
+        subject: subject,
+        body: body,
+        cc: cc,
+    });
+
+    if (query.length) {
+        url += `?${query}`;
+    }
+
+    // check if we can use this link
+    const canOpen = await Linking.canOpenURL(url);
+
+    if (!canOpen) {
+        throw new Error('Provided URL can not be handled');
+    }
+
+    return Linking.openURL(url);
+}
+
  render() {
 		return (
 		<>
@@ -180,23 +222,32 @@ readPlayerHandler = async () => {
 								
 
 							{this.state.miId!=this.state.playerId1 &&
-								<Text style={styles.textoTitulo}> ESPERANDO A QUE {this.state.nombreJugador1} EMPIEZE PARTIDA... </Text>	
-							}
-							<Text style={styles.textoTitulo}> FALTAN {this.state.jugadores} JUGADORES </Text>	
-							<Text style={styles.textoId}> Jugador 1: {this.state.nombreJugador1} </Text>
-							{this.state.playerId2!='undefined' &&
-								<Text style={styles.textoId}> Jugador 2: {this.state.nombreJugador2} </Text>
-							}
-							{this.state.playerId3!='undefined' &&
-								<Text style={styles.textoId}> Jugador 3: {this.state.nombreJugador3} </Text>
-							}
-							{this.state.playerId4!='undefined' &&
-								<Text style={styles.textoId}> Jugador 4: {this.state.nombreJugador4} </Text>
+								<Text style={styles.textoTitulo}> ESPERANDO A QUE {this.state.nombreJugador1} EMPIECE PARTIDA... </Text>	
+								
 							}
 							{this.state.miId==this.state.playerId1 &&
+								<Text style={styles.textoTitulo}> FALTAN {this.state.maxPlayers-this.state.jugadores} JUGADORES </Text>	
+							}
+							<Text style={styles.textoId}> Jugador 1: {this.state.nombreJugador1} </Text>
+							{this.state.maxPlayers>=2 &&
+								<Text style={styles.textoId}> Jugador 2: {this.state.nombreJugador2} </Text>
+							}
+							{this.state.maxPlayers>=3 &&
+								<Text style={styles.textoId}> Jugador 3: {this.state.nombreJugador3} </Text>
+							}
+							{this.state.maxPlayers==4 &&
+								<Text style={styles.textoId}> Jugador 4: {this.state.nombreJugador4} </Text>
+							}
+							{this.state.miId==this.state.playerId1 && this.state.jugadores==this.state.maxPlayers && 
 								<Button title="EMPEZAR PARTIDA"  color="#40d81b" onPress={() => this.setState({ estado: 2 })}/>
 							}
 						</View>
+						<TextInput
+						  style={styles.input}
+						  placeholder="Id amigo"
+						  onChangeText={(cc) => this.setState({ cc })}
+						/>
+						<Button title="Invitar amigo" onPress={() => this.sendEmail(this.state.cc,this.state.subject,this.state.body)} />
 				</View>
 			</View>
 		</>

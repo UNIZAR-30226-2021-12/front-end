@@ -1,13 +1,23 @@
 import React from "react";
-import { Button, StyleSheet, View, Text, TextInput } from "react-native";
+import { Button, StyleSheet, View, Text, TextInput,Image } from "react-native";
 import { Menu } from 'primereact/menu';
 
 class Perfil extends React.Component {
   constructor(props) {
     super(props);
+	const { miId } = this.props.route.params;
+	const { token } = this.props.route.params;
     this.state = {
 		show: false,
-		id: '',
+		miId: miId,
+		token: token,
+		alias: 'a',
+		email: 'b',
+		privateWins: 1,
+		privateTotal: 2,
+		publicWins: 3,
+		publicTotal: 4,
+		avatarId: '7',
     };
 	this.items = [
 					{
@@ -18,7 +28,7 @@ class Perfil extends React.Component {
 					{
 						label: 'Amigos',
 						icon: 'pi pi-users',
-						command: () => {alert("Amigos")}
+						command: () => {this.setState({show: false}), this.props.navigation.navigate("Amigos", { token: this.state.token, miId: this.state.miId})}
 					},
 					{
 						label: 'Cerrar Sesion',
@@ -33,30 +43,52 @@ class Perfil extends React.Component {
 		this.setState({showMenu: !this.state.showMenu})
 		
 	}
-	readHandler = () => {
-		var link = 'https://unozar.herokuapp.com/player/read/$(this.sate.id)';
-		fetch(link, requestOptions)
-		  .then(
-		  function(response) {
-		  if (response.status !== 200) {
-			console.log('Looks like there was a problem. Status Code: ' +
-			  response.status);
-			return;
-		  }
-
-		  // Examine the text in the response
-		  response.json().then(function(data) {
-			console.log(data);
-		  });
-		})
+readHandler = async () => {
+	const requestOptions1 = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+		playerId: miId
+      }),
 	};
+	let data;
+	let response;
+	let statusCode
+	response = await fetch('https://unozar.herokuapp.com/player/read', requestOptions1);
+	data = await response.json();
+	statusCode = response.status;
+	if( await statusCode != 200 ){
+		clearInterval(this.timer1);
+		console.log('¡¡¡ERROR FETCH!!!')
+	}else{
+		await this.setState({ alias: data.alias});
+		await this.setState({ email: data.email});
+		await this.setState({ publicTotal: data.publicTotal});
+		await this.setState({ publicWins: data.publicWins});
+		await this.setState({ privateTotal: data.privateTotal});
+		await this.setState({ privateWins: data.privateWins});
+		await this.setState({ avatarId: data.avatarId});
+		console.log('lectura perfil')
+	}
+};
+componentDidMount(){
+	//this.readHandler();
+}
   render() {
-	const { user } = this.props.route.params;
-	const { pass } = this.props.route.params; 
-	const { id } = this.props.route.params;
     return (
+	<>
 		<View style={styles.screen}>
-			<View style={styles.menu}>
+			<View style={styles.formContainer}>
+					<Image style={styles.avatar} source={require('../assets/avatares/'+this.state.avatarId+'.png')} />
+					<Text style={styles.texto}> {this.state.alias} {this.state.email} </Text>
+					<Text style={styles.texto}> {this.state.miId} </Text>
+					<Text style={styles.texto}> Partidas públicas </Text>
+					<Text style={styles.texto}> J: {this.state.publicTotal} W: {this.state.publicWins}</Text>
+					<Text style={styles.texto}> Partidas privadas </Text>
+					<Text style={styles.texto}> J: {this.state.privateTotal} W: {this.state.privateWins}</Text>
+			</View>
+		</View>
+		<View style={styles.menu}>
 					<div>
 				<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
 				<button icon="pi pi-bars" onClick={() => this.setState({ show: !this.state.show })}><i className="fa fa-bars"></i></button>
@@ -64,48 +96,18 @@ class Perfil extends React.Component {
 					<Menu model={this.items} />
 				)}
 				</div>  
-			</View>
-			<View style={styles.formContainer}>
-				
-				<View style={styles.titulo}>
-					<Text> Perfil </Text>
-				</View>
-				<View>
-					<Text> Nombre:  </Text>
-				</View>
-				<View>
-					<Text> Correo: {JSON.stringify(user).slice(1, -1)} </Text>
-				</View>
-				<View>
-					<Text> Id: {JSON.stringify(id)} </Text>
-				</View>
-				<View>
-					<Text> Partidas Jugadas:  </Text>
-				</View>
-				<View>
-					<Text> Partidas Ganadas:  </Text>
-				</View>
-				<View>
-					<Text> Partidas Perdidas:  </Text>
-				</View>
-			</View>
-			<Text>Read function</Text>
-            <TextInput
-              style={styles.input}
-              onChangeText={(id) => this.setState({ id })}
-            />
-			<Button title="Login" onPress={() => this.readHandler()} />
 		</View>
+		</>
     );
   }
 }
 
 const styles = StyleSheet.create({
   screen: { padding: 50 },
-  titulo: {
-	  fontSize: 50,
-	right: 200,
-	
+  texto: {
+	alignSelf: "center",
+	fontStyle: "Roboto",
+	fontSize: 18
   },
   formContainer: {
     alignSelf: "center",
@@ -116,30 +118,14 @@ const styles = StyleSheet.create({
   menu :{
 	position: 'absolute', 
 	top: 20,
-	left: 1200
+	left: 1200,
+	backgroundColor:'rgba(255, 255, 255, 0.7)',
   },
-  input: {
-    borderColor: "black",
-    borderWidth: 1,
-    height: 25,
-    padding: 10,
-    width: "100%",
-  },
-  buttonReg: {
-    top: 10,
-  },
-  logContainer: {
-    top: 20,
-    flex: 1,
-    justifyContent: "center",
-  },
-  logText: {
-    alignSelf: "center",
-    padding: 10,
-  },
-  buttonLog: {
-    width: "30%",
-    alignSelf: "center",
+  avatar: {
+	alignSelf: "center",
+	resizeMode: "contain",
+	height: 150,
+	width: 120 
   },
 });
 

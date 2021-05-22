@@ -35,12 +35,12 @@ export default class MenuPrincipal extends Component {
 					{
 						label: 'Perfil',
 						icon: 'pi pi-user',
-						command: () => {this.setState({show1: false}), this.props.navigation.navigate("Perfil" , this.props.route.params )}
+						command: () => {this.setState({show1: false}), this.props.navigation.navigate("Perfil" , { token: this.state.token, miId: this.state.playerId} )}
 					},
 					{
 						label: 'Amigos',
 						icon: 'pi pi-users',
-						command: () => {alert("Amigos")}
+						command: () => {this.setState({show1: false}), this.props.navigation.navigate("Amigos" , { token: this.state.token, miId: this.state.playerId} )}
 					},
 					{
 						label: 'Cerrar Sesion',
@@ -143,7 +143,7 @@ crearPartida = async() => {
 			data = await response.json();
 			await this.setState({ token: data.token });	
 			await console.log("start " + this.state.token);
-			this.props.navigation.navigate("Partida", { token: this.state.token});
+			this.props.navigation.navigate("Partida", { token: this.state.token, miId: this.state.playerId});
 		}
 };
 
@@ -156,16 +156,35 @@ joinPartida = async() => {
 		token: this.state.token
       }),
     };
-		console.log('GAME ID: '+ this.state.gameId);
+		console.log('GAME ID PRIVATE: '+ this.state.gameId);
 		let data;
 		let response;
+		await console.log("intentando entrar " + this.state.token);
 		response = await fetch('https://unozar.herokuapp.com/game/joinPrivate', requestOptions)
 		data = await response.json();
 		await this.setState({ token: data.token });
 		await console.log("joineado " + this.state.token);
 		await this.props.navigation.navigate("EsperaPartida", { token: this.state.token , miId: this.state.playerId});
 };
-
+joinPartidaPublica = async() => {
+	const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        numPlayers: this.state.maxPlayers,
+		token: this.state.token
+      }),
+    };
+		console.log('GAME ID: PUBLIC');
+		let data;
+		let response;
+		await console.log("intentando entrar " + this.state.token);
+		response = await fetch('https://unozar.herokuapp.com/game/joinPublic', requestOptions)
+		data = await response.json();
+		await this.setState({ token: data.token });
+		await console.log("joineado " + this.state.token);
+		await this.props.navigation.navigate("EsperaPartida", { token: this.state.token , miId: this.state.playerId});
+};
 
 salirHandler = async () => {
 	const requestOptions = {
@@ -279,15 +298,6 @@ updatePlayerHandler = () => {
 					<Text style={styles.titulo}> UNOZAR </Text>
 				</View>
 			</View>
-			<View style={styles.menu}>
-					<div>
-				<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
-                <button icon="pi pi-bars" onClick={() => this.setState({ show1: !this.state.show1 })}><i className="fa fa-bars"></i></button>
-                { this.state.show1 && (
-					<Menu model={this.items} />
-                )}
-				</div>  
-			</View>
 			<View style={styles.split}>
 				 <View style={styles.containerButtons}>
 					<View style={styles.containerButtonBuscar}>
@@ -387,7 +397,15 @@ updatePlayerHandler = () => {
 			<Button title="UpdatePlayer" onPress={() => this.updatePlayerHandler()} />
 			<Button title="DeletePlayer" onPress={() => this.deletePlayerHandler()} />
 		</View>
-
+		<View style={styles.menu}>
+					<div>
+				<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+                <button icon="pi pi-bars" onClick={() => this.setState({ show1: !this.state.show1 })}><i className="fa fa-bars"></i></button>
+                { this.state.show1 && (
+					<Menu model={this.items} />
+                )}
+				</div>  
+		</View>
       </>
 	  
     );
@@ -407,7 +425,8 @@ const styles = StyleSheet.create({
   menu :{
 	position: 'absolute', 
 	top: 20,
-	left: 1200
+	left: 1200,
+	backgroundColor:'rgba(255, 255, 255, 0.7)',
   },
   split: {
 	 flex: 1,

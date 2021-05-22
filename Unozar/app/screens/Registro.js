@@ -10,51 +10,81 @@ class Registro extends React.Component {
       email: "",
       firstPassword: "",
       secondPassword: "",
-	  dataId: "",
+	  id: "",
+	  token: '',
     };
 	
   }
-  returnData = () => {
-	  return this.state.data;
-  }
-  registerHandler = () => {
-    if (this.state.email.length < 6) {
-      alert("Debe ingresar el correo");
-      return;
-    }
-    if (this.state.password.length < 6) {
-      alert("Debe ingresar la contraseña");
-      return;
-    }
-    console.log(this.state.email);
-    console.log(this.state.password);
-
-    const requestOptions = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: this.state.email,
-        alias: this.state.alias,
-        password: this.state.password,
-      }),
-    };
-
-    fetch(`https://unozar.herokuapp.com/player/create`, requestOptions)
-      .then(
-	  function(response) {
-      if (response.status !== 200) {
-        console.log('Looks like there was a problem. Status Code: ' +
-          response.status);
-        return;
-      }
-
-      // Examine the text in the response
-      response.json().then(function(responseData) {
-			//this.setState({ dataId: responseData});
-			console.log(responseData);
-      });
-    })
-  };
+registroylogin = async () => {
+	await this.registerHandler()
+	await this.login()
+};
+registerHandler = async () => {
+	if (this.state.email.length < 6) {
+	  alert("Debe ingresar el correo");
+	  return;
+	}
+	if (this.state.firstPassword.length < 6) {
+	  alert("Debe ingresar la contraseña");
+	  return;
+	}
+	const requestOptions = {
+	  method: "POST",
+	  headers: { "Content-Type": "application/json" },
+	  body: JSON.stringify({
+		email: this.state.email,
+		alias: this.state.alias,
+		password: this.state.firstPassword,
+	  }),
+	};
+	let data;
+	let response;
+	let statusCode
+	response = await fetch('https://unozar.herokuapp.com/player/create', requestOptions);
+	data = await response.json();
+	statusCode = await response.status;
+	if( await statusCode != 200 ){
+		clearInterval(this.timer1);
+		console.log('¡¡¡ERROR FETCH!!!')
+	}else{
+		await console.log('CREADO CON PASS: '+this.state.firstPassword)
+		await this.setState({ email: data.email })
+	}
+};
+login = async () => {
+	if (this.state.email.length < 6) {
+	  alert("Debe ingresar el correo");
+	  return;
+	}
+	if (this.state.firstPassword.length < 6) {
+	  alert("Debe ingresar la contraseña");
+	  return;
+	}
+	const requestOptions = {
+	  method: "POST",
+	  headers: { "Content-Type": "application/json" },
+	  body: JSON.stringify({
+		email: this.state.email,
+		password: this.state.firstPassword,
+	  }),
+	};
+	let data;
+	let response;
+	let statusCode
+	await console.log('LOGEANDO CON PASS: '+this.state.firstPassword)
+	response = await fetch(`https://unozar.herokuapp.com/player/authentication`, requestOptions)
+	data = await response.json();
+	statusCode = await response.status;
+	if( await statusCode != 200 ){
+		clearInterval(this.timer1);
+		console.log('¡¡¡ERROR FETCH!!!')
+	}else{
+		
+		await this.setState({ playerId: data.id });
+		await this.setState({ token: data.token});
+		await this.props.navigation.navigate("MenuPrincipal", { user: this.state.email, pass: this.state.firstPassword, playerId: this.state.id, token: this.state.token })
+	}
+};
   render() {
     return (
 	<>
@@ -79,7 +109,7 @@ class Registro extends React.Component {
               this.pass1Input = input;
             }}
             style={styles.input}
-            onChangeText={(password) => this.setState({ password })}
+            onChangeText={(firstPassword) => this.setState({ firstPassword })}
             secureTextEntry={true}
           />
           <Text> Repetir contraseña </Text>
@@ -88,13 +118,13 @@ class Registro extends React.Component {
               this.pass2Input = input;
             }}
             style={styles.input}
-            onChangeText={(password) => this.setState({ password })}
+            onChangeText={(secondPassword) => this.setState({ secondPassword })}
             secureTextEntry={true}
           />
           <View style={styles.buttonReg}>
             <Button
               title="Registrarse"
-              onPress={() => this.registerHandler()}
+              onPress={() => this.registroylogin()}
             />
           </View>
 		  </form>

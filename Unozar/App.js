@@ -9,6 +9,8 @@ import MenuPrincipalScreen from "./app/screens/MenuPrincipal";
 import PerfilScreen from "./app/screens/Perfil";
 import PartidaBotsScreen from "./app/screens/PartidaBots";
 import PartidaScreen from "./app/screens/Partida";
+import EsperaPartidaScreen from "./app/screens/EsperaPartida";
+import AmigosScreen from "./app/screens/Amigos";
 import { configureFakeBackend } from "./app/test/FakeBackend";
 //configureFakeBackend();
 
@@ -29,6 +31,8 @@ class App extends React.Component {
 		  <Stack.Screen name="Perfil" component={PerfilScreen} />
 		  <Stack.Screen name="PartidaBots" component={PartidaBotsScreen} />
 		  <Stack.Screen name="Partida" component={PartidaScreen} />
+		  <Stack.Screen name="EsperaPartida" component={EsperaPartidaScreen} />
+		  <Stack.Screen name="Amigos" component={AmigosScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     );
