@@ -82,7 +82,7 @@ login = async () => {
 		
 		await this.setState({ playerId: data.id });
 		await this.setState({ token: data.token});
-		await this.props.navigation.navigate("MenuPrincipal", { user: this.state.email, pass: this.state.firstPassword, playerId: this.state.id, token: this.state.token })
+		await this.props.navigation.push("MenuPrincipal", {playerId: this.state.playerId, token: this.state.token })
 	}
 };
   render() {
@@ -133,7 +133,7 @@ login = async () => {
           <Text style={styles.logText}> ¿Ya está registrado? </Text>
           <View style={styles.buttonLog}>
             <Button
-              onPress={() => this.props.navigation.navigate("Inicio")}
+              onPress={() => this.props.navigation.push("Inicio")}
               title="Login"
             />
           </View>

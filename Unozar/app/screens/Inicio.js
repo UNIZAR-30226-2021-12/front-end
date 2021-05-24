@@ -42,9 +42,10 @@ login = async () => {
 	}else{
 		await this.setState({ playerId: data.id });
 		await this.setState({ token: data.token});
-		await this.props.navigation.navigate("MenuPrincipal", { pass: this.state.password, playerId: this.state.playerId, token: this.state.token })
+		await this.props.navigation.push("MenuPrincipal", { playerId: this.state.playerId, token: this.state.token })
 	}
 };
+
   render() {
     return (
       <View style={styles.screen}>
@@ -72,7 +73,7 @@ login = async () => {
           <View style={styles.container}>
             <View style={styles.buttonLog}>
               <Button title="Login" onPress={() => this.login()} 
-									/*onPress={() => this.props.navigation.navigate("MenuPrincipal", { user: this.state.email, pass: this.state.password })}*//>
+									/*onPress={() =>this.props.navigation.push("MenuPrincipal", { pass: this.state.password, playerId: this.state.playerId, token: this.state.token })}*//>
             </View>
           </View>
 		  </form>
@@ -81,16 +82,16 @@ login = async () => {
           <Text style={styles.regText}> ¿No está registrado? </Text>
           <View style={styles.buttonReg}>
             <Button
-              onPress={() => this.props.navigation.navigate("Registro")}
+              onPress={() => this.props.navigation.push("Registro")}
               title="Registrarse"
             />
           </View>
 		  <View style={styles.buttonLog}>
               <Button title="Logger" onPress={() => this.log()}/>
             </View>
-			<Button title="Partida" onPress={() => this.props.navigation.navigate("Partida", { token: this.state.token})}/>
-			<Button title="EsperaPartida" onPress={() => this.props.navigation.navigate("EsperaPartida", { token: this.state.token, miId: this.state.playerId})}/>
-			<Button title="ListaAmigos" onPress={() => this.props.navigation.navigate("Amigos", { token: this.state.token, miId: this.state.playerId})}/>
+			<Button title="Partida" onPress={() => this.props.navigation.push("Partida", { token: this.state.token})}/>
+			<Button title="EsperaPartida" onPress={() => this.props.navigation.push("EsperaPartida", { token: this.state.token, miId: this.state.playerId})}/>
+			<Button title="ListaAmigos" onPress={() => this.props.navigation.push("Amigos", { token: this.state.token, miId: this.state.playerId})}/>
         </View>
       </View>
     );

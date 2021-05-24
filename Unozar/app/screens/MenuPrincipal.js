@@ -30,82 +30,88 @@ export default class MenuPrincipal extends Component {
 		gameStarted: false,
 		playersIds: [],
 		gameId: '',
+		gift: '',
+		giftClaimedToday: false,
 	};
 	this.items = [
 					{
 						label: 'Perfil',
 						icon: 'pi pi-user',
-						command: () => {this.setState({show1: false}), this.props.navigation.navigate("Perfil" , { token: this.state.token, miId: this.state.playerId} )}
+						command: () => {this.setState({show1: false}), this.props.navigation.push("Perfil" , { token: this.state.token, miId: this.state.playerId} )}
 					},
 					{
 						label: 'Amigos',
 						icon: 'pi pi-users',
-						command: () => {this.setState({show1: false}), this.props.navigation.navigate("Amigos" , { token: this.state.token, miId: this.state.playerId} )}
+						command: () => {this.setState({show1: false}), this.props.navigation.push("Amigos" , { token: this.state.token, miId: this.state.playerId, invitar: false} )}
+					},
+					{
+						label: 'Tienda',
+						icon: 'pi pi-users',
+						command: () => {this.setState({show1: false}), this.props.navigation.push("Tienda" , { token: this.state.token, miId: this.state.playerId} )}
 					},
 					{
 						label: 'Cerrar Sesion',
 						icon: 'pi pi-power-off',
-						command: () => {this.setState({show1: false}),this.props.navigation.navigate("Inicio")}
+						command: () => {this.setState({show1: false}),this.props.navigation.push("Inicio")}
 					}
 					
 		];
 	}
 	componentDidMount(){
+		this.readHandler();
+		let token=this.props.route.params;
 		//let timer = setInterval(() => alert("aux"), 3000);
 	}
-	readUser = () => {
-		const requestOptions = {
-		  method: "POST",
-		  headers: { "Content-Type": "application/json" },
-		  body: JSON.stringify({
-			id: "2c9248de78ffbf080178ffc119c30000",
-		  }),
-		};
-		fetch(`https://unozar.herokuapp.com/player/readPlayer/`, requestOptions)
-		  .then(
-			function(response) {
-			  if (response.status !== 200) {
-				console.log('Looks like there was a problem. Status Code: ' +
-				  response.status);
-				return;
-			  }
-
-			  // Examine the text in the response
-			  response.json().then(function(data) {
-				console.log(data);
-			  });
-			}
-		  )
-		  
-		
+readHandler = async () => {
+	const requestOptions1 = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+		playerId: this.state.playerId
+      }),
 	};
+	let data;
+	let response;
+	let statusCode
+	response = await fetch('https://unozar.herokuapp.com/player/read', requestOptions1);
+	data = await response.json();
+	statusCode = response.status;
+	if( await statusCode != 200 ){
+		clearInterval(this.timer1);
+		console.log('¡¡¡ERROR FETCH!!!')
+	}else{
+		await this.setState({ giftClaimedToday: data.giftClaimedToday});
+		if(await !this.state.giftClaimedToday){
+			await this.ruleta()
+		}
+	}
+};	
+deleteUser = () => {
+	const requestOptions = {
+	  method: "POST",
+	  headers: { "Content-Type": "application/json" },
+	  body: JSON.stringify({
+		id: "2c9248de78ffbf080178ffc119c30000-601",
+	  }),
+	};
+	fetch(`https://unozar.herokuapp.com/player/deletePlayer/`, requestOptions)
+	  .then(
+		function(response) {
+		  if (response.status !== 200) {
+			console.log('Looks like there was a problem. Status Code: ' +
+			  response.status);
+			return;
+		  }
+
+		  // Examine the text in the response
+		  response.json().then(function(data) {
+			console.log(data);
+		  });
+		}
+	  )
+	  
 	
-	deleteUser = () => {
-		const requestOptions = {
-		  method: "POST",
-		  headers: { "Content-Type": "application/json" },
-		  body: JSON.stringify({
-			id: "2c9248de78ffbf080178ffc119c30000-601",
-		  }),
-		};
-		fetch(`https://unozar.herokuapp.com/player/deletePlayer/`, requestOptions)
-		  .then(
-			function(response) {
-			  if (response.status !== 200) {
-				console.log('Looks like there was a problem. Status Code: ' +
-				  response.status);
-				return;
-			  }
-
-			  // Examine the text in the response
-			  response.json().then(function(data) {
-				console.log(data);
-			  });
-			}
-		  )
-		  
-		
-	};
+};
 	
   hide(){
 		this.setState({showMenu: !this.state.showMenu})
@@ -120,7 +126,8 @@ crearPartida = async() => {
         isPrivate: this.state.isprivate,
         maxPlayers: this.state.maxPlayers,
 		numBots: this.state.numBots,
-		token: this.state.token
+		token: this.state.token,
+		bet: 300,
       }),
     };
 		let data;
@@ -129,9 +136,7 @@ crearPartida = async() => {
 		data = await response.json();
 		await this.setState({ token: data.token });
 		await console.log("entrado " + this.state.token);
-		if(this.state.numBots==0){
-			this.props.navigation.navigate("EsperaPartida", { token: this.state.token, miId: this.state.playerId});
-		}else{
+		if((this.state.maxPlayers-this.state.numBots)==1){
 			const requestOptions1 = {
 			  method: "POST",
 			  headers: { "Content-Type": "application/json" },
@@ -143,10 +148,11 @@ crearPartida = async() => {
 			data = await response.json();
 			await this.setState({ token: data.token });	
 			await console.log("start " + this.state.token);
-			this.props.navigation.navigate("Partida", { token: this.state.token, miId: this.state.playerId});
+			this.props.navigation.push("Partida", { token: this.state.token, miId: this.state.playerId});
+		}else{
+			this.props.navigation.push("EsperaPartida", { token: this.state.token, miId: this.state.playerId, numBots: this.state.numBots});
 		}
 };
-
 joinPartida = async() => {
 	const requestOptions = {
       method: "POST",
@@ -164,7 +170,7 @@ joinPartida = async() => {
 		data = await response.json();
 		await this.setState({ token: data.token });
 		await console.log("joineado " + this.state.token);
-		await this.props.navigation.navigate("EsperaPartida", { token: this.state.token , miId: this.state.playerId});
+		await this.props.navigation.push("EsperaPartida", { token: this.state.token , miId: this.state.playerId, numBots: this.state.numBots});
 };
 joinPartidaPublica = async() => {
 	const requestOptions = {
@@ -183,9 +189,8 @@ joinPartidaPublica = async() => {
 		data = await response.json();
 		await this.setState({ token: data.token });
 		await console.log("joineado " + this.state.token);
-		await this.props.navigation.navigate("EsperaPartida", { token: this.state.token , miId: this.state.playerId});
+		await this.props.navigation.push("EsperaPartida", { token: this.state.token , miId: this.state.playerId});
 };
-
 salirHandler = async () => {
 	const requestOptions = {
       method: "POST",
@@ -199,30 +204,28 @@ salirHandler = async () => {
 	data = await response.json();
 	await this.setState({ token: data.token});
 	console.log("salido");
+};	
+readPlayerHandler = () => {
+const requestOptions = {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+	playerId: this.state.playerId
+  }),
 };
-
-	
-	readPlayerHandler = () => {
-	const requestOptions = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-		playerId: this.state.playerId
-      }),
-    };
-		fetch('https://unozar.herokuapp.com/player/read', requestOptions)
-		  .then(
-		  function(response) {
-		  if (response.status !== 200) {
-			console.log('Looks like there was a problem. Status Code: ' +
-			  response.status + response.statusText);
-			return;
-		  }
-		  response.json().then(function(data) {
-			console.log(data);
-		  });
-		})
-	};
+	fetch('https://unozar.herokuapp.com/player/read', requestOptions)
+	  .then(
+	  function(response) {
+	  if (response.status !== 200) {
+		console.log('Looks like there was a problem. Status Code: ' +
+		  response.status + response.statusText);
+		return;
+	  }
+	  response.json().then(function(data) {
+		console.log(data);
+	  });
+	})
+};
 updatePlayerHandler = () => {
 	const requestOptions = {
       method: "PATCH",
@@ -247,48 +250,70 @@ updatePlayerHandler = () => {
 		  });
 		})
 	};
-	deletePlayerHandler = () => {
-		const requestOptions = {
-		  method: "DELETE",
-		  headers: { "Content-Type": "application/json" },
-		  body: JSON.stringify({
-			token: this.state.token
-		  }),
-		};
-		fetch('https://unozar.herokuapp.com/player/delete', requestOptions)
-		  .then(
-		  function(response) {
-		  if (response.status !== 200) {
-			console.log('Looks like there was a problem. Status Code: ' +
-			  response.status + response.statusText);
-			return;
-		  }
-		  response.json().then(function(data) {
-			console.log(data);
-		  });
-		})
+deletePlayerHandler = () => {
+	const requestOptions = {
+	  method: "DELETE",
+	  headers: { "Content-Type": "application/json" },
+	  body: JSON.stringify({
+		token: this.state.token
+	  }),
 	};
-	refreshPlayer = () => {
-		const requestOptions = {
-		  method: "POST",
-		  headers: { "Content-Type": "application/json" },
-		  body: JSON.stringify({
-			token: this.state.token,
-		  }),
-		};
-		fetch('https://unozar.herokuapp.com/player/refreshToken', requestOptions)
-		  .then(
-		  function(response) {
-		  if (response.status !== 200) {
-			console.log('Looks like there was a problem. Status Code: ' +
-			  response.status + response.statusText);
-			return;
-		  }
-		  response.json().then(function(data) {
-			console.log(data);
-		  });
-		})
+	fetch('https://unozar.herokuapp.com/player/delete', requestOptions)
+	  .then(
+	  function(response) {
+	  if (response.status !== 200) {
+		console.log('Looks like there was a problem. Status Code: ' +
+		  response.status + response.statusText);
+		return;
+	  }
+	  response.json().then(function(data) {
+		console.log(data);
+	  });
+	})
+};
+refreshPlayer = () => {
+	const requestOptions = {
+	  method: "POST",
+	  headers: { "Content-Type": "application/json" },
+	  body: JSON.stringify({
+		token: this.state.token,
+	  }),
 	};
+	fetch('https://unozar.herokuapp.com/player/refreshToken', requestOptions)
+	  .then(
+	  function(response) {
+	  if (response.status !== 200) {
+		console.log('Looks like there was a problem. Status Code: ' +
+		  response.status + response.statusText);
+		return;
+	  }
+	  response.json().then(function(data) {
+		console.log(data);
+	  });
+	})
+};
+ruleta = async () => {
+	const requestOptions = {
+	  method: "POST",
+	  headers: { "Content-Type": "application/json" },
+	  body: JSON.stringify({
+		token: this.state.token
+	  }),
+	};
+	let data;
+	let response;
+	let statusCode
+	response = await fetch('https://unozar.herokuapp.com/player/getDailyGift', requestOptions)
+	data = await response.json();
+	statusCode = response.status;
+	if( await statusCode != 200 ){
+		console.log('Error ruleta')
+	}else{
+		await this.setState({ gift: data.gift });
+		await this.setState({ token: data.token});
+		await alert('Has ganado '+this.state.gift+' monedas')
+	}
+};
   render() {
     return (
       <>
@@ -328,7 +353,7 @@ updatePlayerHandler = () => {
 													<View style={styles.buttonCrear}>
 														{ this.state.numBots >= 1 && 
 															<Button title="Crear Partida" 
-																onPress={() => this.props.navigation.navigate("PartidaBots", { numBots: this.state.numBots })} />
+																onPress={() => this.props.navigation.push("PartidaBots", { numBots: this.state.numBots })} />
 														}
 													</View>
 												</View>

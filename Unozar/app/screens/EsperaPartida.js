@@ -1,13 +1,14 @@
 import React from "react";
 import { Alert, Button, StyleSheet, View, Text, TextInput, Image, TouchableOpacity, Timer , ScrollView } from "react-native";
 import { Menu } from 'primereact/menu';
-import { Linking } from 'react-native';
+
 
 class EsperaPartida extends React.Component {
   constructor(props) {
     super(props);
 	const { token } = this.props.route.params;
 	const { miId } = this.props.route.params;
+	const { numBots } = this.props.route.params;
 	this.state = {
 		miId: miId,
 		token: token,
@@ -24,13 +25,13 @@ class EsperaPartida extends React.Component {
 		nombreJugador4: '',
 		estado: 0,
 		jugadores: 0,
-		subject: 'Invitación partida Unozar',
-		body: this.state.nombreJugador1+' desea invitarle a una partida de Unozar: '+this.state.gameId,
-		cc: '',
-		bcc: '',
+		numBots: numBots,
+		bet: '',
+		money: 0,
     };
   }
 componentDidMount(){
+	this.readYo()
 	this.timer1 = setInterval(() => this.estados(), 2000);
 }
 
@@ -42,7 +43,7 @@ estados = async () => {
 			if(await this.state.gameStarted==true){
 				clearInterval(this.timer1);
 				console.log('PASANDO ID: '+this.state.miId)
-				await this.props.navigation.navigate("Partida", { token: this.state.token, miId: this.state.miId});
+				await this.props.navigation.push("Partida", { token: this.state.token, miId: this.state.miId});
 			}
 			await this.setState({ estado: 0})
 		}else if(this.state.estado==2){
@@ -67,9 +68,29 @@ startHandler = async () =>{
 	}else{
 		await this.setState({ token: data.token });	
 		await console.log("start " + this.state.token);
-		await this.props.navigation.navigate("Partida", { token: this.state.token, miId: this.state.miId});
+		await this.props.navigation.push("Partida", { token: this.state.token, miId: this.state.miId});
 	}
-};	
+};
+readYo = async () => {
+	const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+		playerId: this.state.miId
+      }),
+	};
+	let response = await fetch('https://unozar.herokuapp.com/player/read', requestOptions);
+	let data = await response.json();
+	let statusCode = response.status;
+	if( await statusCode != 200 ){
+		clearInterval(this.timer1);
+	console.log('¡¡¡ERROR FETCH!!!')
+	}else{
+		
+		await this.setState({ money: data.money });
+		await console.log('dinero: '+this.state.money)
+	}
+}	
 readHandler = async () => {
 	const requestOptions = {
       method: "POST",
@@ -94,6 +115,12 @@ readHandler = async () => {
 		await this.setState({ playerId2: data.playersIds[1] });
 		await this.setState({ playerId3: data.playersIds[2] });
 		await this.setState({ playerId4: data.playersIds[3] });
+		await this.setState({ bet: data.bet });
+		await console.log('dinero: '+this.state.money+' bet: '+this.state.bet)
+		if( await this.state.money<this.state.bet){
+			await alert('No tienes suficiente dinero para esta sala')
+			await this.salirSala()
+		}
 		if( await this.state.playerId1 != 'undefined' || await this.state.playerId2 != 'undefined' 
 			|| await this.state.playerId3 != 'undefined' || await this.state.playerId4 != 'undefined'){
 			await this.readPlayerHandler();
@@ -134,7 +161,7 @@ readPlayerHandler = async () => {
 	let response;
 	let statusCode
 	console.log('PLAYER IDS:['+this.state.playerId1+', '+this.state.playerId2+', '+this.state.playerId3+' ,'+this.state.playerId4+']')
-	if(this.state.maxPlayers>=2&&this.state.playerId1!='EMPTY'&&this.state.nombreJugador1==''){
+	if(this.state.maxPlayers>=2&&this.state.playerId1!='EMPTY'&&this.state.playerId1!='BOT'&&this.state.nombreJugador1==''){
 		response = await fetch('https://unozar.herokuapp.com/player/read', requestOptions1);
 		data = await response.json();
 		statusCode = response.status;
@@ -147,7 +174,7 @@ readPlayerHandler = async () => {
 			await this.setState({ jugadores: this.state.jugadores+1})
 		}
 	}
-	if(this.state.maxPlayers>=2&&this.state.playerId2!='EMPTY'&&this.state.nombreJugador2==''){
+	if(this.state.maxPlayers>=2&&this.state.playerId2!='EMPTY'&&this.state.playerId2!='BOT'&&this.state.nombreJugador2==''){
 		response = await fetch('https://unozar.herokuapp.com/player/read', requestOptions2);
 		data = await response.json()
 		statusCode = response.status;
@@ -160,7 +187,7 @@ readPlayerHandler = async () => {
 			await this.setState({ jugadores: this.state.jugadores+1})
 		}
 	}
-	if(this.state.maxPlayers>=3&&this.state.playerId3!='EMPTY'&&this.state.nombreJugador3==''){
+	if(this.state.maxPlayers>=3&&this.state.playerId3!='EMPTY'&&this.state.playerId3!='BOT'&&this.state.nombreJugador3==''){
 		response = await fetch('https://unozar.herokuapp.com/player/read', requestOptions3);
 		data = await response.json();
 		statusCode = response.status;
@@ -188,30 +215,29 @@ readPlayerHandler = async () => {
 	}
 
 }
+salirSala = async () => {
+	const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+		token: this.state.token
+      }),
+    };
+	let data;
+	const response = await fetch('https://unozar.herokuapp.com/game/quit', requestOptions);
+	data = await response.json();
+	let statusCode = response.status;
+	if( await statusCode != 200 ){
+		clearInterval(this.timer1);
+		console.log('¡¡¡ERROR FETCH!!!')
+	}else{
+		await this.setState({ token: data.token });
+		await console.log('salir');
+		await clearInterval(this.timer1);
+		await this.props.navigation.push("MenuPrincipal", { token: this.state.token, playerId: this.state.miId});
+	}
+};
 
-sendEmail = async (to, subject, body) => {
-    let url = `mailto:${to}`;
-
-    // Create email link query
-    const query = qs.stringify({
-        subject: subject,
-        body: body,
-        cc: cc,
-    });
-
-    if (query.length) {
-        url += `?${query}`;
-    }
-
-    // check if we can use this link
-    const canOpen = await Linking.canOpenURL(url);
-
-    if (!canOpen) {
-        throw new Error('Provided URL can not be handled');
-    }
-
-    return Linking.openURL(url);
-}
 
  render() {
 		return (
@@ -226,28 +252,26 @@ sendEmail = async (to, subject, body) => {
 								
 							}
 							{this.state.miId==this.state.playerId1 &&
-								<Text style={styles.textoTitulo}> FALTAN {this.state.maxPlayers-this.state.jugadores} JUGADORES </Text>	
+								<Text style={styles.textoTitulo}> FALTAN {(this.state.maxPlayers-this.state.numBots)-this.state.jugadores} JUGADORES </Text>	
 							}
 							<Text style={styles.textoId}> Jugador 1: {this.state.nombreJugador1} </Text>
-							{this.state.maxPlayers>=2 &&
+							{(this.state.maxPlayers-this.state.numBots)>=2 &&
 								<Text style={styles.textoId}> Jugador 2: {this.state.nombreJugador2} </Text>
 							}
-							{this.state.maxPlayers>=3 &&
+							{(this.state.maxPlayers-this.state.numBots)>=3 &&
 								<Text style={styles.textoId}> Jugador 3: {this.state.nombreJugador3} </Text>
 							}
-							{this.state.maxPlayers==4 &&
+							{(this.state.maxPlayers-this.state.numBots)==4 &&
 								<Text style={styles.textoId}> Jugador 4: {this.state.nombreJugador4} </Text>
 							}
 							{this.state.miId==this.state.playerId1 && this.state.jugadores==this.state.maxPlayers && 
 								<Button title="EMPEZAR PARTIDA"  color="#40d81b" onPress={() => this.setState({ estado: 2 })}/>
 							}
 						</View>
-						<TextInput
-						  style={styles.input}
-						  placeholder="Id amigo"
-						  onChangeText={(cc) => this.setState({ cc })}
-						/>
-						<Button title="Invitar amigo" onPress={() => this.sendEmail(this.state.cc,this.state.subject,this.state.body)} />
+						<View  style={styles.boton}>
+							<Button title="Invitar amigo" onPress={() => {clearInterval(this.timer1), this.props.navigation.push("Amigos", { token: this.state.token, miId: this.state.miId, gameId: this.state.gameId, invitar: true, nombreJugador1: this.state.nombreJugador1}) }} />
+							<Button title="Salir" onPress={() => this.salirSala() }/>
+						</View>
 				</View>
 			</View>
 		</>
@@ -279,6 +303,10 @@ const styles = StyleSheet.create({
 	  fontStyle: "Roboto",
 	  fontSize: 30
   },
+  boton: {
+	width: "30%",
+    alignSelf: "center",  
+  }
 });
 
 export default EsperaPartida;

@@ -1,5 +1,5 @@
 import React from "react";
-import { Alert, Button, StyleSheet, View, Text, TextInput, Image, TouchableOpacity, Timer , ScrollView } from "react-native";
+import { Alert, Button, StyleSheet, View, Text, TextInput, Image, TouchableOpacity, Timer , ScrollView, ImageBackground } from "react-native";
 import { Menu } from 'primereact/menu';
 
 class Partida extends React.Component {
@@ -30,7 +30,7 @@ class Partida extends React.Component {
 		carta: '',
 		cartaColor: 'R',
 		restart: 1,
-		topDiscard: 'reverso',
+		topDiscard: '0',
 		turn: 0,
 		gamePaused: '',
 		estado: 1,
@@ -39,6 +39,7 @@ class Partida extends React.Component {
 		playerNumCards: [0,0,0,0],
 		cambiaTurno: [0,1,2,3],
 		playerCards: [],
+		tablero: '2',
     };
   }
 readPlayerHandler = async (i,id,turno) => {
@@ -179,6 +180,7 @@ playCardHandler = async () => {
 		console.log('¡¡¡ERROR FETCH!!!')
 	}else{
 		if(await this.state.playerNumCards[0]==1){
+			await alert('!!!VICTORIA!!!')
 			await this.setState({ estado: 4})
 		}
 		await this.setState({ token: data.token });
@@ -224,7 +226,7 @@ salirHandler = async () => {
 	}else{
 		await this.setState({ token: data.token});
 		console.log("salido");
-		await this.props.navigation.navigate("MenuPrincipal", { token: this.state.token, playerId: this.state.miId});
+		await this.props.navigation.push("MenuPrincipal", { token: this.state.token, playerId: this.state.miId});
 	}
 };
 gameResponseHandler = async () => {
@@ -266,6 +268,7 @@ gameResponseHandler = async () => {
 				this.state.playerNumCards[i]=await data.playersNumCards[this.state.turnos[i]]
 				if( await this.state.playerNumCards[i] == 0){
 					await this.setState({ estado: 4})
+					await alert('DERROTA')
 				}
 			}
 			await this.setState({ restart: this.state.restart+1 }) 
@@ -302,7 +305,7 @@ gameResponseHandler = async () => {
 			//let timer2 = await setTimeout(() => this.gameResponseHandler(), 61000);
 		}else if(this.state.estado==4){
 			await clearInterval(this.timer1);
-			await this.props.navigation.navigate("MenuPrincipal", { playerId: this.state.miId, token: this.state.token });
+			await this.props.navigation.push("MenuPrincipal", { playerId: this.state.miId, token: this.state.token });
 		}
 	};
 	componentDidMount(){
@@ -434,30 +437,29 @@ gameResponseHandler = async () => {
 								</View>
 							</View>
 							<View style={styles.square4}> 
-								<View key={this.state.restart} style={styles.containerTablero}>
-									
-									<Image  style={styles.deck} source={require('../assets/cartas/reverso.png')} />
-									<Image style={styles.carta} source={require('../assets/cartas/'+this.state.topDiscard+'.png')} />
-									<View style={styles.containerColor}>
-										{this.state.showColor &&
-											<>
-											<Button title="Rojo" color="#f71313" onPress={() => this.setState({ cartaColor: 'R'})}/>
-											<Button title="Azul" color="#1385f7" onPress={() => this.setState({ cartaColor: 'B'})}/>
-											<Button title="Amarillo" color="#f4f713" onPress={() => this.setState({ cartaColor: 'Y'})}/>
-											<Button title="Verde" color="#47f713" onPress={() => this.setState({ cartaColor: 'G'})}/>
-											</>
-										}
+								<ImageBackground style={styles.tablero} source={require('../assets/tableros/'+this.state.tablero+'.png')}>
+									<View key={this.state.restart} style={styles.containerTablero}>
+										<Image  style={styles.deck} source={require('../assets/dorsos/0.png')} />
+										<Image style={styles.carta} source={require('../assets/cartas/'+this.state.topDiscard+'.png')} />
+										<View style={styles.containerColor}>
+											{this.state.showColor &&
+												<>
+												<Button title="Rojo" color="#f71313" onPress={() => this.setState({ cartaColor: 'R'})}/>
+												<Button title="Azul" color="#1385f7" onPress={() => this.setState({ cartaColor: 'B'})}/>
+												<Button title="Amarillo" color="#f4f713" onPress={() => this.setState({ cartaColor: 'Y'})}/>
+												<Button title="Verde" color="#47f713" onPress={() => this.setState({ cartaColor: 'G'})}/>
+												</>
+											}
+										</View>
 									</View>
-								</View>
+								</ImageBackground>
 								
 							</View>
-							<View style={styles.square8}> 
 								<View key={this.state.restart} style={styles.containerplayerCards}>
 									<ScrollView horizontal  >
 										{this.verplayerCards()}
 									</ScrollView>
 								</View>
-							</View>
 						</View>
 						<View key={this.state.cambiaTurno[0]} style={[styles.container, { top: 40, width: 240, height: 590, backgroundColor:this.state.turnoJugadores[0] }]}> 
 							<View style={styles.containerPerfil}>
@@ -555,9 +557,9 @@ const styles = StyleSheet.create({
 	 top: -28,
   },
   square4: {
-	  top: 40,
+	top: 40,
 	width: 1117,
-    height: 260,
+    height: 440,
 	 backgroundColor:'rgba(100, 100, 100, 0.4)',   
   },
   containerScreen3: {
@@ -634,6 +636,10 @@ const styles = StyleSheet.create({
 	flexDirection: 'column', 
 	left: 500,	
 	top:50,
+  },
+  tablero: {
+	width: 1117,
+    height: 440,  
   },
 });
 

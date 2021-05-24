@@ -7,32 +7,43 @@ class Amigos extends React.Component {
     super(props);
 	const { token } = this.props.route.params;
 	const { miId } = this.props.route.params;
+	const { gameId } = this.props.route.params;
+	const { invitar } = this.props.route.params;
+	const { nombreJugador1 } = this.props.route.params;
     this.state = {
 		show: false,
 		restart: 1,
 		miId: miId,
 		token: token,
+		invitar: invitar,
+		gameId: gameId,
+		nombreJugador1: nombreJugador1,
 		friendId: '',
-		friendIds: [1234,1234,1234,1234,1234,1234,1234,1234,1234],
-		alias: ['aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa','aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa','aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa','aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa','aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa','aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa','aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa','aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa','aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'],
-		emails: ['@','@','@','@','@','@','@','@','@'],
-		avatarIds: ['0','0','0','0','0','0','0','0','0'],
+		friendIds: [],
+		alias: [],
+		emails: [],
+		avatarIds: [],
     };
 	this.items = [
 					{
-						label: 'Atras',
+						label: 'MenuPrincipal',
 						icon: 'pi pi-user',
-						command: () => {this.setState({show: false}), this.props.navigation.goBack({ token: this.state.token, playerId: this.state.miId})}
+						command: () => {this.setState({show: false}), this.props.navigation.push("MenuPrincipal" , { token: this.state.token, playerId: this.state.miId} )}
 					},
 					{
 						label: 'Perfil',
 						icon: 'pi pi-users',
-						command: () => {this.setState({show: false}), this.props.navigation.navigate("Perfil" , { token: this.state.token, miId: this.state.miId} )}
+						command: () => {this.setState({show: false}), this.props.navigation.push("Perfil" , { token: this.state.token, miId: this.state.miId, invitar: false} )}
+					},
+					{
+						label: 'Tienda',
+						icon: 'pi pi-users',
+						command: () => {this.setState({show1: false}), this.props.navigation.push("Tienda" , { token: this.state.token, miId: this.state.miId} )}
 					},
 					{
 						label: 'Cerrar Sesion',
 						icon: 'pi pi-power-off',
-						command: () => {this.setState({show:false}), this.props.navigation.navigate("Inicio")}
+						command: () => {this.setState({show:false}), this.props.navigation.push("Inicio")}
 					}
 					
 		];
@@ -63,7 +74,9 @@ addFriend = async () => {;
 	}else{
 		await this.setState({ token: data.token});
 		console.log('Amigo añadido')
+		await this.readFriends();
 		await this.setState({ restart: this.state.restart+1})
+		await console.log('token amigos: ' + this.state.token)
 	}
 };
 readFriends = async () => {;
@@ -89,23 +102,33 @@ readFriends = async () => {;
 		await this.setState({ emails: data.emails});
 		await this.setState({ avatarIds: data.avatarIds});
 		await this.setState({ friendIds: data.friendIds});
-		console.log('READFRIENDS :['+this.state.token+', '+this.state.friendIds+', '+this.state.alias+', '+this.state.emails+', '+this.state.avatarIds+']')
+		await console.log('token amigos: ' +this.state.token)
+		await console.log('READFRIENDS :['+this.state.token+', '+this.state.friendIds+', '+this.state.alias+', '+this.state.emails+', '+this.state.avatarIds+']')
 	}
 };
 auxiliar = async () => {
 	await this.readFriends();
 };
+verAmigo = async (i) => {
+	if(this.state.invitar){
+		this.props.navigation.push("Perfil" , { token: this.state.token, miId: this.state.miId, gameId: this.state.gameId, invitar: this.state.invitar, nombreJugador1: this.state.nombreJugador1, idJugadorInvitar: this.state.friendIds[i], amigo: false})
+	}else{
+		this.props.navigation.push("Perfil" , { token: this.state.token, miId: this.state.miId, gameId: this.state.gameId, invitar: this.state.invitar, nombreJugador1: this.state.nombreJugador1, idJugadorInvitar: this.state.friendIds[i], amigo: true})
+	}
+};
 componentDidMount(){
-	//this.auxiliar()
+	console.log('hola')
+	console.log('token amigos: ' +this.state.token)
+	this.auxiliar()
 }
 verListaAmigos = () => {
 	let table = []
-	let aux = 0
+	let i = 0
 		//console.log('LOGIN :{['+this.state.token+'], ['+this.state.friendIds+'], ['+this.state.alias+'], ['+this.state.emails+'], ['+this.state.avatarIds+']}')
-		for(let i = 1; i<= (this.state.friendIds.length*2); i+=4){
+		for(let aux = 0; aux<this.state.friendIds.length; aux+=2){
 			if(aux+1==this.state.friendIds.length){
 				table.push(	<View style={styles.containerDosAmigos}>
-								<TouchableOpacity key={i} style={styles.cartaTouchable} activeOpacity={0.5} onPress={() =>this.props.navigation.navigate("Perfil" , { token: this.state.token, miId: this.state.friendIds[aux]})}>
+								<TouchableOpacity key={i} style={styles.cartaTouchable} activeOpacity={0.5} onPress={() => this.verAmigo(aux)}>
 									<Image  key={i} style={styles.avatar} source={require('../assets/avatares/'+this.state.avatarIds[aux]+'.png')} />
 								</TouchableOpacity>
 								<View key={i+1} style={styles.containerAmigos}>
@@ -117,7 +140,7 @@ verListaAmigos = () => {
 				
 			}else{
 				table.push(	<View style={styles.containerDosAmigos}>
-								<TouchableOpacity key={i} style={styles.cartaTouchable} activeOpacity={0.5} onPress={() =>this.props.navigation.navigate("Perfil" , { token: this.state.token, miId: this.state.friendIds[aux]})}>
+								<TouchableOpacity key={i} style={styles.cartaTouchable} activeOpacity={0.5} onPress={() => this.verAmigo(aux)}>
 									<Image  key={i} style={styles.avatar} source={require('../assets/avatares/'+this.state.avatarIds[aux]+'.png')} />
 								</TouchableOpacity>
 								<View key={i+1} style={styles.containerAmigos}>
@@ -125,7 +148,7 @@ verListaAmigos = () => {
 									<Text key={-(i+1)} style={styles.texto}> {this.state.friendIds[aux]} </Text>
 								</View>
 								
-								<TouchableOpacity key={i+2} style={styles.cartaTouchable} activeOpacity={0.5} onPress={() =>this.props.navigation.navigate("Perfil" , { token: this.state.token, miId: this.state.friendIds[aux+1]})}>
+								<TouchableOpacity key={i+2} style={styles.cartaTouchable} activeOpacity={0.5} onPress={() => this.verAmigo(aux+1)}>
 									<Image  key={i+2} style={styles.avatar} source={require('../assets/avatares/'+this.state.avatarIds[aux+1]+'.png')} />
 								</TouchableOpacity>
 								<View key={i+3} style={styles.containerAmigos}>
@@ -136,7 +159,7 @@ verListaAmigos = () => {
 							</View>
 							)
 			}
-			aux+=2
+			i+=4
 		}
 		
 		return table;
@@ -153,7 +176,7 @@ verListaAmigos = () => {
 					</ScrollView>
 				</View>
 			</View>
-			<View style={styles.buttonAñadir}>
+			<View key={this.state.restart} style={styles.buttonAñadir}>
 				<TextInput
 				  style={styles.input}
 				  placeholder="Id amigo"
