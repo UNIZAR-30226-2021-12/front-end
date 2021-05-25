@@ -1,19 +1,37 @@
 import React from "react";
 import { Button, StyleSheet, View, Text, TextInput } from "react-native";
-
-
+import CustomText from '../assets/idioma/CustomText.js' 
+import { Menu } from 'primereact/menu';
 class Registro extends React.Component {
   constructor(props) {
     super(props);
+	const { español } = this.props.route.params;
+	const { CustomTextLocal } = this.props.route.params;
     this.state = {
       alias: "",
       email: "",
       firstPassword: "",
       secondPassword: "",
-	  id: "",
-	  token: '',
+	  id: 5,
+	  token: 10,
+	  español: español,
+	  CustomTextLocal: CustomTextLocal,
     };
-	
+	this.items = [
+					{
+						label: 'Cambiar idioma',
+						icon: 'pi pi-user',
+						command: () => {if(this.state.español){
+											this.setState({español: false})
+											this.state.CustomTextLocal.setLanguage('en');
+										}else{
+											this.setState({español: true})
+											this.state.CustomTextLocal.setLanguage('es');
+										}
+							
+							}
+					},
+		];
   }
 registroylogin = async () => {
 	await this.registerHandler()
@@ -82,7 +100,7 @@ login = async () => {
 		
 		await this.setState({ playerId: data.id });
 		await this.setState({ token: data.token});
-		await this.props.navigation.push("MenuPrincipal", {playerId: this.state.playerId, token: this.state.token })
+		await this.props.navigation.push("MenuPrincipal", {playerId: this.state.playerId, token: this.state.token, español: this.state.español, CustomTextLocal: this.state.CustomTextLocal })
 	}
 };
   render() {
@@ -91,19 +109,20 @@ login = async () => {
       <View style={styles.screen}>
         <View style={styles.formContainer}>
 		<form>
-          <Text> Alias </Text>
+          <Text> {this.state.CustomTextLocal.alias} </Text>
           <TextInput
             style={styles.input}
+			placeholder={this.state.CustomTextLocal.nombre}
             onChangeText={(alias) => this.setState({ alias })}
           />
 		  
-          <Text> Correo </Text>
+          <Text> {this.state.CustomTextLocal.mail} </Text>
           <TextInput
             style={styles.input}
-            placeholder="ejemplo@unizar.es"
+            placeholder={this.state.CustomTextLocal.ejemploMail}
             onChangeText={(email) => this.setState({ email })}
           />
-          <Text> Contraseña </Text>
+          <Text> {this.state.CustomTextLocal.pass} </Text>
           <TextInput
             ref={(input) => {
               this.pass1Input = input;
@@ -112,7 +131,7 @@ login = async () => {
             onChangeText={(firstPassword) => this.setState({ firstPassword })}
             secureTextEntry={true}
           />
-          <Text> Repetir contraseña </Text>
+          <Text> {this.state.CustomTextLocal.repetirPass} </Text>
           <TextInput
             ref={(input) => {
               this.pass2Input = input;
@@ -123,8 +142,9 @@ login = async () => {
           />
           <View style={styles.buttonReg}>
             <Button
-              title="Registrarse"
+              title={this.state.CustomTextLocal.registro}
               onPress={() => this.registroylogin()}
+			  /*onPress={() =>this.props.navigation.push("MenuPrincipal", {playerId: this.state.playerId, token: this.state.token, español: this.state.español, CustomTextLocal: this.state.CustomTextLocal })}*/
             />
           </View>
 		  </form>
@@ -133,11 +153,20 @@ login = async () => {
           <Text style={styles.logText}> ¿Ya está registrado? </Text>
           <View style={styles.buttonLog}>
             <Button
-              onPress={() => this.props.navigation.push("Inicio")}
-              title="Login"
+              onPress={() => this.props.navigation.push("Inicio", {español: this.state.español, CustomTextLocal: this.state.CustomTextLocal})}
+              title={this.state.CustomTextLocal.login}
             />
           </View>
         </View>
+		<View style={styles.menu}>
+					<div>
+				<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+                <button icon="pi pi-bars" onClick={() => this.setState({ show1: !this.state.show1 })}><i className="fa fa-bars"></i></button>
+                { this.state.show1 && (
+					<Menu model={this.items} />
+                )}
+				</div>  
+		</View>
       </View>
 	  </>
     );
@@ -174,6 +203,12 @@ const styles = StyleSheet.create({
   buttonLog: {
     width: "30%",
     alignSelf: "center",
+  },
+  menu :{
+	position: 'absolute', 
+	top: 20,
+	left: 1200,
+	backgroundColor:'rgba(255, 255, 255, 0.7)',
   },
 });
 

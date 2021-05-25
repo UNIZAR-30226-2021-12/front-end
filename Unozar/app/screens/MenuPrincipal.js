@@ -7,13 +7,15 @@ import {DataTable} from 'primereact/DataTable';
 import { Paginator } from 'primereact/paginator';
 
 import Registro from './Registro.js';
-
+import CustomText from '../assets/idioma/CustomText.js' 
 
 export default class MenuPrincipal extends Component {
   constructor(props) {
     super(props);
 	const { playerId } = this.props.route.params;
 	const { token } = this.props.route.params;
+	const { español } = this.props.route.params;
+	const { CustomTextLocal } = this.props.route.params;
     this.state = {
 		show1: false,
 		show2: false,
@@ -32,6 +34,8 @@ export default class MenuPrincipal extends Component {
 		gameId: '',
 		gift: '',
 		giftClaimedToday: false,
+		español: español,
+		CustomTextLocal: CustomTextLocal,
 	};
 	this.items = [
 					{
@@ -50,6 +54,19 @@ export default class MenuPrincipal extends Component {
 						command: () => {this.setState({show1: false}), this.props.navigation.push("Tienda" , { token: this.state.token, miId: this.state.playerId} )}
 					},
 					{
+						label: 'Cambiar idioma',
+						icon: 'pi pi-user',
+						command: () => {if(this.state.español){
+											this.setState({español: false})
+											this.state.CustomTextLocal.setLanguage('en');
+										}else{
+											this.setState({español: true})
+											this.state.CustomTextLocal.setLanguage('es');
+										}
+							
+							}
+					},
+					{
 						label: 'Cerrar Sesion',
 						icon: 'pi pi-power-off',
 						command: () => {this.setState({show1: false}),this.props.navigation.push("Inicio")}
@@ -59,7 +76,6 @@ export default class MenuPrincipal extends Component {
 	}
 	componentDidMount(){
 		this.readHandler();
-		let token=this.props.route.params;
 		//let timer = setInterval(() => alert("aux"), 3000);
 	}
 readHandler = async () => {
@@ -111,13 +127,7 @@ deleteUser = () => {
 	  )
 	  
 	
-};
-	
-  hide(){
-		this.setState({showMenu: !this.state.showMenu})
-		
-  };
-  
+};  
 crearPartida = async() => {
 	const requestOptions = {
       method: "POST",
@@ -150,7 +160,7 @@ crearPartida = async() => {
 			await console.log("start " + this.state.token);
 			this.props.navigation.push("Partida", { token: this.state.token, miId: this.state.playerId});
 		}else{
-			this.props.navigation.push("EsperaPartida", { token: this.state.token, miId: this.state.playerId, numBots: this.state.numBots});
+			this.props.navigation.push("EsperaPartida", { token: this.state.token, miId: this.state.playerId, numBots: this.state.numBots, español: this.state.español, CustomTextLocal: this.state.CustomTextLocal});
 		}
 };
 joinPartida = async() => {
@@ -394,7 +404,7 @@ ruleta = async () => {
 					<Button title ="-1" onPress={() => this.setState({ maxPlayers: this.state.maxPlayers - 1 })}/>
 				}
 			</View>
-			<Text>Create Game function</Text>
+			<Text>{this.state.CustomTextLocal.crear}</Text>
            
 			<Button title="Create" onPress={() => this.crearPartida()} />
 			<TextInput

@@ -14,9 +14,8 @@ import AmigosScreen from "./app/screens/Amigos";
 import TiendaScreen from "./app/screens/Tienda";
 import { configureFakeBackend } from "./app/test/FakeBackend";
 //configureFakeBackend();
-
 const Stack = createStackNavigator();
-
+import CustomText from './app/assets/idioma/CustomText.js'
 class App extends React.Component {
   render() {
     return (
@@ -26,7 +25,7 @@ class App extends React.Component {
             headerShown: false,
           }}
         >
-          <Stack.Screen name="Inicio" component={InicioScreen} />
+          <Stack.Screen name="Inicio" component={InicioScreen} initialParams={{español: true, CustomTextLocal: new CustomText().devolver() }}/>
           <Stack.Screen name="Registro" component={RegistroScreen} />
           <Stack.Screen name="MenuPrincipal" component={MenuPrincipalScreen} />
 		  <Stack.Screen name="Perfil" component={PerfilScreen} />

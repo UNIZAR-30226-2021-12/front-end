@@ -23,7 +23,7 @@ class Perfil extends React.Component {
 		privateTotal: 2,
 		publicWins: 3,
 		publicTotal: 4,
-		avatarId: '7',
+		avatarId: '3',
 		invitar: invitar,
 		nombreJugador1: nombreJugador1,
 		subject: 'Invitación partida Unozar',

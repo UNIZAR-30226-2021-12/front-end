@@ -1,7 +1,7 @@
 import React from "react";
 import { Alert, Button, StyleSheet, View, Text, TextInput, Image, TouchableOpacity, Timer , ScrollView } from "react-native";
 import { Menu } from 'primereact/menu';
-
+import CustomText from '../assets/idioma/CustomText.js' 
 
 class EsperaPartida extends React.Component {
   constructor(props) {
@@ -9,6 +9,8 @@ class EsperaPartida extends React.Component {
 	const { token } = this.props.route.params;
 	const { miId } = this.props.route.params;
 	const { numBots } = this.props.route.params;
+	const { español } = this.props.route.params;
+	const { CustomTextLocal } = this.props.route.params;
 	this.state = {
 		miId: miId,
 		token: token,
@@ -28,6 +30,8 @@ class EsperaPartida extends React.Component {
 		numBots: numBots,
 		bet: '',
 		money: 0,
+		español: español,
+		CustomTextLocal: CustomTextLocal,
     };
   }
 componentDidMount(){
@@ -234,7 +238,7 @@ salirSala = async () => {
 		await this.setState({ token: data.token });
 		await console.log('salir');
 		await clearInterval(this.timer1);
-		await this.props.navigation.push("MenuPrincipal", { token: this.state.token, playerId: this.state.miId});
+		await this.props.navigation.push("MenuPrincipal", { token: this.state.token, playerId: this.state.miId, español: this.state.español, CustomTextLocal: this.state.CustomTextLocal});
 	}
 };
 
@@ -248,29 +252,29 @@ salirSala = async () => {
 								
 
 							{this.state.miId!=this.state.playerId1 &&
-								<Text style={styles.textoTitulo}> ESPERANDO A QUE {this.state.nombreJugador1} EMPIECE PARTIDA... </Text>	
+								<Text style={styles.textoTitulo}>{this.state.CustomTextLocal.esperandoACreador1} {this.state.nombreJugador1} {this.state.CustomTextLocal.esperandoACreador2}</Text>	
 								
 							}
 							{this.state.miId==this.state.playerId1 &&
-								<Text style={styles.textoTitulo}> FALTAN {(this.state.maxPlayers-this.state.numBots)-this.state.jugadores} JUGADORES </Text>	
+								<Text style={styles.textoTitulo}>{this.state.CustomTextLocal.faltanJugadores1} {(this.state.maxPlayers-this.state.numBots)-this.state.jugadores} {this.state.CustomTextLocal.faltanJugadores2}</Text>	
 							}
-							<Text style={styles.textoId}> Jugador 1: {this.state.nombreJugador1} </Text>
+							<Text style={styles.textoId}> {this.state.CustomTextLocal.jugador1}: {this.state.nombreJugador1} </Text>
 							{(this.state.maxPlayers-this.state.numBots)>=2 &&
-								<Text style={styles.textoId}> Jugador 2: {this.state.nombreJugador2} </Text>
+								<Text style={styles.textoId}> {this.state.CustomTextLocal.jugador2}: {this.state.nombreJugador2} </Text>
 							}
 							{(this.state.maxPlayers-this.state.numBots)>=3 &&
-								<Text style={styles.textoId}> Jugador 3: {this.state.nombreJugador3} </Text>
+								<Text style={styles.textoId}> {this.state.CustomTextLocal.jugador3}: {this.state.nombreJugador3} </Text>
 							}
 							{(this.state.maxPlayers-this.state.numBots)==4 &&
-								<Text style={styles.textoId}> Jugador 4: {this.state.nombreJugador4} </Text>
+								<Text style={styles.textoId}> {this.state.CustomTextLocal.jugador4}: {this.state.nombreJugador4} </Text>
 							}
 							{this.state.miId==this.state.playerId1 && this.state.jugadores==this.state.maxPlayers && 
-								<Button title="EMPEZAR PARTIDA"  color="#40d81b" onPress={() => this.setState({ estado: 2 })}/>
+								<Button title={this.state.CustomTextLocal.empezarPartida}  color="#40d81b" onPress={() => this.setState({ estado: 2 })}/>
 							}
 						</View>
 						<View  style={styles.boton}>
-							<Button title="Invitar amigo" onPress={() => {clearInterval(this.timer1), this.props.navigation.push("Amigos", { token: this.state.token, miId: this.state.miId, gameId: this.state.gameId, invitar: true, nombreJugador1: this.state.nombreJugador1}) }} />
-							<Button title="Salir" onPress={() => this.salirSala() }/>
+							<Button title={this.state.CustomTextLocal.invitarAmigo} onPress={() => {clearInterval(this.timer1), this.props.navigation.push("Amigos", { token: this.state.token, miId: this.state.miId, gameId: this.state.gameId, invitar: true, nombreJugador1: this.state.nombreJugador1}) }} />
+							<Button title={this.state.CustomTextLocal.salir} onPress={() => this.salirSala() }/>
 						</View>
 				</View>
 			</View>
