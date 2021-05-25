@@ -3,7 +3,9 @@ import { Button, StyleSheet, View, Text, TextInput,Image } from "react-native";
 import { Menu } from 'primereact/menu';
 import { Linking } from 'react-native';
 import qs from 'qs';
-class Perfil extends React.Component {
+import CustomText from '../assets/idioma/CustomText.js' 
+
+class PerfilAmigos extends React.Component {
   constructor(props) {
     super(props);
 	const { miId } = this.props.route.params;
@@ -13,6 +15,10 @@ class Perfil extends React.Component {
 	const { nombreJugador1 } = this.props.route.params;
 	const { idJugadorInvitar } = this.props.route.params;
 	const { amigo } = this.props.route.params;
+	const { español } = this.props.route.params;
+	const { CustomTextLocal } = this.props.route.params;
+	const { numBots } = this.props.route.params;
+	const { maxPlayers } = this.props.route.params
     this.state = {
 		show: false,
 		miId: miId,
@@ -32,23 +38,40 @@ class Perfil extends React.Component {
 		bcc: '',
 		idJugadorInvitar: idJugadorInvitar,
 		amigo: amigo,
+		español: español,
+		CustomTextLocal: CustomTextLocal,
+		numBots: numBots,
+		maxPlayers: maxPlayers,
     };
 	this.items = [
 					{
 						label: 'MenuPrincipal',
 						icon: 'pi pi-user',
-						command: () => {this.setState({show: false}), this.props.navigation.push("MenuPrincipal" , { token: this.state.token, playerId: this.state.miId} )}
+						command: () => {this.setState({show: false}), this.props.navigation.push("MenuPrincipal" , { token: this.state.token, playerId: this.state.miId, español: this.state.español, CustomTextLocal: this.state.CustomTextLocal} )}
 					},
 					{
 						label: 'Amigos',
 						icon: 'pi pi-users',
-						command: () => {this.setState({show: false}), this.props.navigation.push("Amigos", { token: this.state.token, miId: this.state.miId})}
+						command: () => {this.setState({show: false}), this.props.navigation.push("Amigos", { token: this.state.token, miId: this.state.miId, español: this.state.español, CustomTextLocal: this.state.CustomTextLocal})}
 					},
 					{
 						label: 'Tienda',
 						icon: 'pi pi-users',
-						command: () => {this.setState({show1: false}), this.props.navigation.push("Tienda" , { token: this.state.token, miId: this.state.miId} )}
-					},	
+						command: () => {this.setState({show1: false}), this.props.navigation.push("Tienda" , { token: this.state.token, miId: this.state.miId, español: this.state.español, CustomTextLocal: this.state.CustomTextLocal} )}
+					},
+					{
+						label: 'Cambiar idioma',
+						icon: 'pi pi-user',
+						command: () => {if(this.state.español){
+											this.setState({español: false})
+											this.state.CustomTextLocal.setLanguage('en');
+										}else{
+											this.setState({español: true})
+											this.state.CustomTextLocal.setLanguage('es');
+										}
+							
+							}
+					},					
 					{
 						label: 'Cerrar Sesion',
 						icon: 'pi pi-power-off',
@@ -62,28 +85,16 @@ class Perfil extends React.Component {
 		this.setState({showMenu: !this.state.showMenu})
 		
 	}
-sendEmail = async (to, subject, body) => {
-    let url = `mailto:${to}`;
-
-    // Create email link query
-    const query = qs.stringify({
-        subject: this.state.subject,
-        body: this.state.body,
-        cc: this.state.cc,
-    });
-
-    if (query.length) {
-        url += `?${query}`;
-    }
-
-    // check if we can use this link
-    const canOpen = await Linking.canOpenURL(url);
-
-    if (!canOpen) {
-        throw new Error('Provided URL can not be handled');
-    }
-
-    return Linking.openURL(url);
+mailto = () => {
+    var url;
+    url = 'mailto:' + this.state.email;
+    url += '?subject=' + this.state.subject;
+    url += '&body=' + this.state.body;
+    window.open(url);
+}
+invitar = () => {
+	this.mailto()
+	this.props.navigation.push("EsperaPartida" , { token: this.state.token, miId: this.state.miId, español: this.state.español, CustomTextLocal: this.state.CustomTextLocal, numBots: this.state.numBots, gameId: this.state.gameId, invitar: this.state.invitar, nombreJugador1: this.state.nombreJugador1, maxPlayers: this.state.maxPlayers} )
 }
 readHandler = async (i) => {
 	const requestOptions1 = {
@@ -133,18 +144,13 @@ deleteAmigo = async () => {
 		console.log('¡¡¡ERROR FETCH!!!')
 	}else{
 		await this.setState({ token: data.token});
-		await this.props.navigation.push("Amigos", { token: this.state.token, miId: this.state.miId});
+		await this.props.navigation.push("Amigos", { token: this.state.token, miId: this.state.miId, gameId: this.state.gameId, invitar: true, nombreJugador1: this.state.nombreJugador1, español: this.state.español, CustomTextLocal: this.state.CustomTextLocal, numBots: this.state.numBots, gameId: this.state.gameId});
 	}		
 };
+
 componentDidMount(){
-	if(this.state.amigo){
-		console.log('Jugador invitado: '+this.state.idJugadorInvitar)
-		this.readHandler(this.state.idJugadorInvitar)
-	}else{
-		console.log('Yo: '+this.state.miId)
-		this.readHandler(this.state.miId)
-	}
-	console.log('token perfil: ' +this.state.token)
+	console.log('Jugador invitado: '+this.state.idJugadorInvitar)
+	this.readHandler(this.state.idJugadorInvitar)
 }
 
   render() {
@@ -165,9 +171,9 @@ componentDidMount(){
 					<Text style={styles.texto}> Partidas privadas </Text>
 					<Text style={styles.texto}> J: {this.state.privateTotal} W: {this.state.privateWins}</Text>
 					{this.state.invitar &&
-						<Button title="Invitar amigo" onPress={() => this.sendEmail(this.state.email,this.state.subject,this.state.body)} />
+						<Button title="Invitar amigo" onPress={() => this.invitar() } />
 					}
-					{this.state.amigo&&
+					{!this.state.invitar&&
 						<Button title="Eliminar amigo" onPress={() => this.deleteAmigo()} />
 					}
 			</View>
@@ -213,4 +219,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Perfil;
+export default PerfilAmigos;
