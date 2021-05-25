@@ -536,29 +536,6 @@ export default class MenuPrincipal extends Component {
           />
           <Button title="Entrar partida" onPress={() => this.joinPartida()} />
           <Button title="Salir Juego" onPress={() => this.salirHandler()} />
-          <TextInput
-            style={styles.input}
-            placeholder="updateEmail"
-            onChangeText={(email) => this.setState({ email })}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="updateAlias"
-            onChangeText={(alias) => this.setState({ alias })}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="updatePassword"
-            onChangeText={(password) => this.setState({ password })}
-          />
-          <Button
-            title="UpdatePlayer"
-            onPress={() => this.updatePlayerHandler()}
-          />
-          <Button
-            title="DeletePlayer"
-            onPress={() => this.deletePlayerHandler()}
-          />
         </View>
         <View style={styles.menu}>
           <div>
@@ -578,12 +555,14 @@ export default class MenuPrincipal extends Component {
         <View style={styles.buttonPerfil}>
           <Button
             title="Perfil"
-            onPress={() =>
+            onPress={() => {
               this.props.navigation.navigate("Perfil", {
                 token: this.state.token,
                 id: this.state.playerId,
-              })
-            }
+                español: this.state.español,
+                CustomTextLocal: this.state.CustomTextLocal,
+              });
+            }}
           />
         </View>
       </>

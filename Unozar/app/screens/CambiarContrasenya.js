@@ -14,10 +14,12 @@ import refreshToken from "../functions/refreshToken";
 import updatePlayer from "../functions/updatePlayer";
 import authentication from "../functions/authentication";
 
-class EditarUsuario extends React.Component {
+class CambiarContrasenya extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      español: this.props.route.params.español,
+      CustomTextLocal: this.props.route.params.CustomTextLocal,
       token: this.props.route.params.token,
       id: this.props.route.params.id,
       email: this.props.route.params.email,
@@ -51,6 +53,8 @@ class EditarUsuario extends React.Component {
       this.props.navigation.push("Perfil", {
         token: token,
         id: this.state.id,
+        español: this.state.español,
+        CustomTextLocal: this.state.CustomTextLocal,
       });
     }
   };
@@ -61,7 +65,10 @@ class EditarUsuario extends React.Component {
       this.setState({ token: token });
     } else {
       alert("Su sesion ha expirado");
-      this.props.navigation.navigate("Inicio");
+      this.props.navigation.navigate("Inicio", {
+        español: this.state.español,
+        CustomTextLocal: this.state.CustomTextLocal,
+      });
     }
   };
 
@@ -72,7 +79,15 @@ class EditarUsuario extends React.Component {
   render() {
     return (
       <View style={styles.screen}>
-        <Cabecera props={this.props}>
+        <Cabecera
+          params={{
+            token: this.state.token,
+            playerId: this.state.id,
+            español: this.state.español,
+            CustomTextLocal: this.state.CustomTextLocal,
+          }}
+          navigation={this.props.navigation}
+        >
           <View style={styles.formContainer}>
             <Text>Contraseña actual</Text>
             <TextInput
@@ -104,6 +119,8 @@ class EditarUsuario extends React.Component {
                     this.props.navigation.push("Perfil", {
                       token: this.state.token,
                       id: this.state.id,
+                      español: this.state.español,
+                      CustomTextLocal: this.state.CustomTextLocal,
                     })
                   }
                 />
@@ -154,4 +171,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default EditarUsuario;
+export default CambiarContrasenya;

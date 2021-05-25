@@ -15,10 +15,12 @@ export default class Cabecera extends Component {
     super(props);
     this.state = {
       visible: false,
-      user: this.props.email,
-      pass: this.props.password,
-      playerId: this.props.playerId,
-      token: this.props.token,
+      español: this.props.params.español,
+      CustomTextLocal: this.props.params.CustomTextLocal,
+      user: this.props.params.email,
+      pass: this.props.params.password,
+      playerId: this.props.params.playerId,
+      token: this.props.params.token,
     };
   }
 
@@ -54,6 +56,8 @@ export default class Cabecera extends Component {
             color: "#fff",
             onPress: () => {
               this.props.navigation.push("MenuPrincipal", {
+                español: this.state.español,
+                CustomTextLocal: this.state.CustomTextLocal,
                 user: this.state.email,
                 pass: this.state.password,
                 playerId: this.state.playerId,

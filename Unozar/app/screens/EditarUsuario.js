@@ -17,12 +17,13 @@ class EditarUsuario extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      español: this.props.route.params.español,
+      CustomTextLocal: this.props.route.params.CustomTextLocal,
       token: this.props.route.params.token,
       alias: this.props.route.params.alias,
       emailViejo: this.props.route.params.email,
       email: null,
       id: this.props.route.params.id,
-
       avatarId: this.props.route.params.avatarId,
       boardId: this.props.route.params.boardId,
       cardsId: this.props.route.params.cardsId,
@@ -46,6 +47,8 @@ class EditarUsuario extends React.Component {
       this.props.navigation.push("Perfil", {
         token: token,
         id: this.state.id,
+        español: this.state.español,
+        CustomTextLocal: this.state.CustomTextLocal,
       });
     }
   };
@@ -56,7 +59,10 @@ class EditarUsuario extends React.Component {
       this.setState({ token: token });
     } else {
       alert("Su sesion ha expirado");
-      this.props.navigation.navigate("Inicio");
+      this.props.navigation.navigate("Inicio", {
+        español: this.state.español,
+        CustomTextLocal: this.state.CustomTextLocal,
+      });
     }
   };
 
@@ -67,7 +73,15 @@ class EditarUsuario extends React.Component {
   render() {
     return (
       <View style={styles.screen}>
-        <Cabecera props={this.props}>
+        <Cabecera
+          params={{
+            token: this.state.token,
+            playerId: this.state.id,
+            español: this.state.español,
+            CustomTextLocal: this.state.CustomTextLocal,
+          }}
+          navigation={this.props.navigation}
+        >
           <View style={styles.formContainer}>
             <Text>Alias</Text>
             <TextInput
@@ -103,6 +117,8 @@ class EditarUsuario extends React.Component {
                     this.props.navigation.push("Perfil", {
                       token: this.state.token,
                       id: this.state.id,
+                      español: this.state.español,
+                      CustomTextLocal: this.state.CustomTextLocal,
                     })
                   }
                   style={styles.botonCancelar}

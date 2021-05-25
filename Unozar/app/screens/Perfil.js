@@ -19,6 +19,8 @@ class Perfil extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      español: this.props.route.params.español,
+      CustomTextLocal: this.props.route.params.CustomTextLocal,
       token: this.props.route.params.token,
       alias: "",
       email: "",
@@ -40,7 +42,10 @@ class Perfil extends React.Component {
   deleteHandler = async () => {
     const status = await deletePlayer(this.state.token);
     if (status !== -1) {
-      this.props.navigation.navigate("Inicio");
+      this.props.navigation.navigate("Inicio", {
+        español: this.state.español,
+        CustomTextLocal: this.state.CustomTextLocal,
+      });
     }
   };
 
@@ -70,7 +75,10 @@ class Perfil extends React.Component {
       this.setState({ token: token });
     } else {
       alert("Su sesion ha expirado");
-      this.props.navigation.navigate("Inicio");
+      this.props.navigation.navigate("Inicio", {
+        español: this.state.español,
+        CustomTextLocal: this.state.CustomTextLocal,
+      });
     }
   };
 
@@ -79,6 +87,7 @@ class Perfil extends React.Component {
     this.focusListener = navigation.addListener("focus", () => {
       // The screen is focused
       // Call any action
+      console.log("hola");
       this.readHandler();
       this.refreshHandler();
     });
@@ -92,7 +101,15 @@ class Perfil extends React.Component {
   render() {
     return (
       <View style={styles.screen}>
-        <Cabecera props={this.props} navigation={this.props.navigation}>
+        <Cabecera
+          params={{
+            token: this.state.token,
+            playerId: this.state.id,
+            español: this.state.español,
+            CustomTextLocal: this.state.CustomTextLocal,
+          }}
+          navigation={this.props.navigation}
+        >
           <View style={styles.body}>
             <View style={styles.formContainer}>
               <View style={styles.tituloView}>
