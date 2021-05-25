@@ -1,215 +1,240 @@
 import React from "react";
-import { Button, StyleSheet, View, Text, TextInput,Image } from "react-native";
-import { Menu } from 'primereact/menu';
-import { Linking } from 'react-native';
-import qs from 'qs';
+import {
+  Button,
+  StyleSheet,
+  View,
+  Text,
+  TextInput,
+  Image,
+  Alert,
+} from "react-native";
+import { Menu } from "primereact/menu";
+import { withNavigation } from "react-navigation";
+import Cabecera from "../components/Cabecera";
+import readPlayer from "../functions/readPlayer";
+import deletePlayer from "../functions/deletePlayer";
+import refreshToken from "../functions/refreshToken";
+
 class Perfil extends React.Component {
   constructor(props) {
     super(props);
-	const { miId } = this.props.route.params;
-	const { token } = this.props.route.params;
-	const { invitar } = this.props.route.params;
-	const { gameId } = this.props.route.params;
-	const { nombreJugador1 } = this.props.route.params;
-	const { idJugadorInvitar } = this.props.route.params;
-	const { amigo } = this.props.route.params;
     this.state = {
-		show: false,
-		miId: miId,
-		token: token,
-		alias: 'a',
-		email: 'b',
-		privateWins: 1,
-		privateTotal: 2,
-		publicWins: 3,
-		publicTotal: 4,
-		avatarId: '3',
-		invitar: invitar,
-		nombreJugador1: nombreJugador1,
-		subject: 'Invitación partida Unozar',
-		body: nombreJugador1+' desea invitarle a una partida de Unozar: '+gameId,
-		cc: '',
-		bcc: '',
-		idJugadorInvitar: idJugadorInvitar,
-		amigo: amigo,
+      token: this.props.route.params.token,
+      alias: "",
+      email: "",
+      id: this.props.route.params.id,
+      publicTotal: 0,
+      publicWins: 0,
+      privateTotal: 0,
+      privateWins: 0,
+      avatarId: 0,
+      boardId: 0,
+      cardsId: 0,
+      money: 0,
+      unlockedAvatars: [],
+      unlockedBoards: [],
+      unlockedCards: [],
     };
-	this.items = [
-					{
-						label: 'MenuPrincipal',
-						icon: 'pi pi-user',
-						command: () => {this.setState({show: false}), this.props.navigation.push("MenuPrincipal" , { token: this.state.token, playerId: this.state.miId} )}
-					},
-					{
-						label: 'Amigos',
-						icon: 'pi pi-users',
-						command: () => {this.setState({show: false}), this.props.navigation.push("Amigos", { token: this.state.token, miId: this.state.miId})}
-					},
-					{
-						label: 'Tienda',
-						icon: 'pi pi-users',
-						command: () => {this.setState({show1: false}), this.props.navigation.push("Tienda" , { token: this.state.token, miId: this.state.miId} )}
-					},	
-					{
-						label: 'Cerrar Sesion',
-						icon: 'pi pi-power-off',
-						command: () => {this.setState({show:false}), this.props.navigation.push("Inicio")}
-					}
-					
-		];
-	}
+  }
 
-	hide(){
-		this.setState({showMenu: !this.state.showMenu})
-		
-	}
-sendEmail = async (to, subject, body) => {
-    let url = `mailto:${to}`;
+  deleteHandler = async () => {
+    const status = await deletePlayer(this.state.token);
+    if (status !== -1) {
+      this.props.navigation.navigate("Inicio");
+    }
+  };
 
-    // Create email link query
-    const query = qs.stringify({
-        subject: this.state.subject,
-        body: this.state.body,
-        cc: this.state.cc,
+  readHandler = async () => {
+    const data = await readPlayer(this.state.id);
+    if (data !== -1) {
+      this.setState({ alias: data.alias });
+      this.setState({ email: data.email });
+      this.setState({ id: data.id });
+      this.setState({ publicTotal: data.publicTotal });
+      this.setState({ publicWins: data.publicWins });
+      this.setState({ privateTotal: data.privateTotal });
+      this.setState({ privateWins: data.privateWins });
+      this.setState({ avatarId: data.avatarId });
+      this.setState({ boardId: data.boardId });
+      this.setState({ cardsId: data.cardsId });
+      this.setState({ money: data.money });
+      this.setState({ unlockedAvatars: data.unlockedAvatars });
+      this.setState({ unlockedBoards: data.unlockedBoards });
+      this.setState({ unlockedCards: data.unlockedCards });
+    }
+  };
+
+  refreshHandler = async () => {
+    const token = await refreshToken(this.state.token);
+    if (token !== -1) {
+      this.setState({ token: token });
+    } else {
+      alert("Su sesion ha expirado");
+      this.props.navigation.navigate("Inicio");
+    }
+  };
+
+  componentDidMount() {
+    const { navigation } = this.props;
+    this.focusListener = navigation.addListener("focus", () => {
+      // The screen is focused
+      // Call any action
+      this.readHandler();
+      this.refreshHandler();
     });
+  }
 
-    if (query.length) {
-        url += `?${query}`;
-    }
-
-    // check if we can use this link
-    const canOpen = await Linking.canOpenURL(url);
-
-    if (!canOpen) {
-        throw new Error('Provided URL can not be handled');
-    }
-
-    return Linking.openURL(url);
-}
-readHandler = async (i) => {
-	const requestOptions1 = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-		playerId: i
-      }),
-	};
-	let data;
-	let response;
-	let statusCode
-	response = await fetch('https://unozar.herokuapp.com/player/read', requestOptions1);
-	data = await response.json();
-	statusCode = response.status;
-	if( await statusCode != 200 ){
-		clearInterval(this.timer1);
-		console.log('¡¡¡ERROR FETCH!!!')
-	}else{
-		await this.setState({ alias: data.alias});
-		await this.setState({ email: data.email});
-		await this.setState({ publicTotal: data.publicTotal});
-		await this.setState({ publicWins: data.publicWins});
-		await this.setState({ privateTotal: data.privateTotal});
-		await this.setState({ privateWins: data.privateWins});
-		await this.setState({ avatarId: data.avatarId});
-		console.log('lectura perfil')
-	}
-};
-deleteAmigo = async () => {
-	const requestOptions = {
-	  method: "POST",
-	  headers: { "Content-Type": "application/json" },
-	  body: JSON.stringify({
-		token: this.state.token,
-		friendId: this.state.idJugadorInvitar
-	  }),
-	};
-	let data;
-	let response;
-	let statusCode
-	response = await fetch('https://unozar.herokuapp.com/player/deleteFriend', requestOptions)
-	data = await response.json();
-	statusCode = response.status;
-	if( await statusCode != 200 ){
-		clearInterval(this.timer1);
-		console.log('¡¡¡ERROR FETCH!!!')
-	}else{
-		await this.setState({ token: data.token});
-		await this.props.navigation.push("Amigos", { token: this.state.token, miId: this.state.miId});
-	}		
-};
-componentDidMount(){
-	if(this.state.amigo){
-		console.log('Jugador invitado: '+this.state.idJugadorInvitar)
-		this.readHandler(this.state.idJugadorInvitar)
-	}else{
-		console.log('Yo: '+this.state.miId)
-		this.readHandler(this.state.miId)
-	}
-	console.log('token perfil: ' +this.state.token)
-}
+  componentDIdUnmount() {
+    // Remove the event listener
+    this.focusListener.remove();
+  }
 
   render() {
     return (
-	<>
-		<View style={styles.screen}>
-			<View style={styles.formContainer}>
-					<Image style={styles.avatar} source={require('../assets/avatares/'+this.state.avatarId+'.png')} />
-					<Text style={styles.texto}> {this.state.alias} {this.state.email} </Text>
-					{!this.state.amigo &&
-					<Text style={styles.texto}> {this.state.miId} </Text>
-					}
-					{this.state.amigo &&
-					<Text style={styles.texto}> {this.state.idJugadorInvitar} </Text>
-					}
-					<Text style={styles.texto}> Partidas públicas </Text>
-					<Text style={styles.texto}> J: {this.state.publicTotal} W: {this.state.publicWins}</Text>
-					<Text style={styles.texto}> Partidas privadas </Text>
-					<Text style={styles.texto}> J: {this.state.privateTotal} W: {this.state.privateWins}</Text>
-					{this.state.invitar &&
-						<Button title="Invitar amigo" onPress={() => this.sendEmail(this.state.email,this.state.subject,this.state.body)} />
-					}
-					{this.state.amigo&&
-						<Button title="Eliminar amigo" onPress={() => this.deleteAmigo()} />
-					}
-			</View>
-		</View>
-		<View style={styles.menu}>
-					<div>
-				<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
-				<button icon="pi pi-bars" onClick={() => this.setState({ show: !this.state.show })}><i className="fa fa-bars"></i></button>
-				{ this.state.show && (
-					<Menu model={this.items} />
-				)}
-				</div>  
-		</View>
-		</>
+      <View style={styles.screen}>
+        <Cabecera props={this.props} navigation={this.props.navigation}>
+          <View style={styles.body}>
+            <View style={styles.formContainer}>
+              <View style={styles.tituloView}>
+                <Text style={styles.titulo}>Perfil</Text>
+              </View>
+
+              <Image
+                style={styles.avatar}
+                source={require("../assets/avatares/" +
+                  this.state.avatarId +
+                  ".png")}
+              />
+              <Text style={styles.textoCampos}>
+                {" "}
+                Alias:{" "}
+                <Text style={styles.textoInterior}>{this.state.alias}</Text>
+              </Text>
+              <Text style={styles.textoCampos}>
+                {" "}
+                Correo:{" "}
+                <Text style={styles.textoInterior}>{this.state.email}</Text>
+              </Text>
+              <Text style={styles.textoCampos}>
+                {" "}
+                Id: <Text style={styles.textoInterior}>
+                  {this.state.id}
+                </Text>{" "}
+              </Text>
+              <Text style={styles.textoCampos}>
+                {" "}
+                Partidas publicas jugadas:{" "}
+                <Text style={styles.textoInterior}>
+                  {this.state.publicTotal}
+                </Text>
+              </Text>
+              <Text style={styles.textoCampos}>
+                {" "}
+                Partidas publicas ganadas:{" "}
+                <Text style={styles.textoInterior}>
+                  {this.state.publicWins}
+                </Text>
+              </Text>
+              <Text style={styles.textoCampos}>
+                {" "}
+                Partidas privadas jugadas:{" "}
+                <Text style={styles.textoInterior}>
+                  {this.state.privateTotal}
+                </Text>
+              </Text>
+              <Text style={styles.textoCampos}>
+                {" "}
+                Partidas privadas ganadas:{" "}
+                <Text style={styles.textoInterior}>
+                  {this.state.privateWins}
+                </Text>
+              </Text>
+              <View style={styles.customsContainer}>
+                {/*------------------------------------------------------------------ */}
+              </View>
+              <View style={styles.botonEditar}>
+                <Button
+                  title="Editar perfil"
+                  onPress={() =>
+                    this.props.navigation.push("EditarUsuario", this.state)
+                  }
+                />
+              </View>
+              <View style={styles.botonEditar}>
+                <Button
+                  title="Cambiar contraseña"
+                  onPress={() =>
+                    this.props.navigation.push("CambiarContrasenya", this.state)
+                  }
+                />
+              </View>
+              <View style={styles.botonEliminar}>
+                <Button
+                  title="Eliminar cuenta"
+                  color="red"
+                  onPress={() => {
+                    if (
+                      window.confirm(
+                        "Esta a punto de eliminar su cuenta, ¿Seguro que desea continuar?"
+                      )
+                    )
+                      this.deleteHandler();
+                  }}
+                />
+              </View>
+            </View>
+          </View>
+        </Cabecera>
+      </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  screen: { padding: 50 },
-  texto: {
-	alignSelf: "center",
-	fontStyle: "Roboto",
-	fontSize: 18
+  screen: {
+    backgroundColor: "#b6eb5f",
+    flex: 1,
   },
-  formContainer: {
-    alignSelf: "center",
-    width: "30%",
-    justifyContent: "center",
+  body: {
+    padding: 50,
     alignContent: "center",
+    justifyContent: "center",
+    alignSelf: "center",
   },
-  menu :{
-	position: 'absolute', 
-	top: 20,
-	left: 1200,
-	backgroundColor:'rgba(255, 255, 255, 0.7)',
+  titulo: {
+    right: 20,
+    fontSize: 50,
+    alignSelf: "center",
+    alignContent: "center",
+    justifyContent: "center",
+    color: "#0800ff",
+  },
+  tituloView: {
+    alignSelf: "center",
+    alignContent: "center",
+    justifyContent: "center",
+    fontFamily: "Cochin",
+    fontWeight: "Bold",
   },
   avatar: {
-	alignSelf: "center",
-	resizeMode: "contain",
-	height: 150,
-	width: 120 
+    resizeMode: "contain",
+    alignSelf: "center",
+    height: 150,
+    width: 120,
+  },
+  textoCampos: {
+    fontWeight: "bold",
+  },
+  textoInterior: { fontWeight: "normal" },
+  botonEditar: {
+    marginTop: 10,
+  },
+  customsContainer: {
+    flexDirection: "row",
+  },
+  botonEliminar: {
+    marginTop: 10,
+    color: "red",
   },
 });
 
