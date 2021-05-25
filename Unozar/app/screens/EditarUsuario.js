@@ -6,7 +6,8 @@ import {
   Text,
   TextInput,
   Image,
-  Alert,
+  ScrollView,
+  TouchableOpacity,
 } from "react-native";
 import { Menu } from "primereact/menu";
 import Cabecera from "../components/Cabecera";
@@ -76,6 +77,73 @@ class EditarUsuario extends React.Component {
     // Remove the event listener
     this.focusListener.remove();
   }
+  verAvatares = () => {
+    let table = [];
+    for (let i = 0; i < this.state.unlockedAvatars.length; i++) {
+      table.push(
+        <TouchableOpacity
+          key={i}
+          style={styles.touchable}
+          activeOpacity={0.5}
+          onPress={() => this.setState({ avatarId: i })}
+        >
+          <Image
+            key={i}
+            style={styles.avatarLista}
+            source={require("../assets/avatares/" +
+              this.state.unlockedAvatars[i] +
+              ".png")}
+          />
+        </TouchableOpacity>
+      );
+    }
+    return table;
+  };
+  verTableros = () => {
+    let table = [];
+    for (let i = 0; i < this.state.unlockedBoards.length; i++) {
+      table.push(
+        <TouchableOpacity
+          key={i}
+          style={styles.touchable}
+          activeOpacity={0.5}
+          onPress={() => this.setState({ boardId: i })}
+        >
+          <Image
+            key={i}
+            style={styles.tableroLista}
+            source={require("../assets/tableros/" +
+              this.state.unlockedBoards[i] +
+              ".png")}
+          />
+        </TouchableOpacity>
+      );
+    }
+    return table;
+  };
+  verDorsos = () => {
+    let table = [];
+    for (let i = 0; i < this.state.unlockedCards.length; i++) {
+      table.push(
+        <TouchableOpacity
+          key={i}
+          style={styles.touchable}
+          activeOpacity={0.5}
+          onPress={() => this.this.setState({ cardsId: i })}
+        >
+          <Image
+            key={i}
+            style={styles.dorsoLista}
+            source={require("../assets/dorsos/" +
+              this.state.unlockedCards[i] +
+              ".png")}
+          />
+        </TouchableOpacity>
+      );
+    }
+    return table;
+  };
+
   render() {
     return (
       <View style={styles.screen}>
@@ -107,6 +175,20 @@ class EditarUsuario extends React.Component {
                 }}
               />
             </View>
+            <Text style={styles.ScrollViewText}>Seleccione un avatar</Text>
+            <ScrollView horizontal style={styles.scrollViews}>
+              {this.verAvatares()}
+            </ScrollView>
+            <Text style={styles.ScrollViewText}>Seleccione un tablero</Text>
+            <ScrollView horizontal style={styles.scrollViews}>
+              {this.verTableros()}
+            </ScrollView>
+            <Text style={styles.ScrollViewText}>
+              Seleccione un reverso de carta
+            </Text>
+            <ScrollView horizontal style={styles.scrollViews}>
+              {this.verDorsos()}
+            </ScrollView>
 
             <View style={styles.botones}>
               <View style={styles.botonConfirmarView}>
@@ -175,6 +257,34 @@ const styles = StyleSheet.create({
   botonCancelarView: {
     flex: 1,
     paddingHorizontal: 30,
+  },
+  touchable: {
+    flex: 1,
+  },
+  avatarLista: {
+    flex: 1,
+    height: 141,
+    width: 134,
+    resizeMode: "contain",
+  },
+  tableroLista: {
+    flex: 1,
+    height: 120,
+    width: 200,
+    resizeMode: "contain",
+  },
+  dorsoLista: {
+    flex: 1,
+    height: 140,
+    width: 90,
+    resizeMode: "contain",
+  },
+  scrollViews: {
+    alignSelf: "center",
+  },
+  ScrollViewText: {
+    alignSelf: "center",
+    marginTop: 10,
   },
 });
 

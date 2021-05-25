@@ -155,8 +155,32 @@ class Perfil extends React.Component {
                   {this.state.privateWins}
                 </Text>
               </Text>
+              <Text style={styles.textoCampos}>
+                {" "}
+                Dinero:{" "}
+                <Text style={styles.textoInterior}>{this.state.money}</Text>
+              </Text>
               <View style={styles.customsContainer}>
-                {/*------------------------------------------------------------------ */}
+                <View>
+                  <Text style={styles.textoCampos}>Tablero actual:</Text>
+                  <Image
+                    style={styles.avatar}
+                    source={require("../assets/tableros/" +
+                      this.state.boardId +
+                      ".png")}
+                  />
+                </View>
+                <View>
+                  <Text style={styles.textoCampos}>
+                    Reverso de carta actual:
+                  </Text>
+                  <Image
+                    style={styles.avatar}
+                    source={require("../assets/dorsos/" +
+                      this.state.cardsId +
+                      ".png")}
+                  />
+                </View>
               </View>
               <View style={styles.botonEditar}>
                 <Button
