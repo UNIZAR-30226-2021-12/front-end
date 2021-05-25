@@ -24,6 +24,10 @@ export default class Cabecera extends Component {
     };
   }
 
+  updateToken = (token) => {
+    this.setState({ token });
+  };
+
   openMenu = () => {
     this.state.visible = true;
     console.log(this.state.visible);

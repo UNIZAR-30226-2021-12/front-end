@@ -1,15 +1,5 @@
 import React from "react";
-import {
-  Button,
-  StyleSheet,
-  View,
-  Text,
-  TextInput,
-  Image,
-  Alert,
-} from "react-native";
-import { Menu } from "primereact/menu";
-import { withNavigation } from "react-navigation";
+import { Button, StyleSheet, View, Text, Image } from "react-native";
 import Cabecera from "../components/Cabecera";
 import readPlayer from "../functions/readPlayer";
 import deletePlayer from "../functions/deletePlayer";
@@ -18,6 +8,7 @@ import refreshToken from "../functions/refreshToken";
 class Perfil extends React.Component {
   constructor(props) {
     super(props);
+    this.Cabecera = React.createRef();
     this.state = {
       español: this.props.route.params.español,
       CustomTextLocal: this.props.route.params.CustomTextLocal,
@@ -73,6 +64,7 @@ class Perfil extends React.Component {
     const token = await refreshToken(this.state.token);
     if (token !== -1) {
       this.setState({ token: token });
+      this.Cabecera.current.updateToken(token);
     } else {
       alert("Su sesion ha expirado");
       this.props.navigation.navigate("Inicio", {
@@ -85,16 +77,12 @@ class Perfil extends React.Component {
   componentDidMount() {
     const { navigation } = this.props;
     this.focusListener = navigation.addListener("focus", () => {
-      // The screen is focused
-      // Call any action
-      console.log("hola");
       this.readHandler();
       this.refreshHandler();
     });
   }
 
   componentDIdUnmount() {
-    // Remove the event listener
     this.focusListener.remove();
   }
 
@@ -102,6 +90,7 @@ class Perfil extends React.Component {
     return (
       <View style={styles.screen}>
         <Cabecera
+          ref={this.Cabecera}
           params={{
             token: this.state.token,
             playerId: this.state.id,

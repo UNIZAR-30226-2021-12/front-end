@@ -17,6 +17,7 @@ import authentication from "../functions/authentication";
 class CambiarContrasenya extends React.Component {
   constructor(props) {
     super(props);
+    this.Cabecera = React.createRef();
     this.state = {
       español: this.props.route.params.español,
       CustomTextLocal: this.props.route.params.CustomTextLocal,
@@ -63,6 +64,7 @@ class CambiarContrasenya extends React.Component {
     const token = await refreshToken(this.state.token);
     if (token !== -1) {
       this.setState({ token: token });
+      this.Cabecera.current.updateToken(token);
     } else {
       alert("Su sesion ha expirado");
       this.props.navigation.navigate("Inicio", {
@@ -80,6 +82,7 @@ class CambiarContrasenya extends React.Component {
     return (
       <View style={styles.screen}>
         <Cabecera
+          ref={this.Cabecera}
           params={{
             token: this.state.token,
             playerId: this.state.id,

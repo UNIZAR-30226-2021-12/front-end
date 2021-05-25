@@ -16,6 +16,7 @@ import refreshToken from "../functions/refreshToken";
 class EditarUsuario extends React.Component {
   constructor(props) {
     super(props);
+    this.Cabecera = React.createRef();
     this.state = {
       español: this.props.route.params.español,
       CustomTextLocal: this.props.route.params.CustomTextLocal,
@@ -57,6 +58,7 @@ class EditarUsuario extends React.Component {
     const token = await refreshToken(this.state.token);
     if (token !== -1) {
       this.setState({ token: token });
+      this.Cabecera.current.updateToken(token);
     } else {
       alert("Su sesion ha expirado");
       this.props.navigation.navigate("Inicio", {
@@ -70,10 +72,15 @@ class EditarUsuario extends React.Component {
     this.refreshHandler();
   }
 
+  componentDIdUnmount() {
+    // Remove the event listener
+    this.focusListener.remove();
+  }
   render() {
     return (
       <View style={styles.screen}>
         <Cabecera
+          ref={this.Cabecera}
           params={{
             token: this.state.token,
             playerId: this.state.id,
@@ -111,16 +118,17 @@ class EditarUsuario extends React.Component {
               </View>
               <View style={styles.botonCancelarView}>
                 <Button
+                  key={this.state.token}
                   title="Cancelar"
                   color="red"
-                  onPress={() =>
+                  onPress={() => {
                     this.props.navigation.push("Perfil", {
                       token: this.state.token,
                       id: this.state.id,
                       español: this.state.español,
                       CustomTextLocal: this.state.CustomTextLocal,
-                    })
-                  }
+                    });
+                  }}
                   style={styles.botonCancelar}
                 />
               </View>

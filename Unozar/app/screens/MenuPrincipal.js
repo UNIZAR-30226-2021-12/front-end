@@ -232,6 +232,8 @@ export default class MenuPrincipal extends Component {
       token: this.state.token,
       miId: this.state.playerId,
       numBots: this.state.numBots,
+      español: this.state.español,
+      CustomTextLocal: this.state.CustomTextLocal,
     });
   };
   joinPartidaPublica = async () => {
@@ -285,57 +287,6 @@ export default class MenuPrincipal extends Component {
       }),
     };
     fetch("https://unozar.herokuapp.com/player/read", requestOptions).then(
-      function (response) {
-        if (response.status !== 200) {
-          console.log(
-            "Looks like there was a problem. Status Code: " +
-              response.status +
-              response.statusText
-          );
-          return;
-        }
-        response.json().then(function (data) {
-          console.log(data);
-        });
-      }
-    );
-  };
-  updatePlayerHandler = () => {
-    const requestOptions = {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: this.state.email,
-        alias: this.state.alias,
-        password: this.state.password,
-        token: this.state.token,
-      }),
-    };
-    fetch("https://unozar.herokuapp.com/player/update", requestOptions).then(
-      function (response) {
-        if (response.status !== 200) {
-          console.log(
-            "Looks like there was a problem. Status Code: " +
-              response.status +
-              response.statusText
-          );
-          return;
-        }
-        response.json().then(function (data) {
-          console.log(data);
-        });
-      }
-    );
-  };
-  deletePlayerHandler = () => {
-    const requestOptions = {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        token: this.state.token,
-      }),
-    };
-    fetch("https://unozar.herokuapp.com/player/delete", requestOptions).then(
       function (response) {
         if (response.status !== 200) {
           console.log(
@@ -556,7 +507,7 @@ export default class MenuPrincipal extends Component {
           <Button
             title="Perfil"
             onPress={() => {
-              this.props.navigation.navigate("Perfil", {
+              this.props.navigation.push("Perfil", {
                 token: this.state.token,
                 id: this.state.playerId,
                 español: this.state.español,
