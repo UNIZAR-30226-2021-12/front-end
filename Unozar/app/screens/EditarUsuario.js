@@ -25,7 +25,7 @@ class EditarUsuario extends React.Component {
       alias: this.props.route.params.alias,
       emailViejo: this.props.route.params.email,
       email: null,
-      id: this.props.route.params.id,
+      playerId: this.props.route.params.playerId,
       avatarId: this.props.route.params.avatarId,
       boardId: this.props.route.params.boardId,
       cardsId: this.props.route.params.cardsId,
@@ -48,7 +48,7 @@ class EditarUsuario extends React.Component {
     if (token !== -1) {
       this.props.navigation.push("Perfil", {
         token: token,
-        id: this.state.id,
+        playerId: this.state.playerId,
         español: this.state.español,
         CustomTextLocal: this.state.CustomTextLocal,
       });
@@ -153,7 +153,7 @@ class EditarUsuario extends React.Component {
           ref={this.Cabecera}
           params={{
             token: this.state.token,
-            playerId: this.state.id,
+            playerId: this.state.playerId,
             español: this.state.español,
             CustomTextLocal: this.state.CustomTextLocal,
           }}
@@ -208,7 +208,7 @@ class EditarUsuario extends React.Component {
                   onPress={() => {
                     this.props.navigation.push("Perfil", {
                       token: this.state.token,
-                      id: this.state.id,
+                      playerId: this.state.playerId,
                       español: this.state.español,
                       CustomTextLocal: this.state.CustomTextLocal,
                     });

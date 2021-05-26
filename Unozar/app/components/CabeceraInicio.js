@@ -37,60 +37,74 @@ export default class Cabecera extends Component {
 
   render() {
     return (
-      <TouchableWithoutFeedback onPress={this.closeMenu}>
-        <View>
-          <Header
-            centerComponent={{
-              text: "UNOZAR",
-              style: { color: "#fff", fontSize: 20 },
-            }}
-            rightComponent={
+      <>
+        <TouchableWithoutFeedback onPress={this.closeMenu}>
+          <View>
+            <Header
+              leftComponent={{
+                icon: "home",
+                color: "#fff",
+                onPress: () => {
+                  this.props.navigation.push("MenuPrincipal", {
+                    español: this.state.español,
+                    CustomTextLocal: this.state.CustomTextLocal,
+                    user: this.state.email,
+                    pass: this.state.password,
+                    playerId: this.state.playerId,
+                    token: this.state.token,
+                  });
+                },
+              }}
+              centerComponent={{
+                text: "UNOZAR",
+                style: { color: "#fff", fontSize: 20 },
+              }}
+              rightComponent={
+                <>
+                  <TouchableOpacity onPress={this.showHideMenu}>
+                    <MenuOutlined style={styles.iconoMenu} />
+                  </TouchableOpacity>
+                </>
+              }
+            />
+            {this.props.children}
+            {this.state.visible && (
               <>
-                <TouchableOpacity onPress={this.showHideMenu}>
-                  <MenuOutlined style={styles.iconoMenu} />
-                </TouchableOpacity>
-                {this.state.visible && (
-                  <>
-                    <View style={styles.menu}>
-                      <TouchableOpacity
-                        style={styles.opcionMenu}
-                        onPress={() =>
-							{if(this.state.español){
-								this.setState({español: false})
-								this.state.CustomTextLocal.setLanguage('en');
-							}else{
-								this.setState({español: true})
-								this.state.CustomTextLocal.setLanguage('es');
-							}  
-							}
-                        }
-                      >
-                        <Text style={styles.textoOpcion}>Cambiar Idioma</Text>
-                      </TouchableOpacity>
-                     
-
-
-                    </View>
-                  </>
-                )}
+                <View style={styles.menu}>
+                  <TouchableOpacity
+                    style={styles.opcionMenu}
+                    onPress={() => {
+                      if (this.state.español) {
+                        this.setState({ español: false });
+                        this.state.CustomTextLocal.setLanguage("en");
+                      } else {
+                        console.log("hola");
+                        this.setState({ español: true });
+                        this.state.CustomTextLocal.setLanguage("es");
+                      }
+                    }}
+                  >
+                    <Text>Cambiar idioma</Text>
+                  </TouchableOpacity>
+                </View>
               </>
-            }
-          />
-          {this.props.children}
-        </View>
-      </TouchableWithoutFeedback>
+            )}
+          </View>
+        </TouchableWithoutFeedback>
+      </>
     );
   }
 }
 
 const styles = {
   menu: {
-    marginTop: 25,
+    top: 32,
+    right: 10,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "white",
     width: 120,
-    height: 40,
+    height: 32,
     position: "absolute",
     shadowColor: "#000000",
     shadowOpacity: 0.8,

@@ -8,6 +8,7 @@ import refreshToken from "../functions/refreshToken";
 class Perfil extends React.Component {
   constructor(props) {
     super(props);
+    console.log(this.props);
     this.Cabecera = React.createRef();
     this.state = {
       español: this.props.route.params.español,
@@ -15,7 +16,7 @@ class Perfil extends React.Component {
       token: this.props.route.params.token,
       alias: "",
       email: "",
-      id: this.props.route.params.id,
+      playerId: this.props.route.params.playerId,
       publicTotal: 0,
       publicWins: 0,
       privateTotal: 0,
@@ -41,11 +42,10 @@ class Perfil extends React.Component {
   };
 
   readHandler = async () => {
-    const data = await readPlayer(this.state.id);
+    const data = await readPlayer(this.state.playerId);
     if (data !== -1) {
       this.setState({ alias: data.alias });
       this.setState({ email: data.email });
-      this.setState({ id: data.id });
       this.setState({ publicTotal: data.publicTotal });
       this.setState({ publicWins: data.publicWins });
       this.setState({ privateTotal: data.privateTotal });
@@ -93,7 +93,7 @@ class Perfil extends React.Component {
           ref={this.Cabecera}
           params={{
             token: this.state.token,
-            playerId: this.state.id,
+            playerId: this.state.playerId,
             español: this.state.español,
             CustomTextLocal: this.state.CustomTextLocal,
           }}
@@ -123,8 +123,9 @@ class Perfil extends React.Component {
               </Text>
               <Text style={styles.textoCampos}>
                 {" "}
-                Id: <Text style={styles.textoInterior}>
-                  {this.state.id}
+                Id:{" "}
+                <Text style={styles.textoInterior}>
+                  {this.state.playerId}
                 </Text>{" "}
               </Text>
               <Text style={styles.textoCampos}>

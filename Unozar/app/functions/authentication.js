@@ -18,6 +18,6 @@ export default async function authentication(params) {
   } else {
     const data = await response.json();
     console.log("Autentificacion");
-    return { id: data.id, token: data.token };
+    return data;
   }
 }

@@ -37,78 +37,124 @@ export default class Cabecera extends Component {
 
   render() {
     return (
-      <TouchableWithoutFeedback onPress={this.closeMenu}>
-        <View>
-          <Header
-            leftComponent={{
-              icon: "home",
-              color: "#fff",
-              onPress: () => {
-                this.props.navigation.push("MenuPrincipal", {
-                  español: this.state.español,
-                  CustomTextLocal: this.state.CustomTextLocal,
-                  user: this.state.email,
-                  pass: this.state.password,
-                  playerId: this.state.playerId,
-                  token: this.state.token,
-                });
-              },
-            }}
-            centerComponent={{
-              text: "UNOZAR",
-              style: { color: "#fff", fontSize: 20 },
-            }}
-            rightComponent={
+      <>
+        <TouchableWithoutFeedback onPress={this.closeMenu}>
+          <View>
+            <Header
+              leftComponent={{
+                icon: "home",
+                color: "#fff",
+                onPress: () => {
+                  this.props.navigation.push("MenuPrincipal", {
+                    español: this.state.español,
+                    CustomTextLocal: this.state.CustomTextLocal,
+                    user: this.state.email,
+                    pass: this.state.password,
+                    playerId: this.state.playerId,
+                    token: this.state.token,
+                  });
+                },
+              }}
+              centerComponent={{
+                text: "UNOZAR",
+                style: { color: "#fff", fontSize: 20 },
+              }}
+              rightComponent={
+                <>
+                  <TouchableOpacity onPress={this.showHideMenu}>
+                    <MenuOutlined style={styles.iconoMenu} />
+                  </TouchableOpacity>
+                </>
+              }
+            />
+            {this.props.children}
+            {this.state.visible && (
               <>
-                <TouchableOpacity onPress={this.showHideMenu}>
-                  <MenuOutlined style={styles.iconoMenu} />
-                </TouchableOpacity>
-                {this.state.visible && (
-                  <>
-                    <View style={styles.menu}>
-                      <TouchableOpacity
-                        style={styles.opcionMenu}
-                        onPress={() =>
-                          this.props.navigation.push("Tienda", {
-                            español: this.state.español,
-                            CustomTextLocal: this.state.CustomTextLocal,
-                            miId: this.state.playerId,
-                            token: this.state.token,
-                          })
-                        }
-                      >
-                        <Text style={styles.textoOpcion}>Tienda</Text>
-                      </TouchableOpacity>
-                      <View style={styles.linea} />
-                      <TouchableOpacity
-                        style={styles.opcionMenu}
-                        onPress={() => console.log("hola2")}
-                      >
-                        <Text>Opcion 2</Text>
-                      </TouchableOpacity>
-                      <View style={styles.linea} />
-                      <TouchableOpacity
-                        style={styles.opcionMenu}
-                        onPress={() => console.log("hola3")}
-                      >
-                        <Text>Opcion 3</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </>
-                )}
+                <View style={styles.menu}>
+                  <TouchableOpacity
+                    style={styles.opcionMenu}
+                    onPress={() =>
+                      this.props.navigation.push("Perfil", {
+                        token: this.state.token,
+                        playerId: this.state.playerId,
+                        español: this.state.español,
+                        CustomTextLocal: this.state.CustomTextLocal,
+                      })
+                    }
+                  >
+                    <Text style={styles.textoOpcion}>Perfil</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={styles.opcionMenu}
+                    onPress={() =>
+                      this.props.navigation.push("Amigos", {
+                        token: this.state.token,
+                        playerId: this.state.playerId,
+                        invitar: false,
+                        español: this.state.español,
+                        CustomTextLocal: this.state.CustomTextLocal,
+                      })
+                    }
+                  >
+                    <Text>Amigos</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={styles.opcionMenu}
+                    onPress={() =>
+                      this.props.navigation.push("Tienda", {
+                        token: this.state.token,
+                        playerId: this.state.playerId,
+                        español: this.state.español,
+                        CustomTextLocal: this.state.CustomTextLocal,
+                      })
+                    }
+                  >
+                    <Text>Tienda</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={styles.opcionMenu}
+                    onPress={() => {
+                      if (this.state.español) {
+                        this.setState({ español: false });
+                        this.state.CustomTextLocal.setLanguage("en");
+                      } else {
+                        this.setState({ español: true });
+                        this.state.CustomTextLocal.setLanguage("es");
+                      }
+                    }}
+                  >
+                    <Text>Cambiar idioma</Text>
+                  </TouchableOpacity>
+
+                  <View style={styles.linea} />
+                  <TouchableOpacity
+                    style={styles.opcionMenu}
+                    onPress={() =>
+                      this.props.navigation.navigate("Inicio", {
+                        español: this.state.español,
+                        CustomTextLocal: this.state.CustomTextLocal,
+                      })
+                    }
+                  >
+                    <Text>Cerrar sesión</Text>
+                  </TouchableOpacity>
+                </View>
               </>
-            }
-          />
-          {this.props.children}
-        </View>
-      </TouchableWithoutFeedback>
+            )}
+          </View>
+        </TouchableWithoutFeedback>
+      </>
     );
   }
 }
 
 const styles = {
   menu: {
-    marginTop: 25,
+    top: 32,
+    right: 10,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "white",
