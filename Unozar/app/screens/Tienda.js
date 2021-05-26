@@ -2,12 +2,14 @@ import React from "react";
 import { Button, StyleSheet, View, Text, TextInput, ScrollView, Image, TouchableOpacity } from "react-native";
 import { Menu } from 'primereact/menu';
 import { Linking } from 'react-native';
-import qs from 'qs';
+import CustomText from '../assets/idioma/CustomText.js' 
 class Perfil extends React.Component {
   constructor(props) {
     super(props);
 	const { token } = this.props.route.params;
 	const { miId } = this.props.route.params;
+	const { español } = this.props.route.params;
+	const { CustomTextLocal } = this.props.route.params;
     this.state = {
 		show: false,
 		token: token,
@@ -23,22 +25,37 @@ class Perfil extends React.Component {
 		unlockedAvatars: [],
 		unlockedBoards: [],
 		unlockedCards: [],
+		español: español,
+		CustomTextLocal: CustomTextLocal,
     };
 	this.items = [
 					{
 						label: 'MenuPrincipal',
 						icon: 'pi pi-user',
-						command: () => {this.setState({show: false}), this.props.navigation.push("MenuPrincipal" , { token: this.state.token, playerId: this.state.miId} )}
+						command: () => {this.setState({show: false}), this.props.navigation.push("MenuPrincipal" , { token: this.state.token, playerId: this.state.miId, español: this.state.español, CustomTextLocal: this.state.CustomTextLocal} )}
 					},
 					{
 						label: 'Perfil',
 						icon: 'pi pi-users',
-						command: () => {this.setState({show: false}), this.props.navigation.push("Perfil" , { token: this.state.token, miId: this.state.miId, invitar: false} )}
+						command: () => {this.setState({show: false}), this.props.navigation.push("Perfil" , { token: this.state.token, miId: this.state.miId, invitar: false, español: this.state.español, CustomTextLocal: this.state.CustomTextLocal} )}
 					},
 					{
 						label: 'Amigos',
 						icon: 'pi pi-users',
-						command: () => {this.setState({show: false}), this.props.navigation.push("Amigos", { token: this.state.token, miId: this.state.miId})}
+						command: () => {this.setState({show: false}), this.props.navigation.push("Amigos", { token: this.state.token, miId: this.state.miId, español: this.state.español, CustomTextLocal: this.state.CustomTextLocal})}
+					},
+					{
+						label: 'Cambiar idioma',
+						icon: 'pi pi-user',
+						command: () => {if(this.state.español){
+											this.setState({español: false})
+											this.state.CustomTextLocal.setLanguage('en');
+										}else{
+											this.setState({español: true})
+											this.state.CustomTextLocal.setLanguage('es');
+										}
+							
+							}
 					},
 					{
 						label: 'Cerrar Sesion',

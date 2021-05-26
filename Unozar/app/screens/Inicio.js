@@ -2,11 +2,14 @@ import React, { Component } from "react";
 import { Button, StyleSheet, View, Alert, TextInput, Text } from "react-native";
 import CustomText from '../assets/idioma/CustomText.js' 
 import { Menu } from 'primereact/menu';
+import Cabecera from "../components/CabeceraInicio";
+
 export default class Inicio extends Component {
   constructor(props) {
     super(props);
 	const { español } = this.props.route.params;
 	const { CustomTextLocal } = this.props.route.params;
+	this.Cabecera = React.createRef();
     this.state = {
       email: "prueba",
       password: "",
@@ -17,6 +20,7 @@ export default class Inicio extends Component {
 	  español: español,
 	  CustomTextLocal: CustomTextLocal,
     };
+	this.cambiarContexto = this.cambiarContexto.bind(this);
 	this.items = [
 					{
 						label: 'Cambiar idioma',
@@ -33,6 +37,9 @@ export default class Inicio extends Component {
 					},
 		];
   }
+cambiarContexto = () => {
+	this.setState({CustomTextLocal: a})
+}
 login = async () => {
 	if (this.state.email.length < 6) {
 	  alert("Debe ingresar el correo");
@@ -67,68 +74,80 @@ login = async () => {
 };
   render() {
     return (
-      <View style={styles.screen}>
-        <View style={styles.formContainer}>
-		<form>
-          <View>
-            <Text>{this.state.CustomTextLocal.mail}</Text>
-            <TextInput
-              style={styles.input}
-              placeholder={this.state.CustomTextLocal.ejemploMail}
-              onChangeText={(email) => this.setState({ email })}
-            />
-          </View>
-          <View>
-            <Text>{this.state.CustomTextLocal.pass}</Text>
-            <TextInput
-              ref={(input) => {
-                this.textInput = input;
-              }}
-              style={styles.input}
-              onChangeText={(password) => this.setState({ password })}
-              secureTextEntry={true}
-            />
-          </View>
-          <View style={styles.container}>
-            <View style={styles.buttonLog}>
-              <Button title={this.state.CustomTextLocal.login} onPress={() => this.login()} 
-									/*onPress={() =>this.props.navigation.push("MenuPrincipal", {playerId: this.state.playerId, token: this.state.token, español: this.state.español, CustomTextLocal: this.state.CustomTextLocal })}*//>
-            </View>
-          </View>
-		  </form>
-        </View>
-        <View style={styles.regContainer}>
-          <Text style={styles.regText}> {this.state.CustomTextLocal.preguntaRegistro} </Text>
-          <View style={styles.buttonReg}>
-            <Button
-              onPress={() => this.props.navigation.push("Registro")}
-              title={this.state.CustomTextLocal.registro}
-			  onPress={() =>this.props.navigation.push("Registro", {español: this.state.español, CustomTextLocal: this.state.CustomTextLocal })}
-            />
-          </View>
-		  <View style={styles.buttonLog}>
-              <Button title="Logger" onPress={() => this.log()}/>
-            </View>
-			<Button title="Partida" onPress={() => this.props.navigation.push("Partida", { token: this.state.token})}/>
-			<Button title="EsperaPartida" onPress={() => this.props.navigation.push("EsperaPartida", { token: this.state.token, miId: this.state.playerId})}/>
-			<Button title="ListaAmigos" onPress={() => this.props.navigation.push("Amigos", { token: this.state.token, miId: this.state.playerId})}/>
-        </View>
-		<View style={styles.menu}>
-					<div>
-				<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
-                <button icon="pi pi-bars" onClick={() => this.setState({ show1: !this.state.show1 })}><i className="fa fa-bars"></i></button>
-                { this.state.show1 && (
-					<Menu model={this.items} />
-                )}
-				</div>  
+		<View style={styles.screen}>
+			<Cabecera
+			  ref={this.Cabecera}
+			  params={{
+				token: this.state.token,
+				playerId: this.state.id,
+				español: this.state.español,
+				CustomTextLocal: this.state.CustomTextLocal,
+			  }}
+			  navigation={this.props.navigation}
+			>
+				<View style={styles.formContainer}>
+				<form>
+				  <View>
+					<Text>{this.state.CustomTextLocal.mail}</Text>
+					<TextInput
+					  style={styles.input}
+					  placeholder={this.state.CustomTextLocal.ejemploMail}
+					  onChangeText={(email) => this.setState({ email })}
+					/>
+				  </View>
+				  <View>
+					<Text>{this.state.CustomTextLocal.pass}</Text>
+					<TextInput
+					  ref={(input) => {
+						this.textInput = input;
+					  }}
+					  style={styles.input}
+					  onChangeText={(password) => this.setState({ password })}
+					  secureTextEntry={true}
+					/>
+				  </View>
+				  <View style={styles.container}>
+					<View style={styles.buttonLog}>
+					  <Button title={this.state.CustomTextLocal.login} /*onPress={() => this.login()} */
+											onPress={() =>this.props.navigation.push("MenuPrincipal", {playerId: this.state.playerId, token: this.state.token, español: this.state.español, CustomTextLocal: this.state.CustomTextLocal })}/>
+					</View>
+				  </View>
+				  </form>
+				</View>
+				<View style={styles.regContainer}>
+				  <Text style={styles.regText}> {this.state.CustomTextLocal.preguntaRegistro} </Text>
+				  <View style={styles.buttonReg}>
+					<Button
+					  onPress={() => this.props.navigation.push("Registro")}
+					  title={this.state.CustomTextLocal.registro}
+					  onPress={() =>this.props.navigation.push("Registro", {español: this.state.español, CustomTextLocal: this.state.CustomTextLocal })}
+					/>
+				  </View>
+				  <View style={styles.buttonLog}>
+					  <Button title="Logger" onPress={() => this.log()}/>
+					</View>
+					<Button title="Partida" onPress={() => this.props.navigation.push("Partida", { token: this.state.token})}/>
+					<Button title="EsperaPartida" onPress={() => this.props.navigation.push("EsperaPartida", { token: this.state.token, miId: this.state.playerId})}/>
+					<Button title="ListaAmigos" onPress={() => this.props.navigation.push("Amigos", { token: this.state.token, miId: this.state.playerId})}/>
+				</View>
+				<View style={styles.menu}>
+							<div>
+						<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+						<button icon="pi pi-bars" onClick={() => this.setState({ show1: !this.state.show1 })}><i className="fa fa-bars"></i></button>
+						{ this.state.show1 && (
+							<Menu model={this.items} />
+						)}
+						</div>  
+				</View>
+			</Cabecera>
 		</View>
-      </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  screen: { padding: 50 },
+  screen: { backgroundColor: "#ffffff",
+    flex: 1, },
   formContainer: {
     alignSelf: "center",
     width: "30%",

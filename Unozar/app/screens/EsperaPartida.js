@@ -9,16 +9,19 @@ class EsperaPartida extends React.Component {
 	const { token } = this.props.route.params;
 	const { miId } = this.props.route.params;
 	const { numBots } = this.props.route.params;
+	const { gameId } = this.props.route.params;
 	const { español } = this.props.route.params;
 	const { CustomTextLocal } = this.props.route.params;
+	const { nombreJugador1 } = this.props.route.params;
+	const { maxPlayers } = this.props.route.params
 	this.state = {
 		miId: miId,
 		token: token,
-		gameId: '',
-		maxPlayers: 2,
+		gameId: gameId,
+		maxPlayers: maxPlayers,
 		gameStarted: '',
 		playerId1: 'undefined',
-		nombreJugador1: '',
+		nombreJugador1: nombreJugador1,
 		playerId2: 'undefined',
 		nombreJugador2: '',
 		playerId3: 'undefined',
@@ -26,7 +29,7 @@ class EsperaPartida extends React.Component {
 		playerId4: 'undefined',
 		nombreJugador4: '',
 		estado: 0,
-		jugadores: 0,
+		jugadores: 1,
 		numBots: numBots,
 		bet: '',
 		money: 0,
@@ -47,12 +50,18 @@ estados = async () => {
 			if(await this.state.gameStarted==true){
 				clearInterval(this.timer1);
 				console.log('PASANDO ID: '+this.state.miId)
-				await this.props.navigation.push("Partida", { token: this.state.token, miId: this.state.miId});
+				await this.props.navigation.push("Partida", { token: this.state.token, miId: this.state.miId, español: this.state.español, CustomTextLocal: this.state.CustomTextLocal});
 			}
 			await this.setState({ estado: 0})
 		}else if(this.state.estado==2){
 			clearInterval(this.timer1);
 			await this.startHandler();
+		}else if(this.state.estado==3){
+			await clearInterval(this.timer1);
+			await this.salirSala()
+		}else if(this.state.estado==4){
+			clearInterval(this.timer1)
+			this.props.navigation.push("Amigos", { token: this.state.token, miId: this.state.miId, gameId: this.state.gameId, invitar: true, nombreJugador1: this.state.nombreJugador1, español: this.state.español, CustomTextLocal: this.state.CustomTextLocal, numBots: this.state.numBots, gameId: this.state.gameId, maxPlayers: this.state.maxPlayers})
 		}
 	}
 startHandler = async () =>{
@@ -72,7 +81,7 @@ startHandler = async () =>{
 	}else{
 		await this.setState({ token: data.token });	
 		await console.log("start " + this.state.token);
-		await this.props.navigation.push("Partida", { token: this.state.token, miId: this.state.miId});
+		await this.props.navigation.push("Partida", { token: this.state.token, miId: this.state.miId, español: this.state.español, CustomTextLocal: this.state.CustomTextLocal});
 	}
 };
 readYo = async () => {
@@ -90,7 +99,7 @@ readYo = async () => {
 		clearInterval(this.timer1);
 	console.log('¡¡¡ERROR FETCH!!!')
 	}else{
-		
+		await this.setState({ nombreJugador1: data.alias });
 		await this.setState({ money: data.money });
 		await console.log('dinero: '+this.state.money)
 	}
@@ -125,10 +134,7 @@ readHandler = async () => {
 			await alert('No tienes suficiente dinero para esta sala')
 			await this.salirSala()
 		}
-		if( await this.state.playerId1 != 'undefined' || await this.state.playerId2 != 'undefined' 
-			|| await this.state.playerId3 != 'undefined' || await this.state.playerId4 != 'undefined'){
-			await this.readPlayerHandler();
-		}
+		await this.readPlayerHandler();
 		await console.log('readHandler[' + this.state.gameId,this.state.maxPlayers,this.state.gameStarted,this.state.token,this.state.playerId1,this.state.playerId2,this.state.playerId3,this.state.playerId4 +']');
 	}
 };
@@ -177,6 +183,8 @@ readPlayerHandler = async () => {
 			await this.setState({ nombreJugador1: data.alias });
 			await this.setState({ jugadores: this.state.jugadores+1})
 		}
+	}else if(this.state.playerId1=='EMPTY'){
+		await this.setState({ nombreJugador1: '' });
 	}
 	if(this.state.maxPlayers>=2&&this.state.playerId2!='EMPTY'&&this.state.playerId2!='BOT'&&this.state.nombreJugador2==''){
 		response = await fetch('https://unozar.herokuapp.com/player/read', requestOptions2);
@@ -190,6 +198,8 @@ readPlayerHandler = async () => {
 			await this.setState({ nombreJugador2: data.alias });
 			await this.setState({ jugadores: this.state.jugadores+1})
 		}
+	}else if(this.state.playerId2=='EMPTY'){
+		await this.setState({ nombreJugador2: '' });
 	}
 	if(this.state.maxPlayers>=3&&this.state.playerId3!='EMPTY'&&this.state.playerId3!='BOT'&&this.state.nombreJugador3==''){
 		response = await fetch('https://unozar.herokuapp.com/player/read', requestOptions3);
@@ -203,6 +213,8 @@ readPlayerHandler = async () => {
 			await this.setState({ nombreJugador3: data.alias });
 			await this.setState({ jugadores: this.state.jugadores+1})
 		}
+	}else if(this.state.playerId3=='EMPTY'){
+		await this.setState({ nombreJugador3: '' });
 	}
 	if(this.state.maxPlayers==4&&this.state.playerId4!='EMPTY'&&this.state.nombreJugador4==''){
 		response = await fetch('https://unozar.herokuapp.com/player/read', requestOptions3);
@@ -216,6 +228,8 @@ readPlayerHandler = async () => {
 			await this.setState({ nombreJugador4: data.alias });
 			await this.setState({ jugadores: this.state.jugadores+1})
 		}
+	}else if(this.state.playerId4=='EMPTY'){
+		await this.setState({ nombreJugador4: '' });
 	}
 
 }
@@ -237,7 +251,6 @@ salirSala = async () => {
 	}else{
 		await this.setState({ token: data.token });
 		await console.log('salir');
-		await clearInterval(this.timer1);
 		await this.props.navigation.push("MenuPrincipal", { token: this.state.token, playerId: this.state.miId, español: this.state.español, CustomTextLocal: this.state.CustomTextLocal});
 	}
 };
@@ -271,10 +284,12 @@ salirSala = async () => {
 							{this.state.miId==this.state.playerId1 && this.state.jugadores==this.state.maxPlayers && 
 								<Button title={this.state.CustomTextLocal.empezarPartida}  color="#40d81b" onPress={() => this.setState({ estado: 2 })}/>
 							}
-						</View>
-						<View  style={styles.boton}>
-							<Button title={this.state.CustomTextLocal.invitarAmigo} onPress={() => {clearInterval(this.timer1), this.props.navigation.push("Amigos", { token: this.state.token, miId: this.state.miId, gameId: this.state.gameId, invitar: true, nombreJugador1: this.state.nombreJugador1}) }} />
-							<Button title={this.state.CustomTextLocal.salir} onPress={() => this.salirSala() }/>
+							<View  style={styles.boton}>
+								{this.state.jugadores!=this.maxPlayers &&
+									<Button title={this.state.CustomTextLocal.invitarAmigo} onPress={() => this.setState({ estado: 4})} />
+								}
+								<Button title={this.state.CustomTextLocal.salir} onPress={() => this.setState({ estado: 3}) }/>
+							</View>
 						</View>
 				</View>
 			</View>

@@ -1,12 +1,15 @@
 import React from "react";
 import { Alert, Button, StyleSheet, View, Text, TextInput, Image, TouchableOpacity, Timer , ScrollView, ImageBackground } from "react-native";
 import { Menu } from 'primereact/menu';
+import CustomText from '../assets/idioma/CustomText.js' 
 
 class Partida extends React.Component {
   constructor(props) {
     super(props);
 	const { token } = this.props.route.params;
 	const { miId } = this.props.route.params;
+	const { español } = this.props.route.params;
+	const { CustomTextLocal } = this.props.route.params;
 	this.state = {
 		miId: miId,
 		gameId: '',
@@ -22,7 +25,7 @@ class Partida extends React.Component {
 		numCartasJugador4: 0,
 		playerId4: 4,
 		jugadores: [],
-		avatarJugadores: ['2','3','4','5'],
+		avatarJugadores: ['1','0','2','3'],
 		turnos: [],
 		miTurno: 0,
 		turnoJugadores: ['rgba(145, 20, 20, 0.4)','rgba(145, 20, 20, 0.4)','rgba(145, 20, 20, 0.4)','rgba(145, 20, 20, 0.4)'],
@@ -30,7 +33,7 @@ class Partida extends React.Component {
 		carta: '',
 		cartaColor: 'R',
 		restart: 1,
-		topDiscard: '0',
+		topDiscard: '1BX',
 		turn: 0,
 		gamePaused: '',
 		estado: 1,
@@ -40,6 +43,9 @@ class Partida extends React.Component {
 		cambiaTurno: [0,1,2,3],
 		playerCards: [],
 		tablero: '2',
+		español: español,
+		CustomTextLocal: CustomTextLocal,
+		dorso:'0',
     };
   }
 readPlayerHandler = async (i,id,turno) => {
@@ -64,6 +70,10 @@ readPlayerHandler = async (i,id,turno) => {
 		this.state.jugadores[i]= await data.alias
 		this.state.turnos[i]= await turno
 		this.state.avatarJugadores[i]= await data.avatarId
+		if(this.state.miId=id){
+			await this.setState({ tablero: data.boardId });
+			await this.setState({ dorso: data.cardsId });
+		}
 		console.log('JUGADOR: '+data.alias+', TIENE DE TURNO: '+turno)
 	}
 }
@@ -150,16 +160,14 @@ readHandler = async () => {
 	}
 };
 playCardHandler = async () => {
+	if(this.state.turn!=this.state.miTurno){
+		alert('No es tu turno')
+		return
+	}
 	await console.log('PONER CARTA: '+ this.state.playerCards[this.state.carta]);
-	if(await this.state.playerCards[this.state.carta]=="XXC"){
-		this.state.topDiscard=await 'X'+this.state.cartaColor+'C'
-	}else if(await this.state.playerCards[this.state.carta]=="XX4"){
-		this.state.topDiscard=await 'X'+this.state.cartaColor+'4'
-	}else{
-		await this.setState({ topDiscard: this.state.playerCards[this.state.carta]})
+	if(await this.state.playerCards[this.state.carta]!="XXC" || await this.state.playerCards[this.state.carta]=="XX4"){
 		await this.setState({ cartaColor: this.state.playerCards[this.state.carta].slice(1,2) })
 	}
-	await console.log('CARTA: '+this.state.topDiscard+' COLOR: '+this.state.cartaColor)
 	await this.setState({ showColor: false })	
 	const requestOptions = {
       method: "POST",
@@ -172,6 +180,7 @@ playCardHandler = async () => {
       }),
     };	
 	let data;
+	await this.setState({ estado: 1})
 	const response = await fetch('https://unozar.herokuapp.com/game/playCard', requestOptions);
 	data = await response.json();
 	let statusCode = await response.status;
@@ -180,14 +189,20 @@ playCardHandler = async () => {
 		console.log('¡¡¡ERROR FETCH!!!')
 	}else{
 		if(await this.state.playerNumCards[0]==1){
+			await clearInterval(this.timer1);
 			await alert('!!!VICTORIA!!!')
-			await this.setState({ estado: 4})
+			await this.props.navigation.push("MenuPrincipal", { playerId: this.state.miId, token: this.state.token, español: this.state.español, CustomTextLocal: this.state.CustomTextLocal });
 		}
 		await this.setState({ token: data.token });
 		await this.setState({hasSaidUnozar: false });
 	}
+	
 }
 robarCardHandler = async () => {
+	if(this.state.turn!=this.state.miTurno){
+		alert('No es tu turno')
+		return
+	}
 	const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -195,6 +210,7 @@ robarCardHandler = async () => {
 		token: this.state.token,
       }),
     };
+	await this.setState({ estado: 1})
 	let data;
 	const response = await fetch('https://unozar.herokuapp.com/game/draw', requestOptions);
 	data = await response.json();
@@ -226,7 +242,7 @@ salirHandler = async () => {
 	}else{
 		await this.setState({ token: data.token});
 		console.log("salido");
-		await this.props.navigation.push("MenuPrincipal", { token: this.state.token, playerId: this.state.miId});
+		await this.props.navigation.push("MenuPrincipal", { token: this.state.token, playerId: this.state.miId, español: this.state.español, CustomTextLocal: this.state.CustomTextLocal});
 	}
 };
 gameResponseHandler = async () => {
@@ -267,8 +283,9 @@ gameResponseHandler = async () => {
 				await console.log('NUMERO DE CARTAS DE '+i+': '+ data.playersNumCards[this.state.turnos[i]])
 				this.state.playerNumCards[i]=await data.playersNumCards[this.state.turnos[i]]
 				if( await this.state.playerNumCards[i] == 0){
-					await this.setState({ estado: 4})
+					clearInterval(this.timer1);
 					await alert('DERROTA')
+					await this.props.navigation.push("MenuPrincipal", { playerId: this.state.miId, token: this.state.token, español: this.state.español, CustomTextLocal: this.state.CustomTextLocal })
 				}
 			}
 			await this.setState({ restart: this.state.restart+1 }) 
@@ -280,7 +297,7 @@ gameResponseHandler = async () => {
 		await console.log('readGameResponse [' + 'READ TOKEN: '+this.state.token,this.state.maxPlayers,data.topDiscard,this.state.playerCards,this.state.turn,this.state.playersIds,this.state.playerNumCards,this.state.gamePaused +']');
 	}
 }	
-
+	
 	estados = async () => {
 		
 		if(this.state.estado==0){
@@ -289,9 +306,6 @@ gameResponseHandler = async () => {
 		}else if(this.state.estado==1){ //Leer sala
 			await console.log('ESTADO ACTUAL: '+this.state.estado);
 			await this.gameResponseHandler();
-			/*if(this.state.turn!=0){
-				let timer2 = await setTimeout(() => this.gameResponseHandler(), 61000);
-			}*/
 			await this.setState({ estado: 0})
 		}else if(this.state.estado==2){ // Jugar carta
 			await console.log('ESTADO ACTUAL: '+this.state.estado);
@@ -302,10 +316,11 @@ gameResponseHandler = async () => {
 			await console.log('ESTADO ACTUAL: '+this.state.estado);
 			await this.robarCardHandler();
 			await this.setState({ estado: 1})
-			//let timer2 = await setTimeout(() => this.gameResponseHandler(), 61000);
 		}else if(this.state.estado==4){
 			await clearInterval(this.timer1);
-			await this.props.navigation.push("MenuPrincipal", { playerId: this.state.miId, token: this.state.token });
+			await this.props.navigation.push("MenuPrincipal", { playerId: this.state.miId, token: this.state.token, español: this.state.español, CustomTextLocal: this.state.CustomTextLocal });
+		}else if(this.state.estado==5){
+			await this.salirHandler()
 		}
 	};
 	componentDidMount(){
@@ -405,41 +420,47 @@ gameResponseHandler = async () => {
 					</View>
 					<View style={styles.containerScreen1}>
 						<View style={styles.containerScreen2}>
-							<View style={styles.square3}> 
-								<View style={styles.containerScreen3}>
-									<View key={this.state.cambiaTurno[1]} style={[styles.container, { width: 372.3, height: 150, backgroundColor:this.state.turnoJugadores[1] }]}> 
-										<View style={styles.containerScreen4}>
-											<Image style={styles.iconoPerson2}  source={require('../assets/avatares/'+this.state.avatarJugadores[1]+'.png')} />
-											<View style={styles.containerScreen5}>
-													<Text style={styles.sizeText}> {this.state.jugadores[1]} </Text>
-													<Text style={styles.sizeText}> Cartas: {this.state.playerNumCards[1]}</Text>
+							<ImageBackground style={styles.tablero} source={require('../assets/tableros/'+this.state.tablero+'.png')}>
+								<View style={styles.square3}> 
+									<View style={styles.containerScreen3}>
+										{this.state.maxPlayers>=2&&
+										<View key={this.state.cambiaTurno[1]} style={[styles.container, { width: 372.3, height: 150, backgroundColor:this.state.turnoJugadores[1] }]}> 
+											<View style={styles.containerScreen4}>
+												<Image style={styles.iconoPerson2}  source={require('../assets/avatares/'+this.state.avatarJugadores[1]+'.png')} />
+												<View style={styles.containerScreen5}>
+														<Text style={styles.sizeText}> {this.state.jugadores[1]} </Text>
+														<Text style={styles.sizeText}> Cartas: {this.state.playerNumCards[1]}</Text>
+												</View>
 											</View>
 										</View>
-									</View>
-									<View key={this.state.cambiaTurno[2]} style={[styles.container, { width: 372.3, height: 150, backgroundColor:this.state.turnoJugadores[2] }]}> 
-										<View style={styles.containerScreen4}>
-											<Image style={styles.iconoPerson2} source={require('../assets/avatares/'+this.state.avatarJugadores[2]+'.png')}/>
-											<View style={styles.containerScreen5}>
-													<Text style={styles.sizeText}> {this.state.jugadores[2]} </Text>
-													<Text style={styles.sizeText}> Cartas: {this.state.playerNumCards[2]}</Text>
+										}
+										{this.state.maxPlayers>=3&&
+										<View key={this.state.cambiaTurno[2]} style={[styles.container, { width: 372.3, height: 150, backgroundColor:this.state.turnoJugadores[2] }]}> 
+											<View style={styles.containerScreen4}>
+												<Image style={styles.iconoPerson2} source={require('../assets/avatares/'+this.state.avatarJugadores[2]+'.png')}/>
+												<View style={styles.containerScreen5}>
+														<Text style={styles.sizeText}> {this.state.jugadores[2]} </Text>
+														<Text style={styles.sizeText}> Cartas: {this.state.playerNumCards[2]}</Text>
+												</View>
 											</View>
 										</View>
-									</View>
-									<View key={this.state.cambiaTurno[3]} style={[styles.container, { width: 372.3, height: 150, backgroundColor:this.state.turnoJugadores[3] }]}> 
-										<View style={styles.containerScreen4}>
-											<Image style={styles.iconoPerson2} source={require('../assets/avatares/'+this.state.avatarJugadores[3]+'.png')} />
-											<View style={styles.containerScreen5}>
-													<Text style={styles.sizeText}> {this.state.jugadores[3]} </Text>
-													<Text style={styles.sizeText}> Cartas: {this.state.playerNumCards[3]}</Text>
+										}
+										{this.state.maxPlayers==4&&
+										<View key={this.state.cambiaTurno[3]} style={[styles.container, { width: 372.3, height: 150, backgroundColor:this.state.turnoJugadores[3] }]}> 
+											<View style={styles.containerScreen4}>
+												<Image style={styles.iconoPerson2} source={require('../assets/avatares/'+this.state.avatarJugadores[3]+'.png')} />
+												<View style={styles.containerScreen5}>
+														<Text style={styles.sizeText}> {this.state.jugadores[3]} </Text>
+														<Text style={styles.sizeText}> Cartas: {this.state.playerNumCards[3]}</Text>
+												</View>
 											</View>
 										</View>
+										}
 									</View>
 								</View>
-							</View>
-							<View style={styles.square4}> 
-								<ImageBackground style={styles.tablero} source={require('../assets/tableros/'+this.state.tablero+'.png')}>
+								
 									<View key={this.state.restart} style={styles.containerTablero}>
-										<Image  style={styles.deck} source={require('../assets/dorsos/0.png')} />
+										<Image  style={styles.deck} source={require('../assets/dorsos/'+this.state.dorso+'.png')} />
 										<Image style={styles.carta} source={require('../assets/cartas/'+this.state.topDiscard+'.png')} />
 										<View style={styles.containerColor}>
 											{this.state.showColor &&
@@ -452,14 +473,12 @@ gameResponseHandler = async () => {
 											}
 										</View>
 									</View>
-								</ImageBackground>
-								
-							</View>
-								<View key={this.state.restart} style={styles.containerplayerCards}>
-									<ScrollView horizontal  >
-										{this.verplayerCards()}
-									</ScrollView>
-								</View>
+									<View key={-this.state.restart} style={styles.containerplayerCards}>
+										<ScrollView horizontal  >
+											{this.verplayerCards()}
+										</ScrollView>
+									</View>
+							</ImageBackground>				
 						</View>
 						<View key={this.state.cambiaTurno[0]} style={[styles.container, { top: 40, width: 240, height: 590, backgroundColor:this.state.turnoJugadores[0] }]}> 
 							<View style={styles.containerPerfil}>
@@ -472,8 +491,7 @@ gameResponseHandler = async () => {
 									<Button title="PONER CARTA"  color="#e1a81a" onPress={() => this.setState({ estado: 2 })}/>
 									<Button title="ROBAR CARTA"  color="#e1a81a" onPress={() => this.setState({ estado: 3})}/>
 									<Button title="UNOZAR"  color="#40d81b" onPress={() => this.setState({ hasSaidUnozar: true })}/>
-									<Button title="READ GAME" color="#40d81b" onPress={() => this.gameResponseHandler()}/>
-									<Button title="SALIR" color="#40d81b" onPress={() => this.salirHandler()}/>
+									<Button title="SALIR" color="#40d81b" onPress={() => this.setState({ estado: 5})}/>
 								</View>
 							</View>
 						</View>
@@ -542,7 +560,6 @@ const styles = StyleSheet.create({
 	  fontSize: 20  
   },
   square3 : {
-	top: 40,
 	width: 1117,
     height: 150,
     
@@ -618,7 +635,7 @@ const styles = StyleSheet.create({
 	width: 200  
   },
   containerplayerCards: {
-	 top: 15,
+	top: 100,
 	flexDirection: 'row', 
 	justifyContent: 'center'
   },
@@ -638,8 +655,9 @@ const styles = StyleSheet.create({
 	top:50,
   },
   tablero: {
+	top: 40,
 	width: 1117,
-    height: 440,  
+    height: 590,  
   },
 });
 
