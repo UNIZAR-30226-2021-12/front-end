@@ -85,7 +85,9 @@ class EditarUsuario extends React.Component {
           key={i}
           style={styles.touchable}
           activeOpacity={0.5}
-          onPress={() => this.setState({ avatarId: i })}
+          onPress={() => {
+            this.state.avatarId = i;
+          }}
         >
           <Image
             key={i}

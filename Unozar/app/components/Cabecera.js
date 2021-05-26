@@ -1,14 +1,13 @@
 import React, { Component } from "react";
 import { Header } from "react-native-elements";
-import { View, Text } from "react-native";
-//import Menu, { MenuItem, MenuDivider } from "react-native-material-menu";
-import { MenuOutlined } from "@ant-design/icons";
-import Portal from "@burstware/react-native-portal";
-import { Button, Menu, Divider, Provider } from "react-native-paper";
 import {
-  TouchableHighlight,
+  View,
+  Text,
   TouchableOpacity,
-} from "react-native-gesture-handler";
+  TouchableWithoutFeedback,
+  Modal,
+} from "react-native";
+import { MenuOutlined } from "@ant-design/icons";
 
 export default class Cabecera extends Component {
   constructor(props) {
@@ -28,92 +27,119 @@ export default class Cabecera extends Component {
     this.setState({ token });
   };
 
-  openMenu = () => {
-    this.state.visible = true;
-    console.log(this.state.visible);
-  };
-
   closeMenu = () => {
-    this.state.visible = false;
-    console.log(this.state.visible);
+    this.setState({ visible: false });
   };
 
-  _menu = null;
-
-  setMenuRef = (ref) => {
-    this._menu = ref;
+  showHideMenu = () => {
+    this.setState({ visible: !this.state.visible });
   };
 
-  hideMenu = () => {
-    this._menu.hide();
-  };
-
-  showMenu = () => {
-    this._menu.show();
-  };
   render() {
     return (
-      <>
-        <Header
-          leftComponent={{
-            icon: "home",
-            color: "#fff",
-            onPress: () => {
-              this.props.navigation.push("MenuPrincipal", {
-                español: this.state.español,
-                CustomTextLocal: this.state.CustomTextLocal,
-                user: this.state.email,
-                pass: this.state.password,
-                playerId: this.state.playerId,
-                token: this.state.token,
-              });
-            },
-          }}
-          centerComponent={{
-            text: "UNOZAR",
-            style: { color: "#fff", fontSize: 20 },
-          }}
-          rightComponent={
-            <Provider>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "center",
-                }}
-              >
-                <Menu
-                  visible={this.state.visible}
-                  onDismiss={this.closeMenu}
-                  anchor={
-                    <TouchableOpacity onPress={() => this.showMenu}>
-                      <MenuOutlined />
-                    </TouchableOpacity>
-                  }
-                >
-                  <Menu.Item onPress={() => {}} title="Item 1" />
-                  <Menu.Item onPress={() => {}} title="Item 2" />
-                  <Divider />
-                  <Menu.Item onPress={() => {}} title="Item 3" />
-                </Menu>
-              </View>
-            </Provider>
-          }
-        />
-        {this.props.children}
-      </>
+      <TouchableWithoutFeedback onPress={this.closeMenu}>
+        <View>
+          <Header
+            leftComponent={{
+              icon: "home",
+              color: "#fff",
+              onPress: () => {
+                this.props.navigation.push("MenuPrincipal", {
+                  español: this.state.español,
+                  CustomTextLocal: this.state.CustomTextLocal,
+                  user: this.state.email,
+                  pass: this.state.password,
+                  playerId: this.state.playerId,
+                  token: this.state.token,
+                });
+              },
+            }}
+            centerComponent={{
+              text: "UNOZAR",
+              style: { color: "#fff", fontSize: 20 },
+            }}
+            rightComponent={
+              <>
+                <TouchableOpacity onPress={this.showHideMenu}>
+                  <MenuOutlined style={styles.iconoMenu} />
+                </TouchableOpacity>
+                {this.state.visible && (
+                  <>
+                    <View style={styles.menu}>
+                      <TouchableOpacity
+                        style={styles.opcionMenu}
+                        onPress={() =>
+                          this.props.navigation.push("Tienda", {
+                            español: this.state.español,
+                            CustomTextLocal: this.state.CustomTextLocal,
+                            miId: this.state.playerId,
+                            token: this.state.token,
+                          })
+                        }
+                      >
+                        <Text style={styles.textoOpcion}>Tienda</Text>
+                      </TouchableOpacity>
+                      <View style={styles.linea} />
+                      <TouchableOpacity
+                        style={styles.opcionMenu}
+                        onPress={() => console.log("hola2")}
+                      >
+                        <Text>Opcion 2</Text>
+                      </TouchableOpacity>
+                      <View style={styles.linea} />
+                      <TouchableOpacity
+                        style={styles.opcionMenu}
+                        onPress={() => console.log("hola3")}
+                      >
+                        <Text>Opcion 3</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </>
+                )}
+              </>
+            }
+          />
+          {this.props.children}
+        </View>
+      </TouchableWithoutFeedback>
     );
   }
 }
 
 const styles = {
   menu: {
-    left: -100,
-    flex: 1,
+    marginTop: 25,
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: "white",
+    width: 120,
+    height: 160,
+    position: "absolute",
+    shadowColor: "#000000",
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    shadowOffset: {
+      height: 1,
+      width: 1,
+    },
+  },
+  iconoMenu: {
+    color: "white",
+    marginTop: 5,
   },
   icon: {
     color: "white",
     top: 10,
   },
+  opcionMenu: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  linea: {
+    borderBottomColor: "black",
+    borderBottomWidth: 1,
+    alignSelf: "stretch",
+  },
+  textoOpcion: {},
 };
