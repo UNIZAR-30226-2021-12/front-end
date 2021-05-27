@@ -3,7 +3,6 @@ import { Button, StyleSheet, View, Text, TextInput, Image } from "react-native";
 import { Menu } from "primereact/menu";
 import { Linking } from "react-native";
 import qs from "qs";
-import CustomText from "../assets/idioma/CustomText.js";
 import Cabecera from "../components/Cabecera";
 
 class PerfilAmigos extends React.Component {

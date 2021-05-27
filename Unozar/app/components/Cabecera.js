@@ -5,7 +5,6 @@ import {
   Text,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  Modal,
 } from "react-native";
 import { MenuOutlined } from "@ant-design/icons";
 
@@ -15,7 +14,6 @@ export default class Cabecera extends Component {
     this.state = {
       visible: false,
       español: this.props.params.español,
-      CustomTextLocal: this.props.params.CustomTextLocal,
       user: this.props.params.email,
       pass: this.props.params.password,
       playerId: this.props.params.playerId,
@@ -47,7 +45,6 @@ export default class Cabecera extends Component {
                 onPress: () => {
                   this.props.navigation.push("MenuPrincipal", {
                     español: this.state.español,
-                    CustomTextLocal: this.state.CustomTextLocal,
                     user: this.state.email,
                     pass: this.state.password,
                     playerId: this.state.playerId,
@@ -78,11 +75,12 @@ export default class Cabecera extends Component {
                         token: this.state.token,
                         playerId: this.state.playerId,
                         español: this.state.español,
-                        CustomTextLocal: this.state.CustomTextLocal,
                       })
                     }
                   >
-                    <Text style={styles.textoOpcion}>Perfil</Text>
+                    {(this.state.español && <Text>Perfil</Text>) || (
+                      <Text>Profile</Text>
+                    )}
                   </TouchableOpacity>
 
                   <TouchableOpacity
@@ -93,11 +91,12 @@ export default class Cabecera extends Component {
                         playerId: this.state.playerId,
                         invitar: false,
                         español: this.state.español,
-                        CustomTextLocal: this.state.CustomTextLocal,
                       })
                     }
                   >
-                    <Text>Amigos</Text>
+                    {(this.state.español && <Text>Amigos</Text>) || (
+                      <Text>Friends</Text>
+                    )}
                   </TouchableOpacity>
 
                   <TouchableOpacity
@@ -107,26 +106,25 @@ export default class Cabecera extends Component {
                         token: this.state.token,
                         playerId: this.state.playerId,
                         español: this.state.español,
-                        CustomTextLocal: this.state.CustomTextLocal,
                       })
                     }
                   >
-                    <Text>Tienda</Text>
+                    {(this.state.español && <Text>Tienda</Text>) || (
+                      <Text>Shop</Text>
+                    )}
                   </TouchableOpacity>
 
                   <TouchableOpacity
                     style={styles.opcionMenu}
                     onPress={() => {
-                      if (this.state.español) {
-                        this.setState({ español: false });
-                        this.state.CustomTextLocal.setLanguage("en");
-                      } else {
-                        this.setState({ español: true });
-                        this.state.CustomTextLocal.setLanguage("es");
-                      }
+                      this.setState({ español: !this.state.español });
+                      this.props.updateParent();
+                      this.closeMenu();
                     }}
                   >
-                    <Text>Cambiar idioma</Text>
+                    {(this.state.español && <Text>English</Text>) || (
+                      <Text>Español</Text>
+                    )}
                   </TouchableOpacity>
 
                   <View style={styles.linea} />
@@ -135,11 +133,12 @@ export default class Cabecera extends Component {
                     onPress={() =>
                       this.props.navigation.navigate("Inicio", {
                         español: this.state.español,
-                        CustomTextLocal: this.state.CustomTextLocal,
                       })
                     }
                   >
-                    <Text>Cerrar sesión</Text>
+                    {(this.state.español && <Text>Cerrar sesión</Text>) || (
+                      <Text>Sign out</Text>
+                    )}
                   </TouchableOpacity>
                 </View>
               </>

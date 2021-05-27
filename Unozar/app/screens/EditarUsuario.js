@@ -9,7 +9,6 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-import { Menu } from "primereact/menu";
 import Cabecera from "../components/Cabecera";
 import updatePlayer from "../functions/updatePlayer";
 import refreshToken from "../functions/refreshToken";
@@ -20,7 +19,6 @@ class EditarUsuario extends React.Component {
     this.Cabecera = React.createRef();
     this.state = {
       español: this.props.route.params.español,
-      CustomTextLocal: this.props.route.params.CustomTextLocal,
       token: this.props.route.params.token,
       alias: this.props.route.params.alias,
       emailViejo: this.props.route.params.email,
@@ -50,7 +48,6 @@ class EditarUsuario extends React.Component {
         token: token,
         playerId: this.state.playerId,
         español: this.state.español,
-        CustomTextLocal: this.state.CustomTextLocal,
       });
     }
   };
@@ -61,10 +58,12 @@ class EditarUsuario extends React.Component {
       this.setState({ token: token });
       this.Cabecera.current.updateToken(token);
     } else {
-      alert("Su sesion ha expirado");
+      alert(
+        (this.state.español && "Su sesion ha expirado") ||
+          "Your session has expired"
+      );
       this.props.navigation.navigate("Inicio", {
         español: this.state.español,
-        CustomTextLocal: this.state.CustomTextLocal,
       });
     }
   };
@@ -146,6 +145,10 @@ class EditarUsuario extends React.Component {
     return table;
   };
 
+  changeLanguage = () => {
+    this.setState({ español: !this.state.español });
+  };
+
   render() {
     return (
       <View style={styles.screen}>
@@ -155,9 +158,9 @@ class EditarUsuario extends React.Component {
             token: this.state.token,
             playerId: this.state.playerId,
             español: this.state.español,
-            CustomTextLocal: this.state.CustomTextLocal,
           }}
           navigation={this.props.navigation}
+          updateParent={this.changeLanguage}
         >
           <View style={styles.formContainer}>
             <Text>Alias</Text>
@@ -167,7 +170,9 @@ class EditarUsuario extends React.Component {
               onChangeText={(alias) => this.setState({ alias })}
             />
             <View>
-              <Text>Correo electrónico</Text>
+              {(this.state.español && <Text>Correo electrónico</Text>) || (
+                <Text>Email</Text>
+              )}
               <TextInput
                 style={styles.input}
                 value={this.state.emailViejo}
@@ -177,17 +182,23 @@ class EditarUsuario extends React.Component {
                 }}
               />
             </View>
-            <Text style={styles.ScrollViewText}>Seleccione un avatar</Text>
+            {(this.state.español && (
+              <Text style={styles.ScrollViewText}>Seleccione un avatar</Text>
+            )) || <Text style={styles.ScrollViewText}>Select an avatar</Text>}
             <ScrollView horizontal style={styles.scrollViews}>
               {this.verAvatares()}
             </ScrollView>
-            <Text style={styles.ScrollViewText}>Seleccione un tablero</Text>
+            {(this.state.español && (
+              <Text style={styles.ScrollViewText}>Seleccione un tablero</Text>
+            )) || <Text style={styles.ScrollViewText}>Select a board</Text>}
             <ScrollView horizontal style={styles.scrollViews}>
               {this.verTableros()}
             </ScrollView>
-            <Text style={styles.ScrollViewText}>
-              Seleccione un reverso de carta
-            </Text>
+            {(this.state.español && (
+              <Text style={styles.ScrollViewText}>
+                Seleccione un reverso de carta
+              </Text>
+            )) || <Text style={styles.ScrollViewText}>Select a card back</Text>}
             <ScrollView horizontal style={styles.scrollViews}>
               {this.verDorsos()}
             </ScrollView>
@@ -195,7 +206,7 @@ class EditarUsuario extends React.Component {
             <View style={styles.botones}>
               <View style={styles.botonConfirmarView}>
                 <Button
-                  title="Confirmar"
+                  title={(this.state.español && "Confirmar") || "Confirm"}
                   onPress={() => this.updateHandler()}
                   style={styles.botonConfirmar}
                 />
@@ -203,14 +214,13 @@ class EditarUsuario extends React.Component {
               <View style={styles.botonCancelarView}>
                 <Button
                   key={this.state.token}
-                  title="Cancelar"
+                  title={(this.state.español && "Cancelar") || "Cancel"}
                   color="red"
                   onPress={() => {
                     this.props.navigation.push("Perfil", {
                       token: this.state.token,
                       playerId: this.state.playerId,
                       español: this.state.español,
-                      CustomTextLocal: this.state.CustomTextLocal,
                     });
                   }}
                   style={styles.botonCancelar}

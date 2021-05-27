@@ -20,7 +20,6 @@ class CambiarContrasenya extends React.Component {
     this.Cabecera = React.createRef();
     this.state = {
       español: this.props.route.params.español,
-      CustomTextLocal: this.props.route.params.CustomTextLocal,
       token: this.props.route.params.token,
       playerId: this.props.route.params.playerId,
       email: this.props.route.params.email,
@@ -39,7 +38,9 @@ class CambiarContrasenya extends React.Component {
     };
     const resp = await authentication(par);
     if (resp === -1) {
-      alert("Contraseña incorrecta");
+      alert(
+        (this.state.español && "Contraseña incorrecta") || "Incorrect password"
+      );
       return -1;
     }
     const params = {
@@ -55,7 +56,6 @@ class CambiarContrasenya extends React.Component {
         token: token,
         playerId: this.state.playerId,
         español: this.state.español,
-        CustomTextLocal: this.state.CustomTextLocal,
       });
     }
   };
@@ -66,10 +66,12 @@ class CambiarContrasenya extends React.Component {
       this.setState({ token: token });
       this.Cabecera.current.updateToken(token);
     } else {
-      alert("Su sesion ha expirado");
+      alert(
+        (this.state.español && "Su sesion ha expirado") ||
+          "Your session has expired"
+      );
       this.props.navigation.navigate("Inicio", {
         español: this.state.español,
-        CustomTextLocal: this.state.CustomTextLocal,
       });
     }
   };
@@ -77,6 +79,10 @@ class CambiarContrasenya extends React.Component {
   componentDidMount() {
     this.refreshHandler();
   }
+
+  changeLanguage = () => {
+    this.setState({ español: !this.state.español });
+  };
 
   render() {
     return (
@@ -87,19 +93,23 @@ class CambiarContrasenya extends React.Component {
             token: this.state.token,
             playerId: this.state.playerId,
             español: this.state.español,
-            CustomTextLocal: this.state.CustomTextLocal,
           }}
           navigation={this.props.navigation}
+          updateParent={this.changeLanguage}
         >
           <View style={styles.formContainer}>
-            <Text>Contraseña actual</Text>
+            {(this.state.español && <Text>Contraseña actual</Text>) || (
+              <Text>Current password</Text>
+            )}
             <TextInput
               style={styles.input}
               onChangeText={(oldPass) => this.setState({ oldPass })}
               secureTextEntry={true}
             />
             <View>
-              <Text>Nueva contraseña</Text>
+              {(this.state.español && <Text>Nueva contraseña</Text>) || (
+                <Text>New password</Text>
+              )}
               <TextInput
                 style={styles.input}
                 onChangeText={(newPass) => this.setState({ newPass })}
@@ -110,20 +120,22 @@ class CambiarContrasenya extends React.Component {
             <View style={styles.botones}>
               <View style={styles.botonConfirmarView}>
                 <Button
-                  title="Cambiar contraseña"
+                  title={
+                    (this.state.español && "Cambiar contraseña") ||
+                    "Change password"
+                  }
                   onPress={() => this.updatePassHandler()}
                 />
               </View>
               <View style={styles.botonCancelarView}>
                 <Button
-                  title="Cancelar"
+                  title={(this.state.español && "Cancelar") || "Cancel"}
                   color="red"
                   onPress={() =>
                     this.props.navigation.push("Perfil", {
                       token: this.state.token,
                       playerId: this.state.playerId,
                       español: this.state.español,
-                      CustomTextLocal: this.state.CustomTextLocal,
                     })
                   }
                 />

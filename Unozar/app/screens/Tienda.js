@@ -9,22 +9,16 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native";
-import { Menu } from "primereact/menu";
-import { Linking } from "react-native";
-import CustomText from "../assets/idioma/CustomText.js";
 import Cabecera from "../components/Cabecera";
 import readPlayer from "../functions/readPlayer";
 class Perfil extends React.Component {
   constructor(props) {
     super(props);
-    const { token } = this.props.route.params;
-    const { playerId } = this.props.route.params;
-    const { español } = this.props.route.params;
-    const { CustomTextLocal } = this.props.route.params;
+    this.Cabecera = React.createRef();
     this.state = {
       show: false,
-      token: token,
-      playerId: playerId,
+      token: this.props.route.params.token,
+      playerId: this.props.route.params.playerId,
       avatarId: "0",
       boardId: "0",
       cardsId: "0",
@@ -36,8 +30,7 @@ class Perfil extends React.Component {
       unlockedAvatars: [],
       unlockedBoards: [],
       unlockedCards: [],
-      español: español,
-      CustomTextLocal: CustomTextLocal,
+      español: this.props.route.params.español,
     };
   }
 
@@ -117,7 +110,10 @@ class Perfil extends React.Component {
     };
     console.log("avatar i: " + i);
     if (this.state.money < 250) {
-      alert("No tienes suficiente dinero");
+      alert(
+        (this.state.español && "No tienes suficiente dinero") ||
+          "You don't have enough money"
+      );
       return;
     }
     let data;
@@ -139,6 +135,7 @@ class Perfil extends React.Component {
       await this.setState({ dorsos: [] });
       await this.readHandler();
       await this.setState({ restart: this.state.restart + 1 });
+      this.Cabecera.current.updateToken(data.token);
     }
   };
   desbloquearDorso = async (i) => {
@@ -152,7 +149,10 @@ class Perfil extends React.Component {
     };
     console.log("dorso id:" + this.state.dorsos[i]);
     if (this.state.money < 500) {
-      alert("No tienes suficiente dinero");
+      alert(
+        (this.state.español && "No tienes suficiente dinero") ||
+          "You don't have enough money"
+      );
       return;
     }
     let data;
@@ -174,6 +174,7 @@ class Perfil extends React.Component {
       await this.setState({ dorsos: [] });
       await this.readHandler();
       await this.setState({ restart: this.state.restart + 1 });
+      this.Cabecera.current.updateToken(data.token);
     }
   };
   desbloquearTablero = async (i) => {
@@ -187,7 +188,10 @@ class Perfil extends React.Component {
     };
     console.log("tablero id:" + this.state.tableros[i]);
     if (this.state.money < 700) {
-      alert("No tienes suficiente dinero");
+      alert(
+        (this.state.español && "No tienes suficiente dinero") ||
+          "You don't have enough money"
+      );
       return;
     }
     let data;
@@ -209,6 +213,7 @@ class Perfil extends React.Component {
       await this.setState({ dorsos: [] });
       await this.readHandler();
       await this.setState({ restart: this.state.restart + 1 });
+      this.Cabecera.current.updateToken(data.token);
     }
   };
   addMoney = async () => {
@@ -298,6 +303,11 @@ class Perfil extends React.Component {
     }
     return table;
   };
+
+  changeLanguage = () => {
+    this.setState({ español: !this.state.español });
+  };
+
   render() {
     return (
       <>
@@ -308,12 +318,14 @@ class Perfil extends React.Component {
             token: this.state.token,
             playerId: this.state.playerId,
             español: this.state.español,
-            CustomTextLocal: this.state.CustomTextLocal,
           }}
           navigation={this.props.navigation}
+          updateParent={this.changeLanguage}
         >
           <View style={styles.screen}>
-            <Text style={styles.textTitulo}>TIENDA</Text>
+            {(this.state.español && (
+              <Text style={styles.textTitulo}>TIENDA</Text>
+            )) || <Text style={styles.textTitulo}>SHOP</Text>}
             <Text style={styles.textTitulo}>{this.state.money}</Text>
             <View style={styles.avatar_desbloqueables}>
               <View style={styles.avatarContainer}>
@@ -323,29 +335,41 @@ class Perfil extends React.Component {
                     this.state.avatarId +
                     ".png")}
                 />
-                <Text style={styles.textAvatar}> Avatar actual</Text>
+                {(this.state.español && (
+                  <Text style={styles.textAvatar}>Avatar actual</Text>
+                )) || <Text style={styles.textAvatar}>Current avatar</Text>}
                 <Image
                   style={styles.dorsoPerfil}
                   source={require("../assets/dorsos/" +
                     this.state.cardsId +
                     ".png")}
                 />
-                <Text style={styles.textAvatar}> Dorso actual</Text>
+                {(this.state.español && (
+                  <Text style={styles.textAvatar}>Dorso actual</Text>
+                )) || <Text style={styles.textAvatar}>Current card back</Text>}
                 <Image
                   style={styles.tableroPerfil}
                   source={require("../assets/tableros/" +
                     this.state.boardId +
                     ".png")}
                 />
-                <Text style={styles.textAvatar}> Tablero actual</Text>
+                {(this.state.español && (
+                  <Text style={styles.textAvatar}>Tablero actual</Text>
+                )) || <Text style={styles.textAvatar}>Current board</Text>}
               </View>
               <View style={styles.containerDesbloqueables}>
                 <View>
                   {this.state.unlockedAvatars.length != 4 && (
                     <>
-                      <Text style={styles.textAvatar}>
-                        Avatares desbloqueables (250 monedas)
-                      </Text>
+                      {(this.state.español && (
+                        <Text style={styles.textAvatar}>
+                          Avatares desbloqueables (250 monedas)
+                        </Text>
+                      )) || (
+                        <Text style={styles.textAvatar}>
+                          Unlockable avatars (250 coins)
+                        </Text>
+                      )}
                       <View
                         key={this.state.restart}
                         style={styles.containerListaAvatares}
@@ -358,9 +382,15 @@ class Perfil extends React.Component {
                 <View>
                   {this.state.unlockedBoards.length != 3 && (
                     <>
-                      <Text style={styles.textAvatar}>
-                        Tableros desbloqueables (500 monedas)
-                      </Text>
+                      {(this.state.español && (
+                        <Text style={styles.textAvatar}>
+                          Tableros desbloqueables (500 monedas)
+                        </Text>
+                      )) || (
+                        <Text style={styles.textAvatar}>
+                          Unlockable boards (500 coins)
+                        </Text>
+                      )}
                       <View
                         key={this.state.restart}
                         style={styles.containerListaTableros}
@@ -373,9 +403,15 @@ class Perfil extends React.Component {
                 <View>
                   {this.state.unlockedCards.length != 5 && (
                     <>
-                      <Text style={styles.textAvatar}>
-                        Dorsos desbloqueables (750 monedas)
-                      </Text>
+                      {(this.state.español && (
+                        <Text style={styles.textAvatar}>
+                          Dorsos desbloqueables (750 monedas)
+                        </Text>
+                      )) || (
+                        <Text style={styles.textAvatar}>
+                          Unlockable card backs (750 coins)
+                        </Text>
+                      )}
                       <View
                         key={this.state.restart}
                         style={styles.containerListaDorsos}

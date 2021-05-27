@@ -5,7 +5,6 @@ import {
   Text,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  Modal,
 } from "react-native";
 import { MenuOutlined } from "@ant-design/icons";
 
@@ -15,7 +14,6 @@ export default class Cabecera extends Component {
     this.state = {
       visible: false,
       español: this.props.params.español,
-      CustomTextLocal: this.props.params.CustomTextLocal,
       user: this.props.params.email,
       pass: this.props.params.password,
       playerId: this.props.params.playerId,
@@ -47,7 +45,6 @@ export default class Cabecera extends Component {
                 onPress: () => {
                   this.props.navigation.push("MenuPrincipal", {
                     español: this.state.español,
-                    CustomTextLocal: this.state.CustomTextLocal,
                     user: this.state.email,
                     pass: this.state.password,
                     playerId: this.state.playerId,
@@ -74,17 +71,14 @@ export default class Cabecera extends Component {
                   <TouchableOpacity
                     style={styles.opcionMenu}
                     onPress={() => {
-                      if (this.state.español) {
-                        this.setState({ español: false });
-                        this.state.CustomTextLocal.setLanguage("en");
-                      } else {
-                        console.log("hola");
-                        this.setState({ español: true });
-                        this.state.CustomTextLocal.setLanguage("es");
-                      }
+                      this.setState({ español: !this.state.español });
+                      this.props.updateParent();
+                      this.closeMenu();
                     }}
                   >
-                    <Text>Cambiar idioma</Text>
+                    {(this.state.español && <Text>English</Text>) || (
+                      <Text>Español</Text>
+                    )}
                   </TouchableOpacity>
                 </View>
               </>

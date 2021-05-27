@@ -12,7 +12,6 @@ class Perfil extends React.Component {
     this.Cabecera = React.createRef();
     this.state = {
       español: this.props.route.params.español,
-      CustomTextLocal: this.props.route.params.CustomTextLocal,
       token: this.props.route.params.token,
       alias: "",
       email: "",
@@ -36,7 +35,6 @@ class Perfil extends React.Component {
     if (status !== -1) {
       this.props.navigation.navigate("Inicio", {
         español: this.state.español,
-        CustomTextLocal: this.state.CustomTextLocal,
       });
     }
   };
@@ -66,10 +64,12 @@ class Perfil extends React.Component {
       this.setState({ token: token });
       this.Cabecera.current.updateToken(token);
     } else {
-      alert("Su sesion ha expirado");
+      alert(
+        (this.state.español && "Su sesion ha expirado") ||
+          "Your session has expired"
+      );
       this.props.navigation.navigate("Inicio", {
         español: this.state.español,
-        CustomTextLocal: this.state.CustomTextLocal,
       });
     }
   };
@@ -86,6 +86,10 @@ class Perfil extends React.Component {
     this.focusListener.remove();
   }
 
+  changeLanguage = () => {
+    this.setState({ español: !this.state.español });
+  };
+
   render() {
     return (
       <View style={styles.screen}>
@@ -95,14 +99,22 @@ class Perfil extends React.Component {
             token: this.state.token,
             playerId: this.state.playerId,
             español: this.state.español,
-            CustomTextLocal: this.state.CustomTextLocal,
           }}
           navigation={this.props.navigation}
+          updateParent={this.changeLanguage}
         >
           <View style={styles.body}>
             <View style={styles.formContainer}>
               <View style={styles.tituloView}>
-                <Text style={styles.titulo}>Perfil</Text>
+                {(this.state.español && (
+                  <Text style={styles.titulo}>
+                    {"    "}Perfil{"    "}
+                  </Text>
+                )) || (
+                  <Text style={styles.titulo}>
+                    {"    "}Profile{"    "}
+                  </Text>
+                )}
               </View>
 
               <Image
@@ -112,58 +124,108 @@ class Perfil extends React.Component {
                   ".png")}
               />
               <Text style={styles.textoCampos}>
-                {" "}
                 Alias:{" "}
                 <Text style={styles.textoInterior}>{this.state.alias}</Text>
               </Text>
+
+              {(this.state.español && (
+                <Text style={styles.textoCampos}>
+                  Correo:{" "}
+                  <Text style={styles.textoInterior}>{this.state.email}</Text>
+                </Text>
+              )) || (
+                <Text style={styles.textoCampos}>
+                  Email:{" "}
+                  <Text style={styles.textoInterior}>{this.state.email}</Text>
+                </Text>
+              )}
+
               <Text style={styles.textoCampos}>
-                {" "}
-                Correo:{" "}
-                <Text style={styles.textoInterior}>{this.state.email}</Text>
-              </Text>
-              <Text style={styles.textoCampos}>
-                {" "}
                 Id:{" "}
-                <Text style={styles.textoInterior}>
-                  {this.state.playerId}
-                </Text>{" "}
+                <Text style={styles.textoInterior}>{this.state.playerId}</Text>{" "}
               </Text>
-              <Text style={styles.textoCampos}>
-                {" "}
-                Partidas publicas jugadas:{" "}
-                <Text style={styles.textoInterior}>
-                  {this.state.publicTotal}
+
+              {(this.state.español && (
+                <Text style={styles.textoCampos}>
+                  Partidas publicas jugadas:{" "}
+                  <Text style={styles.textoInterior}>
+                    {this.state.publicTotal}
+                  </Text>
                 </Text>
-              </Text>
-              <Text style={styles.textoCampos}>
-                {" "}
-                Partidas publicas ganadas:{" "}
-                <Text style={styles.textoInterior}>
-                  {this.state.publicWins}
+              )) || (
+                <Text style={styles.textoCampos}>
+                  Public games played:{" "}
+                  <Text style={styles.textoInterior}>
+                    {this.state.publicTotal}
+                  </Text>
                 </Text>
-              </Text>
-              <Text style={styles.textoCampos}>
-                {" "}
-                Partidas privadas jugadas:{" "}
-                <Text style={styles.textoInterior}>
-                  {this.state.privateTotal}
+              )}
+
+              {(this.state.español && (
+                <Text style={styles.textoCampos}>
+                  Partidas publicas ganadas:{" "}
+                  <Text style={styles.textoInterior}>
+                    {this.state.publicWins}
+                  </Text>
                 </Text>
-              </Text>
-              <Text style={styles.textoCampos}>
-                {" "}
-                Partidas privadas ganadas:{" "}
-                <Text style={styles.textoInterior}>
-                  {this.state.privateWins}
+              )) || (
+                <Text style={styles.textoCampos}>
+                  Public games won:{" "}
+                  <Text style={styles.textoInterior}>
+                    {this.state.publicWins}
+                  </Text>
                 </Text>
-              </Text>
-              <Text style={styles.textoCampos}>
-                {" "}
-                Dinero:{" "}
-                <Text style={styles.textoInterior}>{this.state.money}</Text>
-              </Text>
+              )}
+
+              {(this.state.español && (
+                <Text style={styles.textoCampos}>
+                  Partidas privadas jugadas:{" "}
+                  <Text style={styles.textoInterior}>
+                    {this.state.privateTotal}
+                  </Text>
+                </Text>
+              )) || (
+                <Text style={styles.textoCampos}>
+                  Private games played:{" "}
+                  <Text style={styles.textoInterior}>
+                    {this.state.privateTotal}
+                  </Text>
+                </Text>
+              )}
+
+              {(this.state.español && (
+                <Text style={styles.textoCampos}>
+                  Partidas privadas ganadas:{" "}
+                  <Text style={styles.textoInterior}>
+                    {this.state.privateWins}
+                  </Text>
+                </Text>
+              )) || (
+                <Text style={styles.textoCampos}>
+                  Private games won:{" "}
+                  <Text style={styles.textoInterior}>
+                    {this.state.privateWins}
+                  </Text>
+                </Text>
+              )}
+
+              {(this.state.español && (
+                <Text style={styles.textoCampos}>
+                  Dinero:{" "}
+                  <Text style={styles.textoInterior}>{this.state.money}</Text>
+                </Text>
+              )) || (
+                <Text style={styles.textoCampos}>
+                  Money:{" "}
+                  <Text style={styles.textoInterior}>{this.state.money}</Text>
+                </Text>
+              )}
+
               <View style={styles.customsContainer}>
                 <View>
-                  <Text style={styles.textoCampos}>Tablero actual:</Text>
+                  {(this.state.español && (
+                    <Text style={styles.textoCampos}>Tablero actual:</Text>
+                  )) || <Text style={styles.textoCampos}>Current board:</Text>}
                   <Image
                     style={styles.avatar}
                     source={require("../assets/tableros/" +
@@ -172,9 +234,13 @@ class Perfil extends React.Component {
                   />
                 </View>
                 <View>
-                  <Text style={styles.textoCampos}>
-                    Reverso de carta actual:
-                  </Text>
+                  {(this.state.español && (
+                    <Text style={styles.textoCampos}>
+                      Reverso de carta actual:
+                    </Text>
+                  )) || (
+                    <Text style={styles.textoCampos}>Current card back:</Text>
+                  )}
                   <Image
                     style={styles.avatar}
                     source={require("../assets/dorsos/" +
@@ -185,7 +251,9 @@ class Perfil extends React.Component {
               </View>
               <View style={styles.botonEditar}>
                 <Button
-                  title="Editar perfil"
+                  title={
+                    (this.state.español && "Editar perfil") || "Edit profile"
+                  }
                   onPress={() =>
                     this.props.navigation.push("EditarUsuario", this.state)
                   }
@@ -193,7 +261,10 @@ class Perfil extends React.Component {
               </View>
               <View style={styles.botonEditar}>
                 <Button
-                  title="Cambiar contraseña"
+                  title={
+                    (this.state.español && "Cambiar contraseña") ||
+                    "Change password"
+                  }
                   onPress={() =>
                     this.props.navigation.push("CambiarContrasenya", this.state)
                   }
@@ -201,12 +272,17 @@ class Perfil extends React.Component {
               </View>
               <View style={styles.botonEliminar}>
                 <Button
-                  title="Eliminar cuenta"
+                  title={
+                    (this.state.español && "Eliminar cuenta") ||
+                    "Delete account"
+                  }
                   color="red"
                   onPress={() => {
                     if (
                       window.confirm(
-                        "Esta a punto de eliminar su cuenta, ¿Seguro que desea continuar?"
+                        (this.state.español &&
+                          "Esta a punto de eliminar su cuenta. ¿Seguro que desea continuar?") ||
+                          "You are about to delete your account. Are you sure you want to proceed?"
                       )
                     )
                       this.deleteHandler();
@@ -238,7 +314,9 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     alignContent: "center",
     justifyContent: "center",
-    color: "#0800ff",
+    color: "white",
+    backgroundColor: "#2196F3",
+    width: "100%",
   },
   tituloView: {
     alignSelf: "center",

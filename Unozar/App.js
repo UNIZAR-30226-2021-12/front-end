@@ -9,12 +9,12 @@ import MenuPrincipalScreen from "./app/screens/MenuPrincipal";
 import PerfilScreen from "./app/screens/Perfil";
 import PerfilAmigosScreen from "./app/screens/PerfilAmigos";
 import AmigosScreen from "./app/screens/Amigos";
-import EditarUsuarioScreen from "./app/screens/editarUsuario";
+import EditarUsuarioScreen from "./app/screens/EditarUsuario";
 import CambiarContrasenyaScreen from "./app/screens/CambiarContrasenya";
+import EsperaPartidaScreen from "./app/screens/EsperaPartida";
 import PartidaBotsScreen from "./app/screens/PartidaBots";
 import PartidaScreen from "./app/screens/Partida";
 import TiendaScreen from "./app/screens/Tienda";
-import CustomText from "./app/assets/idioma/CustomText.js";
 import { configureFakeBackend } from "./app/test/FakeBackend";
 //configureFakeBackend();
 
@@ -34,7 +34,6 @@ class App extends React.Component {
             component={InicioScreen}
             initialParams={{
               español: true,
-              CustomTextLocal: new CustomText().devolver(),
             }}
           />
           <Stack.Screen name="Registro" component={RegistroScreen} />
@@ -47,6 +46,7 @@ class App extends React.Component {
             name="CambiarContrasenya"
             component={CambiarContrasenyaScreen}
           />
+          <Stack.Screen name="EsperaPartida" component={EsperaPartidaScreen} />
           <Stack.Screen name="PartidaBots" component={PartidaBotsScreen} />
           <Stack.Screen name="Partida" component={PartidaScreen} />
           <Stack.Screen name="Tienda" component={TiendaScreen} />

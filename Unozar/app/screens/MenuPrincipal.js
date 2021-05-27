@@ -1,4 +1,4 @@
-import React, { useRef, Component } from "react";
+import React, { Component } from "react";
 import {
   Button,
   StyleSheet,
@@ -8,24 +8,12 @@ import {
   Text,
   Timer,
 } from "react-native";
-import { Column } from "primereact/Column";
-import Inicio from "./Inicio.js";
-import { Menu } from "primereact/menu";
-import { DataTable } from "primereact/DataTable";
-import { Paginator } from "primereact/paginator";
-
-import Registro from "./Registro.js";
-import CustomText from "../assets/idioma/CustomText.js";
 import Cabecera from "../components/Cabecera";
 import readPlayer from "../functions/readPlayer";
 
 export default class MenuPrincipal extends Component {
   constructor(props) {
     super(props);
-    const { playerId } = this.props.route.params;
-    const { token } = this.props.route.params;
-    const { español } = this.props.route.params;
-    const { CustomTextLocal } = this.props.route.params;
     this.state = {
       show1: false,
       show2: false,
@@ -36,15 +24,14 @@ export default class MenuPrincipal extends Component {
       alias: null,
       password: null,
       email: null,
-      playerId: playerId,
-      token: token,
+      playerId: this.props.route.params.playerId,
+      token: this.props.route.params.token,
       gameId: "",
       gameStarted: false,
       playersIds: [],
       gift: "",
       giftClaimedToday: false,
-      español: español,
-      CustomTextLocal: CustomTextLocal,
+      español: this.props.route.params.español,
       bet: 0,
     };
   }
@@ -115,7 +102,6 @@ export default class MenuPrincipal extends Component {
         token: this.state.token,
         miId: this.state.playerId,
         español: this.state.español,
-        CustomTextLocal: this.state.CustomTextLocal,
       });
     } else {
       this.props.navigation.push("EsperaPartida", {
@@ -123,7 +109,6 @@ export default class MenuPrincipal extends Component {
         miId: this.state.playerId,
         numBots: this.state.numBots,
         español: this.state.español,
-        CustomTextLocal: this.state.CustomTextLocal,
         maxPlayers: this.state.maxPlayers,
       });
     }
@@ -153,7 +138,6 @@ export default class MenuPrincipal extends Component {
       miId: this.state.playerId,
       numBots: this.state.numBots,
       español: this.state.español,
-      CustomTextLocal: this.state.CustomTextLocal,
     });
   };
   joinPartidaPublica = async () => {
@@ -223,6 +207,11 @@ export default class MenuPrincipal extends Component {
       await alert("Has ganado " + this.state.gift + " monedas");
     }
   };
+
+  changeLanguage = () => {
+    this.setState({ español: !this.state.español });
+  };
+
   render() {
     return (
       <>
@@ -233,9 +222,9 @@ export default class MenuPrincipal extends Component {
             token: this.state.token,
             playerId: this.state.playerId,
             español: this.state.español,
-            CustomTextLocal: this.state.CustomTextLocal,
           }}
           navigation={this.props.navigation}
+          updateParent={this.changeLanguage}
         >
           <View style={styles.screen}>
             <View style={styles.formContainer}>
@@ -272,9 +261,7 @@ export default class MenuPrincipal extends Component {
                 </View>
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={styles.titulo2}>
-                  {this.state.CustomTextLocal.crear}
-                </Text>
+                <Text style={styles.titulo2}>Crear partida</Text>
                 <View style={{ flexDirection: "row" }}>
                   <Text style={{ fontStyle: "Roboto", fontSize: 15 }}>
                     Nº Bots{" "}

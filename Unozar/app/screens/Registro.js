@@ -1,22 +1,19 @@
 import React from "react";
 import { Button, StyleSheet, View, Text, TextInput } from "react-native";
-import CustomText from "../assets/idioma/CustomText.js";
-import { Menu } from "primereact/menu";
 import Cabecera from "../components/CabeceraInicio";
+import authentication from "../functions/authentication";
+import register from "../functions/register";
 class Registro extends React.Component {
   constructor(props) {
     super(props);
-    const { español } = this.props.route.params;
-    const { CustomTextLocal } = this.props.route.params;
     this.state = {
       alias: "",
       email: "",
-      firstPassword: "",
+      password: "",
       secondPassword: "",
-      playerId: 5,
-      token: 10,
-      español: español,
-      CustomTextLocal: CustomTextLocal,
+      playerId: 0,
+      token: 0,
+      español: this.props.route.params.español,
     };
   }
   registroylogin = async () => {
@@ -24,81 +21,86 @@ class Registro extends React.Component {
     await this.login();
   };
   registerHandler = async () => {
-    if (this.state.email.length < 6) {
-      alert("Debe ingresar el correo");
+    if (this.state.alias.length < 1) {
+      alert(
+        (this.state.español && "Debe ingresar un alias") ||
+          "You must enter an alias"
+      );
       return;
     }
-    if (this.state.firstPassword.length < 6) {
-      alert("Debe ingresar la contraseña");
+    if (this.state.alias.length > 15) {
+      alert(
+        (this.state.español && "El alias no puede exceder los 15 caracteres") ||
+          "The alias can't exceed 15 characters"
+      );
       return;
     }
-    const requestOptions = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: this.state.email,
-        alias: this.state.alias,
-        password: this.state.firstPassword,
-      }),
-    };
-    let data;
-    let response;
-    let statusCode;
-    response = await fetch(
-      "https://unozar.herokuapp.com/player/create",
-      requestOptions
-    );
-    data = await response.json();
-    statusCode = await response.status;
-    if ((await statusCode) != 200) {
-      clearInterval(this.timer1);
-      console.log("¡¡¡ERROR FETCH!!!");
-    } else {
-      await console.log("CREADO CON PASS: " + this.state.firstPassword);
-      await this.setState({ email: data.email });
+    if (this.state.email.length < 1) {
+      alert(
+        (this.state.español && "Debe ingresar un correo") ||
+          "You must enter an email"
+      );
+      return;
     }
+    if (
+      !this.state.email.match(
+        /(?!.*\.{2})^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([\t]*\r\n)?[\t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([\t]*\r\n)?[\t]+)?")@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i
+      )
+    ) {
+      alert(
+        (this.state.español && "El correo ingresado no es valido") ||
+          "The email is not valid"
+      );
+      return;
+    }
+    if (this.state.password.length < 1) {
+      alert(
+        (this.state.español && "Debe ingresar una contraseña") ||
+          "You must enter a password"
+      );
+      return;
+    }
+    const data = await register({
+      email: this.state.email,
+      alias: this.state.alias,
+      password: this.state.password,
+    });
+    console.log(data);
   };
+
   login = async () => {
-    if (this.state.email.length < 6) {
-      alert("Debe ingresar el correo");
+    if (this.state.email.length < 1) {
+      alert(
+        (this.state.español && "Debe ingresar el correo") ||
+          "You must enter an email"
+      );
       return;
     }
-    if (this.state.firstPassword.length < 6) {
-      alert("Debe ingresar la contraseña");
+    if (this.state.password.length < 1) {
+      alert(
+        (this.state.español && "Debe ingresar la contraseña") ||
+          "You must enter a password"
+      );
       return;
     }
-    const requestOptions = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: this.state.email,
-        password: this.state.firstPassword,
-      }),
-    };
-    let data;
-    let response;
-    let statusCode;
-    await console.log("LOGEANDO CON PASS: " + this.state.firstPassword);
-    response = await fetch(
-      `https://unozar.herokuapp.com/player/authentication`,
-      requestOptions
-    );
-    data = await response.json();
-    statusCode = await response.status;
-    if ((await statusCode) != 200) {
-      clearInterval(this.timer1);
-      console.log("¡¡¡ERROR FETCH!!!");
-    } else {
-      await this.setState({ playerId: data.playerId });
-      await this.setState({ token: data.token });
-      await this.props.navigation.push("MenuPrincipal", {
-        playerId: this.state.playerId,
-        token: this.state.token,
-        español: this.state.español,
-        CustomTextLocal: this.state.CustomTextLocal,
-      });
-    }
+    const data = await authentication({
+      email: this.state.email,
+      password: this.state.password,
+    });
+    this.setState({ playerId: data.id });
+    this.setState({ token: data.token });
+    console.log("Inicio playerId: " + this.state.playerId);
+    this.props.navigation.push("MenuPrincipal", {
+      playerId: this.state.playerId,
+      token: this.state.token,
+      español: this.state.español,
+    });
   };
+
+  changeLanguage = () => {
+    this.setState({ español: !this.state.español });
+  };
+
   render() {
     return (
       <>
@@ -108,68 +110,78 @@ class Registro extends React.Component {
             token: this.state.token,
             playerId: this.state.playerId,
             español: this.state.español,
-            CustomTextLocal: this.state.CustomTextLocal,
           }}
           navigation={this.props.navigation}
+          updateParent={this.changeLanguage}
         >
           <View style={styles.screen}>
             <View style={styles.formContainer}>
-              <form>
-                <Text> {this.state.CustomTextLocal.alias} </Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder={this.state.CustomTextLocal.nombre}
-                  onChangeText={(alias) => this.setState({ alias })}
-                />
+              <Text>Alias</Text>
+              <TextInput
+                style={styles.input}
+                placeholder={
+                  (this.state.español && "Tu alias aparecerá en el juego") ||
+                  "Your alias will show in the game"
+                }
+                onChangeText={(alias) => this.setState({ alias })}
+              />
 
-                <Text> {this.state.CustomTextLocal.mail} </Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder={this.state.CustomTextLocal.ejemploMail}
-                  onChangeText={(email) => this.setState({ email })}
+              {(this.state.español && <Text>Correo electrónico</Text>) || (
+                <Text>Email</Text>
+              )}
+              <TextInput
+                style={styles.input}
+                placeholder={
+                  (this.state.español && "ejemplo@unizar.es") ||
+                  "example@unizar.es"
+                }
+                onChangeText={(email) => this.setState({ email })}
+              />
+              {(this.state.español && <Text>Contraseña</Text>) || (
+                <Text>Password</Text>
+              )}
+              <TextInput
+                ref={(input) => {
+                  this.pass1Input = input;
+                }}
+                style={styles.input}
+                onChangeText={(password) => this.setState({ password })}
+                secureTextEntry={true}
+              />
+              {(this.state.español && <Text>Repetir contraseña</Text>) || (
+                <Text>Repeat password</Text>
+              )}
+              <TextInput
+                ref={(input) => {
+                  this.pass2Input = input;
+                }}
+                style={styles.input}
+                onChangeText={(secondPassword) =>
+                  this.setState({ secondPassword })
+                }
+                secureTextEntry={true}
+              />
+              <View style={styles.buttonReg}>
+                <Button
+                  title={(this.state.español && "Registrarse") || "Register"}
+                  onPress={() => this.registroylogin()}
                 />
-                <Text> {this.state.CustomTextLocal.pass} </Text>
-                <TextInput
-                  ref={(input) => {
-                    this.pass1Input = input;
-                  }}
-                  style={styles.input}
-                  onChangeText={(firstPassword) =>
-                    this.setState({ firstPassword })
-                  }
-                  secureTextEntry={true}
-                />
-                <Text> {this.state.CustomTextLocal.repetirPass} </Text>
-                <TextInput
-                  ref={(input) => {
-                    this.pass2Input = input;
-                  }}
-                  style={styles.input}
-                  onChangeText={(secondPassword) =>
-                    this.setState({ secondPassword })
-                  }
-                  secureTextEntry={true}
-                />
-                <View style={styles.buttonReg}>
-                  <Button
-                    title={this.state.CustomTextLocal.registro}
-                    onPress={() => this.registroylogin()}
-                    /*onPress={() =>this.props.navigation.push("MenuPrincipal", {playerId: this.state.playerId, token: this.state.token, español: this.state.español, CustomTextLocal: this.state.CustomTextLocal })}*/
-                  />
-                </View>
-              </form>
+              </View>
             </View>
             <View style={styles.logContainer}>
-              <Text style={styles.logText}> ¿Ya está registrado? </Text>
+              {(this.state.español && (
+                <Text style={styles.logText}>¿Ya está registrado?</Text>
+              )) || (
+                <Text style={styles.logText}>You already have an account?</Text>
+              )}
               <View style={styles.buttonLog}>
                 <Button
                   onPress={() =>
                     this.props.navigation.push("Inicio", {
                       español: this.state.español,
-                      CustomTextLocal: this.state.CustomTextLocal,
                     })
                   }
-                  title={this.state.CustomTextLocal.login}
+                  title={(this.state.español && "Iniciar Sesión") || "Sign in"}
                 />
               </View>
             </View>

@@ -1,16 +1,11 @@
 import React, { Component } from "react";
 import { Button, StyleSheet, View, Alert, TextInput, Text } from "react-native";
-import CustomText from "../assets/idioma/CustomText.js";
-import { Menu } from "primereact/menu";
 import Cabecera from "../components/CabeceraInicio";
 import authentication from "../functions/authentication";
 
 export default class Inicio extends Component {
   constructor(props) {
     super(props);
-    const { español } = this.props.route.params;
-    const { CustomTextLocal } = this.props.route.params;
-    this.Cabecera = React.createRef();
     this.state = {
       email: "prueba",
       password: "",
@@ -18,37 +13,49 @@ export default class Inicio extends Component {
       playerId: "",
       token: "",
       show1: false,
-      español: español,
-      CustomTextLocal: CustomTextLocal,
+      español: this.props.route.params.español,
     };
-    this.cambiarContexto = this.cambiarContexto.bind(this);
   }
-  cambiarContexto = () => {
-    this.setState({ CustomTextLocal: a });
-  };
   login = async () => {
-    if (this.state.email.length < 6) {
-      alert("Debe ingresar el correo");
+    if (this.state.email.length < 1) {
+      alert(
+        (this.state.español && "Debe ingresar el correo") ||
+          "You must enter an email"
+      );
       return;
     }
-    if (this.state.password.length < 6) {
-      alert("Debe ingresar la contraseña");
+    if (this.state.password.length < 1) {
+      alert(
+        (this.state.español && "Debe ingresar la contraseña") ||
+          "You must enter a password"
+      );
       return;
     }
     const data = await authentication({
       email: this.state.email,
       password: this.state.password,
     });
-    this.setState({ playerId: data.id });
-    this.setState({ token: data.token });
-    console.log("Inicio playerId: " + this.state.playerId);
-    this.props.navigation.push("MenuPrincipal", {
-      playerId: this.state.playerId,
-      token: this.state.token,
-      español: this.state.español,
-      CustomTextLocal: this.state.CustomTextLocal,
-    });
+    if (data !== -1) {
+      this.setState({ playerId: data.id });
+      this.setState({ token: data.token });
+      console.log("Inicio playerId: " + this.state.playerId);
+      this.props.navigation.push("MenuPrincipal", {
+        playerId: this.state.playerId,
+        token: this.state.token,
+        español: this.state.español,
+      });
+    } else {
+      alert(
+        (this.state.español && "Correo o contraseña incorrectos") ||
+          "Incorrect email or password"
+      );
+    }
   };
+
+  changeLanguage = () => {
+    this.setState({ español: !this.state.español });
+  };
+
   render() {
     return (
       <View style={styles.screen}>
@@ -58,87 +65,63 @@ export default class Inicio extends Component {
             token: this.state.token,
             playerId: this.state.playerId,
             español: this.state.español,
-            CustomTextLocal: this.state.CustomTextLocal,
           }}
           navigation={this.props.navigation}
+          updateParent={this.changeLanguage}
         >
           <View style={styles.formContainer}>
-            <form>
-              <View>
-                <Text>{this.state.CustomTextLocal.mail}</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder={this.state.CustomTextLocal.ejemploMail}
-                  onChangeText={(email) => this.setState({ email })}
+            <View>
+              {(this.state.español && <Text>Correo electrónico</Text>) || (
+                <Text>Email</Text>
+              )}
+              <TextInput
+                style={styles.input}
+                placeholder={
+                  (this.state.español && "ejemplo@unizar.es") ||
+                  "example@unizar.es"
+                }
+                onChangeText={(email) => this.setState({ email })}
+              />
+            </View>
+            <View>
+              {(this.state.español && <Text>Contraseña</Text>) || (
+                <Text>Password</Text>
+              )}
+              <TextInput
+                ref={(input) => {
+                  this.textInput = input;
+                }}
+                style={styles.input}
+                onChangeText={(password) => this.setState({ password })}
+                secureTextEntry={true}
+              />
+            </View>
+            <View style={styles.container}>
+              <View style={styles.buttonLog}>
+                <Button
+                  title={(this.state.español && "Iniciar Sesión") || "Sign in"}
+                  onPress={() => this.login()}
                 />
               </View>
-              <View>
-                <Text>{this.state.CustomTextLocal.pass}</Text>
-                <TextInput
-                  ref={(input) => {
-                    this.textInput = input;
-                  }}
-                  style={styles.input}
-                  onChangeText={(password) => this.setState({ password })}
-                  secureTextEntry={true}
-                />
-              </View>
-              <View style={styles.container}>
-                <View style={styles.buttonLog}>
-                  <Button
-                    title={this.state.CustomTextLocal.login}
-                    onPress={() => this.login()}
-                  />
-                </View>
-              </View>
-            </form>
+            </View>
           </View>
           <View style={styles.regContainer}>
-            <Text style={styles.regText}>
-              {" "}
-              {this.state.CustomTextLocal.preguntaRegistro}{" "}
-            </Text>
+            {(this.state.español && (
+              <Text style={styles.regText}>¿No está registrado?</Text>
+            )) || (
+              <Text style={styles.regText}>You don't have an account?</Text>
+            )}
             <View style={styles.buttonReg}>
               <Button
                 onPress={() => this.props.navigation.push("Registro")}
-                title={this.state.CustomTextLocal.registro}
+                title={(this.state.español && "Registrarse") || "Register"}
                 onPress={() =>
                   this.props.navigation.push("Registro", {
                     español: this.state.español,
-                    CustomTextLocal: this.state.CustomTextLocal,
                   })
                 }
               />
             </View>
-            <View style={styles.buttonLog}>
-              <Button title="Logger" onPress={() => this.log()} />
-            </View>
-            <Button
-              title="Partida"
-              onPress={() =>
-                this.props.navigation.push("Partida", {
-                  token: this.state.token,
-                })
-              }
-            />
-            <Button
-              title="EsperaPartida"
-              onPress={() =>
-                this.props.navigation.push("EsperaPartida", {
-                  token: this.state.token,
-                  miId: this.state.playerId,
-                })
-              }
-            />
-            <Button
-              title="ListaAmigos"
-              onPress={() =>
-                this.props.navigation.push("Amigos", {
-                  token: this.state.token,
-                  miId: this.state.playerId,
-                })
-              }
-            />
           </View>
         </Cabecera>
       </View>

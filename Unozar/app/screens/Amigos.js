@@ -9,38 +9,26 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native";
-import { Menu } from "primereact/menu";
-import CustomText from "../assets/idioma/CustomText.js";
 import Cabecera from "../components/Cabecera";
 
 class Amigos extends React.Component {
   constructor(props) {
     super(props);
-    const { token } = this.props.route.params;
-    const { playerId } = this.props.route.params;
-    const { gameId } = this.props.route.params;
-    const { invitar } = this.props.route.params;
-    const { nombreJugador1 } = this.props.route.params;
-    const { español } = this.props.route.params;
-    const { CustomTextLocal } = this.props.route.params;
-    const { numBots } = this.props.route.params;
-    const { maxPlayers } = this.props.route.params;
     this.state = {
       restart: 1,
-      playerId: playerId,
-      token: token,
-      invitar: invitar,
-      gameId: gameId,
-      nombreJugador1: nombreJugador1,
+      playerId: this.props.route.params.playerId,
+      token: this.props.route.params.token,
+      invitar: this.props.route.params.invitar,
+      gameId: this.props.route.params.gameId,
+      nombreJugador1: this.props.route.params.nombreJugador1,
       friendId: "",
       friendIds: [],
       alias: [],
       emails: [],
       avatarIds: [],
-      español: español,
-      CustomTextLocal: CustomTextLocal,
-      numBots: numBots,
-      maxPlayers: maxPlayers,
+      español: this.props.route.params.español,
+      numBots: this.props.route.params.numBots,
+      maxPlayers: this.props.route.params.maxPlayers,
     };
   }
   addFriend = async () => {
@@ -128,7 +116,6 @@ class Amigos extends React.Component {
         nombreJugador1: this.state.nombreJugador1,
         idJugadorInvitar: this.state.friendIds[i],
         español: this.state.español,
-        CustomTextLocal: this.state.CustomTextLocal,
         numBots: this.state.numBots,
         maxPlayers: this.state.maxPlayers,
       });
@@ -141,7 +128,6 @@ class Amigos extends React.Component {
         nombreJugador1: this.state.nombreJugador1,
         idJugadorInvitar: this.state.friendIds[i],
         español: this.state.español,
-        CustomTextLocal: this.state.CustomTextLocal,
       });
     }
   };
@@ -244,6 +230,11 @@ class Amigos extends React.Component {
 
     return table;
   };
+
+  changeLanguage = () => {
+    this.setState({ español: !this.state.español });
+  };
+
   render() {
     return (
       <>
@@ -254,9 +245,9 @@ class Amigos extends React.Component {
             token: this.state.token,
             playerId: this.state.playerId,
             español: this.state.español,
-            CustomTextLocal: this.state.CustomTextLocal,
           }}
           navigation={this.props.navigation}
+          updateParent={this.changeLanguage}
         >
           <View style={styles.screen}>
             <View style={styles.square1}>
@@ -267,10 +258,15 @@ class Amigos extends React.Component {
             <View key={this.state.restart} style={styles.buttonAñadir}>
               <TextInput
                 style={styles.input}
-                placeholder="Id amigo"
+                placeholder={
+                  (this.state.español && "ID de amigo") || "Friend ID"
+                }
                 onChangeText={(friendId) => this.setState({ friendId })}
               />
-              <Button title="Añadir amigo" onPress={() => this.addFriend()} />
+              <Button
+                title={(this.state.español && "Añadir amigo") || "Add friend"}
+                onPress={() => this.addFriend()}
+              />
             </View>
           </View>
         </Cabecera>
