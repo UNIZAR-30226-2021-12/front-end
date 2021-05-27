@@ -15,38 +15,38 @@ import refreshToken from "../functions/refreshToken";
 export default class MenuPrincipal extends Component {
   constructor(props) {
     super(props);
-	this.Cabecera = React.createRef();
+    this.Cabecera = React.createRef();
     this.state = {
-		show1: false,
-		show2: false,
-		show3: false,
-		isprivate: false,
-		maxPlayers: 2,
-		numBots: 0,
-		alias: null,
-		password: null,
-		email: null,
-		miId: this.props.route.params.miId,
-		token: this.props.route.params.token,
-		gameId: '',
-		gameStarted: false,
-		playersIds: [],
-		gift: '',
-		giftClaimedToday: false,
-		español: this.props.route.params.español,
-		bet: 0,
-		money: 0,
-	};
-	}
-	componentDidMount(){
-		console.log(this.state.miId)
-		this.readHandler();
-		//let timer = setInterval(() => alert("aux"), 3000);
-	}
-	changeLanguage = () => {
-	this.setState({ español: !this.state.español });
+      show1: false,
+      show2: false,
+      show3: false,
+      isprivate: false,
+      maxPlayers: 2,
+      numBots: 0,
+      alias: null,
+      password: null,
+      email: null,
+      miId: this.props.route.params.miId,
+      token: this.props.route.params.token,
+      gameId: "",
+      gameStarted: false,
+      playersIds: [],
+      gift: "",
+      giftClaimedToday: false,
+      español: this.props.route.params.español,
+      bet: 0,
+      money: 0,
+    };
+  }
+  componentDidMount() {
+    console.log(this.state.miId);
+    this.readHandler();
+    //let timer = setInterval(() => alert("aux"), 3000);
+  }
+  changeLanguage = () => {
+    this.setState({ español: !this.state.español });
   };
-refreshHandler = async () => {
+  refreshHandler = async () => {
     const token = await refreshToken(this.state.token);
     if (token !== -1) {
       this.setState({ token: token });
@@ -61,28 +61,25 @@ refreshHandler = async () => {
       });
     }
   };
-readHandler = async () => {
-	await this.refreshHandler();
+  readHandler = async () => {
+    await this.refreshHandler();
     const data = await readPlayer(this.state.miId);
     if (data !== -1) {
       await this.setState({ giftClaimedToday: data.giftClaimedToday });
-      if (await !this.state.giftClaimedToday) {
-        await this.ruleta();
+      await this.setState({ money: data.money });
+      await this.setState({ gameId: data.gameId });
+      console.log("ID GAME: " + this.state.gameId);
+      if ((await this.state.gameId) != "NONE") {
+        await this.props.navigation.push("Partida", {
+          token: this.state.token,
+          miId: this.state.miId,
+          español: this.state.español,
+        });
       }
-	  await this.setState({ money: data.money });
-	  await this.setState({ gameId: data.gameId });
-	  console.log('ID GAME: '+this.state.gameId)
-	  if(await this.state.gameId!='NONE'){
-		await this.props.navigation.push("Partida", {
-			token: this.state.token,
-			miId: this.state.miId,
-			español: this.state.español,
-		  });
-	  }
     }
-  };	
-crearPartida = async () => {
-   if (this.state.bet > this.state.money) {
+  };
+  crearPartida = async () => {
+    if (this.state.bet > this.state.money) {
       alert(
         (this.state.español && "No puede apostar más dinero del que posee") ||
           "You can't bet more than the money you own"
@@ -140,7 +137,7 @@ crearPartida = async () => {
     }
   };
 
-joinPartida = async () => {
+  joinPartida = async () => {
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -167,7 +164,7 @@ joinPartida = async () => {
       español: this.state.español,
     });
   };
-joinPartidaPublica = async () => {
+  joinPartidaPublica = async () => {
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -192,7 +189,7 @@ joinPartidaPublica = async () => {
       miId: this.state.miId,
     });
   };
-salirHandler = async () => {
+  salirHandler = async () => {
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -208,8 +205,8 @@ salirHandler = async () => {
     data = await response.json();
     await this.setState({ token: data.token });
     console.log("salido");
-  };	
-ruleta = async () => {
+  };
+  ruleta = async () => {
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -234,10 +231,22 @@ ruleta = async () => {
       await alert("Has ganado " + this.state.gift + " monedas");
     }
   };
+  botonRuleta = async () => {
+    if (!this.state.giftClaimedToday) {
+      await this.ruleta();
+      await this.readHandler();
+    } else {
+      alert(
+        (this.state.español && "Ya ha recibido su regalo diario") ||
+          "You have already received your daily gift"
+      );
+    }
+  };
+
   render() {
     return (
       <>
-		<View style={styles.screen}>
+        <View style={styles.screen}>
           <Cabecera
             ref={this.Cabecera}
             style={{ position: "absolute" }}
@@ -488,7 +497,7 @@ ruleta = async () => {
                       "Public game"}
                   </Text>
                 </View>
-				{!this.state.isprivate && (
+                {!this.state.isprivate && (
                   <View
                     style={{
                       flexDirection: "row",
@@ -544,7 +553,7 @@ ruleta = async () => {
                         borderColor: "black",
                         borderWidth: 1,
                         flex: 3,
-						keyboardType: "numeric",
+                        keyboardType: "numeric",
                       }}
                       placeholder={
                         (this.state.español && "Cantidad a apostar") ||
@@ -554,7 +563,7 @@ ruleta = async () => {
                         bet = bet.replace(/[^0-9]/g, "");
                         this.setState({ bet });
                       }}
-					   value={this.state.bet}
+                      value={this.state.bet}
                     />
                   </View>
                 )}
@@ -570,17 +579,22 @@ ruleta = async () => {
                 </View>
               </View>
             </View>
+            <View style={{ width: "10%", marginTop: 50, alignSelf: "center" }}>
+              <Button
+                title={(this.state.español && "Regalo diario") || "Daily gift"}
+                onPress={() => this.botonRuleta()}
+                color="#fe76fc"
+              />
+            </View>
             <View style={{ width: "10%", marginTop: 40, alignSelf: "center" }}>
               <Button title="Salir Juego" onPress={() => this.salirHandler()} />
             </View>
           </Cabecera>
         </View>
       </>
-	  
     );
   }
 }
-
 
 const styles = StyleSheet.create({
   screen: { backgroundColor: "#ffffff", flex: 1 },
@@ -641,4 +655,3 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
 });
-
