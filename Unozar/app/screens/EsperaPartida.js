@@ -16,7 +16,6 @@ import refreshToken from "../functions/refreshToken";
 class EsperaPartida extends React.Component {
   constructor(props) {
     super(props);
-	this.Cabecera = React.createRef();
 	const { token } = this.props.route.params;
 	const { miId } = this.props.route.params;
 	const { numBots } = this.props.route.params;
@@ -54,7 +53,6 @@ refreshHandler = async () => {
     const token = await refreshToken(this.state.token);
     if (token !== -1) {
       this.setState({ token: token });
-      this.Cabecera.current.updateToken(token);
     } else {
       alert(
         (this.state.español && "Su sesion ha expirado") ||
@@ -67,7 +65,7 @@ refreshHandler = async () => {
     }
   };	
 estados = async () => {
-	this.refreshHandler();
+	await this.refreshHandler();
     if (this.state.estado == 0) {
       await console.log("ESTADO ACTUAL: " + this.state.estado);
       await this.readHandler();
@@ -98,7 +96,10 @@ estados = async () => {
         numBots: this.state.numBots,
         maxPlayers: this.state.maxPlayers,
       });
-    }
+    }else if(this.state.estado == 5) {
+		this.refreshHandler()
+		await this.setState({ estado: 0 });
+	}
   };	
 
 startHandler = async () => {
@@ -245,7 +246,7 @@ readPlayerHandler = async (datab) => {
 	let statusCode
 	console.log('PLAYER IDS:['+datab.playersIds[0]+', '+datab.playersIds[1]+', '+datab.playersIds[2]+' ,'+datab.playersIds[3]+']')
 	if(this.state.miId1!=datab.playersIds[0]){
-		if(this.state.miId1!=null||datab.playersIds[0]=='EMPTY'){
+		if(datab.playersIds[0]=='EMPTY'){
 			await this.setState({ nombreJugador1: '' });
 		}else{
 			response = await fetch('https://unozar.herokuapp.com/player/read', requestOptions1);
@@ -260,8 +261,8 @@ readPlayerHandler = async (datab) => {
 			}
 		}
 	}
-	if(this.state.miId2!=datab.playersIds[1]){
-		if(this.state.miId2!=null||datab.playersIds[1]=='EMPTY'){
+	if(this.state.miId2!=datab.playersIds[1]&&this.state.maxPlayers==2){
+		if (datab.playersIds[1]=='EMPTY'){
 			await this.setState({ nombreJugador2: '' });
 		}else{
 			response = await fetch('https://unozar.herokuapp.com/player/read', requestOptions2);
@@ -276,8 +277,8 @@ readPlayerHandler = async (datab) => {
 			}
 		}
 	}
-	if(this.state.miId3!=datab.playersIds[2]){
-		if(this.state.miId3!=null||datab.playersIds[2]=='EMPTY'){
+	if(this.state.miId3!=datab.playersIds[2]&&this.state.maxPlayers==3){
+		if(datab.playersIds[2]=='EMPTY'){
 			await this.setState({ nombreJugador3: '' });
 		}else{
 			response = await fetch('https://unozar.herokuapp.com/player/read', requestOptions3);
@@ -292,8 +293,8 @@ readPlayerHandler = async (datab) => {
 			}
 		}
 	}
-	if(this.state.miId4!=datab.playersIds[3]){
-		if(this.state.miId4!=null||datab.playersIds[3]=='EMPTY'){
+	if(this.state.miId4!=datab.playersIds[3]&&this.state.maxPlayers==4){
+		if(datab.playersIds[3]=='EMPTY'){
 			await this.setState({ nombreJugador4: '' });
 		}else{
 			response = await fetch('https://unozar.herokuapp.com/player/read', requestOptions3);
@@ -348,31 +349,42 @@ salirSala = async () => {
 						<View style={styles.containerParticipantes}>
 								
 
-							{this.state.miId!=this.state.miId1 &&
-								<Text style={styles.textoTitulo}>Esperando a que {this.state.nombreJugador1} empiece la partida</Text>	
-								
+							{this.state.miId!=this.state.miId1 && (
+								(this.state.español && <Text style={styles.textoTitulo}>Esperando a que {this.state.nombreJugador1} empiece la partida</Text>) || (
+									<Text style={styles.textoTitulo}>Waiting {this.state.nombreJugador1} to start the game</Text>
+								  ))
 							}
-							{this.state.miId==this.state.miId1 &&
-								<Text style={styles.textoTitulo}>Faltan  {(this.state.maxPlayers-this.state.numBots)-this.state.jugadores} jugadores</Text>	
+							{this.state.miId==this.state.miId1 && (
+								(this.state.español && <Text style={styles.textoTitulo}>Faltan {(this.state.maxPlayers-this.state.numBots)-this.state.jugadores} jugadores</Text>) || (
+									<Text style={styles.textoTitulo}>{(this.state.maxPlayers-this.state.numBots)-this.state.jugadores} remaining</Text>
+								  ))
 							}
-							<Text style={styles.textoId}> Jugador 1: {this.state.nombreJugador1} </Text>
-							{(this.state.maxPlayers-this.state.numBots)>=2 &&
-								<Text style={styles.textoId}> Jugador 2: {this.state.nombreJugador2} </Text>
+							{(this.state.español && <Text style={styles.textoId}> Jugador 1: {this.state.nombreJugador1} </Text>) || (
+									<Text style={styles.textoId}> Player 1: {this.state.nombreJugador1} </Text>
+								  )}
+							{(this.state.maxPlayers-this.state.numBots)>=2 && (
+								(this.state.español && <Text style={styles.textoId}> Jugador 2: {this.state.nombreJugador2} </Text>) || (
+									<Text style={styles.textoId}> Player 2: {this.state.nombreJugador2} </Text>
+								  ))
 							}
-							{(this.state.maxPlayers-this.state.numBots)>=3 &&
-								<Text style={styles.textoId}> Jugador 3: {this.state.nombreJugador3} </Text>
+							{(this.state.maxPlayers-this.state.numBots)>=3 &&(
+								(this.state.español && <Text style={styles.textoId}> Jugador 3: {this.state.nombreJugador3} </Text>) || (
+									<Text style={styles.textoId}> Player 3: {this.state.nombreJugador3} </Text>
+								  ))
 							}
-							{(this.state.maxPlayers-this.state.numBots)==4 &&
-								<Text style={styles.textoId}> Jugador 4: {this.state.nombreJugador4} </Text>
+							{(this.state.maxPlayers-this.state.numBots)==4 &&(
+								(this.state.español && <Text style={styles.textoId}> Jugador 4: {this.state.nombreJugador4} </Text>) || (
+									<Text style={styles.textoId}> Player 4: {this.state.nombreJugador4} </Text>
+								  ))
 							}
 							{this.state.miId==this.state.miId1 && this.state.jugadores==this.state.maxPlayers && 
-								<Button title="Empezar partida"  color="#40d81b" onPress={() => this.setState({ estado: 2 })}/>
+								<Button title={(this.state.español && "Empezar partida") || "Start game"}  color="#40d81b" onPress={() => this.setState({ estado: 2 })}/>
 							}
 							<View  style={styles.boton}>
 								{this.state.jugadores!=this.maxPlayers &&
-									<Button title="Invitar amigo" onPress={() => this.setState({ estado: 4})} />
+									<Button title={(this.state.español && "Invitar amigos") || "Invite friends"} onPress={() => this.setState({ estado: 4})} />
 								}
-								<Button title="Salir" onPress={() => this.setState({ estado: 3}) }/>
+								<Button title={(this.state.español && "Salir") || "Quit"} onPress={() => this.setState({ estado: 3}) }/>
 							</View>
 						</View>
 				</View>

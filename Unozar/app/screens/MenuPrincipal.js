@@ -15,36 +15,38 @@ import refreshToken from "../functions/refreshToken";
 export default class MenuPrincipal extends Component {
   constructor(props) {
     super(props);
-    this.Cabecera = React.createRef();
+	this.Cabecera = React.createRef();
     this.state = {
-      show1: false,
-      show2: false,
-      show3: false,
-      isprivate: false,
-      maxPlayers: 2,
-      numBots: 0,
-      alias: null,
-      password: null,
-      email: null,
-      miId: this.props.route.params.miId,
-      token: this.props.route.params.token,
-      gameId: "",
-      gameStarted: false,
-      playersIds: [],
-      gift: "",
-      giftClaimedToday: false,
-      español: this.props.route.params.español,
-      bet: 0,
-      money: 0,
-    };
-  }
-  componentDidMount() {
-    console.log(this.state.miId);
-    this.readHandler();
-    this.refreshHandler();
-    //let timer = setInterval(() => alert("aux"), 3000);
-  }
-  refreshHandler = async () => {
+		show1: false,
+		show2: false,
+		show3: false,
+		isprivate: false,
+		maxPlayers: 2,
+		numBots: 0,
+		alias: null,
+		password: null,
+		email: null,
+		miId: this.props.route.params.miId,
+		token: this.props.route.params.token,
+		gameId: '',
+		gameStarted: false,
+		playersIds: [],
+		gift: '',
+		giftClaimedToday: false,
+		español: this.props.route.params.español,
+		bet: 0,
+		money: 0,
+	};
+	}
+	componentDidMount(){
+		console.log(this.state.miId)
+		this.readHandler();
+		//let timer = setInterval(() => alert("aux"), 3000);
+	}
+	changeLanguage = () => {
+	this.setState({ español: !this.state.español });
+  };
+refreshHandler = async () => {
     const token = await refreshToken(this.state.token);
     if (token !== -1) {
       this.setState({ token: token });
@@ -59,18 +61,28 @@ export default class MenuPrincipal extends Component {
       });
     }
   };
-  readHandler = async () => {
+readHandler = async () => {
+	await this.refreshHandler();
     const data = await readPlayer(this.state.miId);
     if (data !== -1) {
-      this.setState({ giftClaimedToday: data.giftClaimedToday });
-      this.setState({ money: data.money });
-      if (!this.state.giftClaimedToday) {
-        this.ruleta();
+      await this.setState({ giftClaimedToday: data.giftClaimedToday });
+      if (await !this.state.giftClaimedToday) {
+        await this.ruleta();
       }
+	  await this.setState({ money: data.money });
+	  await this.setState({ gameId: data.gameId });
+	  console.log('ID GAME: '+this.state.gameId)
+	  if(await this.state.gameId!='NONE'){
+		await this.props.navigation.push("Partida", {
+			token: this.state.token,
+			miId: this.state.miId,
+			español: this.state.español,
+		  });
+	  }
     }
-  };
-  crearPartida = async () => {
-    if (this.state.bet > this.state.money) {
+  };	
+crearPartida = async () => {
+   if (this.state.bet > this.state.money) {
       alert(
         (this.state.español && "No puede apostar más dinero del que posee") ||
           "You can't bet more than the money you own"
@@ -128,7 +140,7 @@ export default class MenuPrincipal extends Component {
     }
   };
 
-  joinPartida = async () => {
+joinPartida = async () => {
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -155,7 +167,7 @@ export default class MenuPrincipal extends Component {
       español: this.state.español,
     });
   };
-  joinPartidaPublica = async () => {
+joinPartidaPublica = async () => {
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -180,7 +192,7 @@ export default class MenuPrincipal extends Component {
       miId: this.state.miId,
     });
   };
-  salirHandler = async () => {
+salirHandler = async () => {
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -196,8 +208,8 @@ export default class MenuPrincipal extends Component {
     data = await response.json();
     await this.setState({ token: data.token });
     console.log("salido");
-  };
-  ruleta = async () => {
+  };	
+ruleta = async () => {
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -222,15 +234,10 @@ export default class MenuPrincipal extends Component {
       await alert("Has ganado " + this.state.gift + " monedas");
     }
   };
-
-  changeLanguage = () => {
-    this.setState({ español: !this.state.español });
-  };
-
   render() {
     return (
       <>
-        <View style={styles.screen}>
+		<View style={styles.screen}>
           <Cabecera
             ref={this.Cabecera}
             style={{ position: "absolute" }}
@@ -481,7 +488,7 @@ export default class MenuPrincipal extends Component {
                       "Public game"}
                   </Text>
                 </View>
-                {!this.state.isprivate && (
+				{!this.state.isprivate && (
                   <View
                     style={{
                       flexDirection: "row",
@@ -537,7 +544,7 @@ export default class MenuPrincipal extends Component {
                         borderColor: "black",
                         borderWidth: 1,
                         flex: 3,
-                        keyboardType: "numeric",
+						keyboardType: "numeric",
                       }}
                       placeholder={
                         (this.state.español && "Cantidad a apostar") ||
@@ -547,7 +554,7 @@ export default class MenuPrincipal extends Component {
                         bet = bet.replace(/[^0-9]/g, "");
                         this.setState({ bet });
                       }}
-                      value={this.state.bet}
+					   value={this.state.bet}
                     />
                   </View>
                 )}
@@ -569,9 +576,11 @@ export default class MenuPrincipal extends Component {
           </Cabecera>
         </View>
       </>
+	  
     );
   }
 }
+
 
 const styles = StyleSheet.create({
   screen: { backgroundColor: "#ffffff", flex: 1 },
@@ -632,3 +641,4 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
 });
+

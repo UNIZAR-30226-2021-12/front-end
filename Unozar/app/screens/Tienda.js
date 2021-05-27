@@ -260,7 +260,6 @@ refreshHandler = async () => {
     await this.setState({ restart: this.state.restart + 1 });
   };
   verAvatares = () => {
-	  this.refreshHandler();
     let table = [];
     for (let i = 0; i < this.state.avatares.length; i++) {
       table.push(
@@ -283,7 +282,6 @@ refreshHandler = async () => {
     return table;
   };
   verTableros = () => {
-	  this.refreshHandler();
     let table = [];
     for (let i = 0; i < this.state.tableros.length; i++) {
       table.push(
@@ -306,7 +304,6 @@ refreshHandler = async () => {
     return table;
   };
   verDorsos = () => {
-	  this.refreshHandler();
     let table = [];
     for (let i = 0; i < this.state.dorsos.length; i++) {
       table.push(

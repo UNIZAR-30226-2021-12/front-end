@@ -12,12 +12,16 @@ class Registro extends React.Component {
       email: "",
       firstPassword: "",
       secondPassword: "",
-      id: 5,
-      token: 10,
-      español: this.props.route.params.español,
+	  id: 5,
+	  token: 10,
+	  español: this.props.route.params.español,
     };
   }
-  registerHandler = async () => {
+registroylogin = async () => {
+	await this.registerHandler()
+	await this.login()
+};
+registerHandler = async () => {
     if (this.state.alias.length < 1) {
       alert(
         (this.state.español && "Debe ingresar un alias") ||
@@ -50,28 +54,21 @@ class Registro extends React.Component {
       );
       return;
     }
-    if (this.state.firstPassword.length < 1) {
+    if (this.state.password.length < 1) {
       alert(
         (this.state.español && "Debe ingresar una contraseña") ||
           "You must enter a password"
       );
       return;
     }
-    if (this.state.firstPassword !== this.state.secondPassword) {
-      alert(
-        (this.state.español && "Las dos contraseñas no coinciden") ||
-          "The two passwords don't match"
-      );
-      return;
-    }
     const data = await register({
       email: this.state.email,
       alias: this.state.alias,
-      password: this.state.firstPassword,
+      password: this.state.password,
     });
-    await this.login();
+    console.log(data);
   };
-  login = async () => {
+login = async () => {
     if (this.state.email.length < 1) {
       alert(
         (this.state.español && "Debe ingresar el correo") ||
@@ -79,17 +76,16 @@ class Registro extends React.Component {
       );
       return;
     }
-    if (this.state.firstPassword.length < 1) {
+    if (this.state.password.length < 1) {
       alert(
         (this.state.español && "Debe ingresar la contraseña") ||
           "You must enter a password"
       );
       return;
     }
-
     const data = await authentication({
       email: this.state.email,
-      password: this.state.firstPassword,
+      password: this.state.password,
     });
     this.setState({ miId: data.id });
     this.setState({ token: data.token });
@@ -99,7 +95,7 @@ class Registro extends React.Component {
       token: this.state.token,
       español: this.state.español,
     });
-  };
+  };  
   render() {
     return (
       <>
@@ -144,9 +140,7 @@ class Registro extends React.Component {
                   this.pass1Input = input;
                 }}
                 style={styles.input}
-                onChangeText={(firstPassword) =>
-                  this.setState({ firstPassword })
-                }
+                onChangeText={(password) => this.setState({ password })}
                 secureTextEntry={true}
               />
               {(this.state.español && <Text>Repetir contraseña</Text>) || (
@@ -165,7 +159,7 @@ class Registro extends React.Component {
               <View style={styles.buttonReg}>
                 <Button
                   title={(this.state.español && "Registrarse") || "Register"}
-                  onPress={() => this.registerHandler()}
+                  onPress={() => this.registroylogin()}
                 />
               </View>
             </View>
@@ -224,11 +218,11 @@ const styles = StyleSheet.create({
     width: "30%",
     alignSelf: "center",
   },
-  menu: {
-    position: "absolute",
-    top: 20,
-    left: 1200,
-    backgroundColor: "rgba(255, 255, 255, 0.7)",
+  menu :{
+	position: 'absolute', 
+	top: 20,
+	left: 1200,
+	backgroundColor:'rgba(255, 255, 255, 0.7)',
   },
 });
 
