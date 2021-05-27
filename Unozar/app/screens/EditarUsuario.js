@@ -97,15 +97,23 @@ class EditarUsuario extends React.Component {
           activeOpacity={0.5}
           onPress={() => {
             this.state.avatarId = this.state.unlockedAvatars[i];
+            this.forceUpdate();
           }}
         >
-          <Image
-            key={i}
-            style={styles.avatarLista}
-            source={require("../assets/avatares/" +
-              this.state.unlockedAvatars[i] +
-              ".png")}
-          />
+          <View
+            style={
+              this.state.avatarId === this.state.unlockedAvatars[i] &&
+              styles.bordeMarcadoAvatar
+            }
+          >
+            <Image
+              key={i}
+              style={styles.avatarLista}
+              source={require("../assets/avatares/" +
+                this.state.unlockedAvatars[i] +
+                ".png")}
+            />
+          </View>
         </TouchableOpacity>
       );
     }
@@ -119,15 +127,25 @@ class EditarUsuario extends React.Component {
           key={i}
           style={styles.touchable}
           activeOpacity={0.5}
-          onPress={() => (this.state.boardId = this.state.unlockedBoards[i])}
+          onPress={() => {
+            this.state.boardId = this.state.unlockedBoards[i];
+            this.forceUpdate();
+          }}
         >
-          <Image
-            key={i}
-            style={styles.tableroLista}
-            source={require("../assets/tableros/" +
-              this.state.unlockedBoards[i] +
-              ".png")}
-          />
+          <View
+            style={
+              this.state.boardId === this.state.unlockedBoards[i] &&
+              styles.bordeMarcadoTablero
+            }
+          >
+            <Image
+              key={i}
+              style={styles.tableroLista}
+              source={require("../assets/tableros/" +
+                this.state.unlockedBoards[i] +
+                ".png")}
+            />
+          </View>
         </TouchableOpacity>
       );
     }
@@ -141,15 +159,25 @@ class EditarUsuario extends React.Component {
           key={i}
           style={styles.touchable}
           activeOpacity={0.5}
-          onPress={() => (this.state.cardsId = this.state.unlockedCards[i])}
+          onPress={() => {
+            this.state.cardsId = this.state.unlockedCards[i];
+            this.forceUpdate();
+          }}
         >
-          <Image
-            key={i}
-            style={styles.dorsoLista}
-            source={require("../assets/dorsos/" +
-              this.state.unlockedCards[i] +
-              ".png")}
-          />
+          <View
+            style={
+              this.state.cardsId === this.state.unlockedCards[i] &&
+              styles.bordeMarcadoCartas
+            }
+          >
+            <Image
+              key={i}
+              style={styles.dorsoLista}
+              source={require("../assets/dorsos/" +
+                this.state.unlockedCards[i] +
+                ".png")}
+            />
+          </View>
         </TouchableOpacity>
       );
     }
@@ -283,23 +311,41 @@ const styles = StyleSheet.create({
   touchable: {
     flex: 1,
   },
-  avatarLista: {
+  bordeMarcadoAvatar: {
     flex: 1,
+    height: 150,
+    width: 154,
+    backgroundColor: "#20d300",
+  },
+  bordeMarcadoTablero: {
+    flex: 1,
+    backgroundColor: "#20d300",
+  },
+  bordeMarcadoCartas: {
+    flex: 1,
+    backgroundColor: "#20d300",
+  },
+  avatarLista: {
     height: 141,
     width: 134,
+    flex: 1,
     resizeMode: "contain",
+    margin: 10,
   },
   tableroLista: {
     flex: 1,
     height: 120,
     width: 200,
     resizeMode: "contain",
+    margin: 10,
   },
   dorsoLista: {
     flex: 1,
     height: 140,
     width: 90,
     resizeMode: "contain",
+    margin: 10,
+    alignSelf: "center",
   },
   scrollViews: {
     alignSelf: "center",
