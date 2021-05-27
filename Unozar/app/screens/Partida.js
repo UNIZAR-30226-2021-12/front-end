@@ -13,10 +13,12 @@ import {
   ImageBackground,
 } from "react-native";
 import { Menu } from "primereact/menu";
+import refreshToken from "../functions/refreshToken";
 
 class Partida extends React.Component {
   constructor(props) {
     super(props);
+	this.Cabecera = React.createRef();
 	const { token } = this.props.route.params;
 	const { miId } = this.props.route.params;
 	const { español } = this.props.route.params;
@@ -93,6 +95,22 @@ readPlayerHandler = async (i,id,turno) => {
 		}
 	}
 }
+refreshHandler = async () => {
+    const token = await refreshToken(this.state.token);
+    if (token !== -1) {
+      this.setState({ token: token });
+      this.Cabecera.current.updateToken(token);
+    } else {
+      alert(
+        (this.state.español && "Su sesion ha expirado") ||
+          "Your session has expired"
+      );
+	  clearInterval(this.timer1);
+      this.props.navigation.navigate("Inicio", {
+        español: this.state.español,
+      });
+    }
+  };
 readHandler = async () => {
 	const requestOptions = {
       method: "POST",
@@ -181,7 +199,9 @@ playCardHandler = async () => {
 		return
 	}
 	await console.log('PONER CARTA: '+ this.state.playerCards[this.state.carta]);
-	if(await this.state.playerCards[this.state.carta]!="XXC" || await this.state.playerCards[this.state.carta]!="XX4"){
+	if(await this.state.playerCards[this.state.carta]!="XXC"){
+		await this.setState({ cartaColor: this.state.playerCards[this.state.carta].slice(1,2) })
+	}else if(await this.state.playerCards[this.state.carta]!="XX4"){
 		await this.setState({ cartaColor: this.state.playerCards[this.state.carta].slice(1,2) })
 	}
 	console.log('Jugar carta con color: '+this.state.cartaColor)
@@ -325,7 +345,7 @@ gameResponseHandler = async () => {
 }	
 	
 	estados = async () => {
-		
+		this.refreshHandler();
 		if(this.state.estado==0){
 			await console.log('ESTADO TOKEN0: '+this.state.token)
 			await this.gameResponseHandler();
@@ -352,7 +372,7 @@ gameResponseHandler = async () => {
 	componentDidMount(){
 		//console.log('		MI ID: '+this.state.miId)
 		this.readHandler();
-		this.timer1 = setInterval(() => this.estados(), 1000);
+		this.timer1 = setInterval(() => this.estados(), 2000);
 		//this.createplayerCards();
 	}
 	createplayerCards = () => {
@@ -544,7 +564,7 @@ const styles = StyleSheet.create({
   square1: {
     width: 1358,
     height: 60,
-    backgroundColor:'rgba(140, 200, 60, 0.4)',
+    backgroundColor:'rgba(140, 200, 60)',
   },
   icono:{
 	top: -5,
@@ -561,7 +581,7 @@ const styles = StyleSheet.create({
 	 top: 40,
     width: 240,
     height: 590,
-    backgroundColor:'rgba(150, 40, 32, 0.4)',
+    backgroundColor:'rgba(150, 40, 32)',
   },
   iconoPerson: {
 	width: 100,
@@ -603,7 +623,7 @@ const styles = StyleSheet.create({
 	top: 40,
 	width: 1117,
     height: 440,
-	 backgroundColor:'rgba(100, 100, 100, 0.4)',   
+	 backgroundColor:'rgba(100, 100, 100)',   
   },
   containerScreen3: {
 	flexDirection: 'row',   
@@ -611,17 +631,17 @@ const styles = StyleSheet.create({
   square5: {
 	width: 372.3,
     height: 150,
-    backgroundColor:'rgba(145, 20, 20, 0.4)',  
+    backgroundColor:'rgba(145, 20, 20)',  
   },
   square6: {
 	width: 372.3,
     height: 150,
-    backgroundColor:'rgba(20, 145, 20, 0.4)',   
+    backgroundColor:'rgba(20, 145, 20)',   
   },
   square7: {
 	width: 372.3,
     height: 150,
-    backgroundColor:'rgba(20, 20, 145, 0.4)',   
+    backgroundColor:'rgba(20, 20, 145)',   
   },
   iconoPerson2: {
 	top: 20,
@@ -641,7 +661,7 @@ const styles = StyleSheet.create({
 	top: 40,
 	width: 1117,
     height: 180,
-	backgroundColor:'rgba(224, 65, 127, 0.4)',    
+	backgroundColor:'rgba(224, 65, 127)',    
   },
   deck: {
 	top: 50,

@@ -11,6 +11,8 @@ import {
 } from "react-native";
 import Cabecera from "../components/Cabecera";
 import readPlayer from "../functions/readPlayer";
+import refreshToken from "../functions/refreshToken";
+
 class Perfil extends React.Component {
   constructor(props) {
     super(props);
@@ -35,6 +37,7 @@ class Perfil extends React.Component {
   }
 
   readHandler = async () => {
+	  this.refreshHandler();
     const data = await readPlayer(this.state.miId);
 
     this.setState({ avatarId: data.avatarId });
@@ -94,12 +97,28 @@ class Perfil extends React.Component {
     await this.setState({ restart: this.state.restart + 1 });
   };
   componentDidMount() {
+	 this.refreshHandler();
     console.log("miId: " + this.state.miId);
     console.log("token: " + this.state.token);
     this.readHandler();
   }
-
+refreshHandler = async () => {
+    const token = await refreshToken(this.state.token);
+    if (token !== -1) {
+      this.setState({ token: token });
+      this.Cabecera.current.updateToken(token);
+    } else {
+      alert(
+        (this.state.español && "Su sesion ha expirado") ||
+          "Your session has expired"
+      );
+      this.props.navigation.navigate("Inicio", {
+        español: this.state.español,
+      });
+    }
+  };
   desbloquearAvatar = async (i) => {
+	  this.refreshHandler();
     const requestOptions1 = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -139,6 +158,7 @@ class Perfil extends React.Component {
     }
   };
   desbloquearDorso = async (i) => {
+	  this.refreshHandler();
     const requestOptions1 = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -178,6 +198,7 @@ class Perfil extends React.Component {
     }
   };
   desbloquearTablero = async (i) => {
+	  this.refreshHandler();
     const requestOptions1 = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -217,6 +238,7 @@ class Perfil extends React.Component {
     }
   };
   addMoney = async () => {
+	  this.refreshHandler();
     const requestOptions1 = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -238,6 +260,7 @@ class Perfil extends React.Component {
     await this.setState({ restart: this.state.restart + 1 });
   };
   verAvatares = () => {
+	  this.refreshHandler();
     let table = [];
     for (let i = 0; i < this.state.avatares.length; i++) {
       table.push(
@@ -260,6 +283,7 @@ class Perfil extends React.Component {
     return table;
   };
   verTableros = () => {
+	  this.refreshHandler();
     let table = [];
     for (let i = 0; i < this.state.tableros.length; i++) {
       table.push(
@@ -282,6 +306,7 @@ class Perfil extends React.Component {
     return table;
   };
   verDorsos = () => {
+	  this.refreshHandler();
     let table = [];
     for (let i = 0; i < this.state.dorsos.length; i++) {
       table.push(

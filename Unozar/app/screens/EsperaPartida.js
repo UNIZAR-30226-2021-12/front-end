@@ -12,10 +12,11 @@ import {
   ScrollView,
 } from "react-native";
 import { Menu } from "primereact/menu";
-
+import refreshToken from "../functions/refreshToken";
 class EsperaPartida extends React.Component {
   constructor(props) {
     super(props);
+	this.Cabecera = React.createRef();
 	const { token } = this.props.route.params;
 	const { miId } = this.props.route.params;
 	const { numBots } = this.props.route.params;
@@ -45,11 +46,28 @@ class EsperaPartida extends React.Component {
     };
   }
 componentDidMount(){
+	this.refreshHandler();
 	this.readYo()
 	this.timer1 = setInterval(() => this.estados(), 2000);
 }
-	
+refreshHandler = async () => {
+    const token = await refreshToken(this.state.token);
+    if (token !== -1) {
+      this.setState({ token: token });
+      this.Cabecera.current.updateToken(token);
+    } else {
+      alert(
+        (this.state.español && "Su sesion ha expirado") ||
+          "Your session has expired"
+      );
+	  clearInterval(this.timer1);
+      this.props.navigation.navigate("Inicio", {
+        español: this.state.español,
+      });
+    }
+  };	
 estados = async () => {
+	this.refreshHandler();
     if (this.state.estado == 0) {
       await console.log("ESTADO ACTUAL: " + this.state.estado);
       await this.readHandler();

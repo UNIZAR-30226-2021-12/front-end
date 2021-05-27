@@ -10,10 +10,11 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Cabecera from "../components/CabeceraAmigos";
-
+import refreshToken from "../functions/refreshToken";
 class Amigos extends React.Component {
   constructor(props) {
     super(props);
+	this.Cabecera = React.createRef();
     this.state = {
 		restart: 1,
 		miId: this.props.route.params.miId,
@@ -30,6 +31,22 @@ class Amigos extends React.Component {
 		maxPlayers: this.props.route.params.maxPlayers,
     };
 	}
+	
+refreshHandler = async () => {
+	const token = await refreshToken(this.state.token);
+	if (token !== -1) {
+	  this.setState({ token: token });
+	  this.Cabecera.current.updateToken(token);
+	} else {
+	  alert(
+		(this.state.español && "Su sesion ha expirado") ||
+		  "Your session has expired"
+	  );
+	  this.props.navigation.navigate("Inicio", {
+		español: this.state.español,
+	  });
+	}
+};
 addFriend = async () => {;
 	const requestOptions = {
 	  method: "POST",
@@ -119,6 +136,7 @@ componentDidMount(){
 	console.log('hola')
 	console.log('token amigos: ' +this.state.token)
 	this.auxiliar()
+	this.refreshHandler();
 }
 verListaAmigos = () => {
     let table = [];

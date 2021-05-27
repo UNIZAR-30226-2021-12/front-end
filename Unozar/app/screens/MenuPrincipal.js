@@ -10,10 +10,12 @@ import {
 } from "react-native";
 import Cabecera from "../components/Cabecera";
 import readPlayer from "../functions/readPlayer";
+import refreshToken from "../functions/refreshToken";
 
 export default class MenuPrincipal extends Component {
   constructor(props) {
     super(props);
+	this.Cabecera = React.createRef();
     this.state = {
 		show1: false,
 		show2: false,
@@ -38,8 +40,24 @@ export default class MenuPrincipal extends Component {
 	componentDidMount(){
 		console.log(this.state.miId)
 		this.readHandler();
+		this.refreshHandler();
 		//let timer = setInterval(() => alert("aux"), 3000);
 	}
+refreshHandler = async () => {
+    const token = await refreshToken(this.state.token);
+    if (token !== -1) {
+      this.setState({ token: token });
+      this.Cabecera.current.updateToken(token);
+    } else {
+      alert(
+        (this.state.español && "Su sesion ha expirado") ||
+          "Your session has expired"
+      );
+      this.props.navigation.navigate("Inicio", {
+        español: this.state.español,
+      });
+    }
+  };
 readHandler = async () => {
     const data = await readPlayer(this.state.miId);
     if (data !== -1) {
@@ -59,7 +77,7 @@ crearPartida = async () => {
     } else if (this.state.numBots > 0 && !this.state.isprivate) {
       alert("No puedes añadir bots a una partida privada");
       return;
-    } else if (!this.state.isprivate && this.state.bet > 0) {
+    } else if (this.state.isprivate && this.state.bet > 0) {
       // ??????????????????
       alert("No puedes añadir apuesta a una partida privada");
       return;

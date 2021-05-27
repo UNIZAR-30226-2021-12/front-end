@@ -4,10 +4,11 @@ import { Menu } from "primereact/menu";
 import { Linking } from "react-native";
 import qs from "qs";
 import Cabecera from "../components/Cabecera";
-
+import refreshToken from "../functions/refreshToken";
 class PerfilAmigos extends React.Component {
   constructor(props) {
     super(props);
+	this.Cabecera = React.createRef();
 	const { miId } = this.props.route.params;
 	const { token } = this.props.route.params;
 	const { invitar } = this.props.route.params;
@@ -49,6 +50,7 @@ mailto = () => {
     window.open(url);
 }
 readYo = async () => {
+	this.refreshHandler();
 	const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -70,7 +72,23 @@ invitar = () => {
 	this.mailto()
 	this.props.navigation.push("EsperaPartida" , { token: this.state.token, miId: this.state.miId, español: this.state.español, numBots: this.state.numBots, gameId: this.state.gameId, invitar: this.state.invitar, maxPlayers: this.state.maxPlayers} )
 }
+refreshHandler = async () => {
+    const token = await refreshToken(this.state.token);
+    if (token !== -1) {
+      this.setState({ token: token });
+      this.Cabecera.current.updateToken(token);
+    } else {
+      alert(
+        (this.state.español && "Su sesion ha expirado") ||
+          "Your session has expired"
+      );
+      this.props.navigation.navigate("Inicio", {
+        español: this.state.español,
+      });
+    }
+  };
 readHandler = async (i) => {
+	this.refreshHandler();
 	const requestOptions1 = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -99,6 +117,7 @@ readHandler = async (i) => {
 	}
 };
 deleteAmigo = async () => {
+	this.refreshHandler();
 	const requestOptions = {
 	  method: "POST",
 	  headers: { "Content-Type": "application/json" },
@@ -123,6 +142,7 @@ deleteAmigo = async () => {
 };
 
 componentDidMount(){
+	this.refreshHandler();
 	console.log('Jugador invitado: '+this.state.idJugadorInvitar)
 	this.readHandler(this.state.idJugadorInvitar)
 }
