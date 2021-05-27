@@ -307,11 +307,21 @@ class Partida extends React.Component {
       "https://unozar.herokuapp.com/game/quit",
       requestOptions
     );
-    data = await response.json();
     let statusCode = response.status;
     if ((await statusCode) != 200) {
       console.log("¡¡¡ERROR FETCH!!!");
+      alert(
+        (this.state.español &&
+          "Ha sido expulsado de la partida por inactividad") ||
+          "You have been kicked out from the game due to inactivity"
+      );
+      this.props.navigation.push("MenuPrincipal", {
+        token: this.state.token,
+        miId: this.state.miId,
+        español: this.state.español,
+      });
     } else {
+      data = await response.json();
       await this.setState({ token: data.token });
       console.log("salido");
       await this.props.navigation.push("MenuPrincipal", {

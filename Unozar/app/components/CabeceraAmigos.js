@@ -17,10 +17,10 @@ export default class Cabecera extends Component {
       español: this.props.params.español,
       miId: this.props.params.miId,
       token: this.props.params.token,
-	  invitar: this.props.params.invitar,
-	  numBots: this.props.params.numBots,
-	  maxPlayers: this.props.params.maxPlayers,
-	  gameId: this.props.params.gameId,
+      invitar: this.props.params.invitar,
+      numBots: this.props.params.numBots,
+      maxPlayers: this.props.params.maxPlayers,
+      gameId: this.props.params.gameId,
     };
   }
 
@@ -69,44 +69,59 @@ export default class Cabecera extends Component {
             {this.state.visible && (
               <>
                 <View style={styles.menu}>
-					{!this.state.invitar &&
-					<>
-                  <TouchableOpacity
-                    style={styles.opcionMenu}
-                    onPress={() =>
-                      this.props.navigation.push("Perfil", {
-                        token: this.state.token,
-                        miId: this.state.miId,
-                        español: this.state.español,
-                      })
-                    }
-                  >
-                    {(this.state.español && <Text>Perfil</Text>) || (
-                      <Text>Profile</Text>
-                    )}
-                  </TouchableOpacity>
+                  {!this.state.invitar && (
+                    <>
+                      <TouchableOpacity
+                        style={styles.opcionMenu}
+                        onPress={() =>
+                          this.props.navigation.push("Perfil", {
+                            token: this.state.token,
+                            miId: this.state.miId,
+                            español: this.state.español,
+                          })
+                        }
+                      >
+                        {(this.state.español && <Text>Perfil</Text>) || (
+                          <Text>Profile</Text>
+                        )}
+                      </TouchableOpacity>
 
+                      <TouchableOpacity
+                        style={styles.opcionMenu}
+                        onPress={() =>
+                          this.props.navigation.push("Amigos", {
+                            token: this.state.token,
+                            miId: this.state.miId,
+                            invitar: false,
+                            español: this.state.español,
+                            gameId: this.state.gameId,
+                            numBots: this.state.numBots,
+                            maxPlayers: this.state.maxPlayers,
+                          })
+                        }
+                      >
+                        {(this.state.español && <Text>Amigos</Text>) || (
+                          <Text>Friends</Text>
+                        )}
+                      </TouchableOpacity>
+
+                      <TouchableOpacity
+                        style={styles.opcionMenu}
+                        onPress={() =>
+                          this.props.navigation.push("Tienda", {
+                            token: this.state.token,
+                            miId: this.state.miId,
+                            español: this.state.español,
+                          })
+                        }
+                      >
+                        {(this.state.español && <Text>Tienda</Text>) || (
+                          <Text>Shop</Text>
+                        )}
+                      </TouchableOpacity>
+                    </>
+                  )}
                   <TouchableOpacity
-                    style={styles.opcionMenu}
-                    onPress={() =>
-                      this.props.navigation.push("Amigos", {
-                        token: this.state.token,
-                        miId: this.state.miId,
-                        invitar: false,
-                        español: this.state.español,
-						gameId: this.state.gameId,
-						numBots: this.state.numBots,
-						maxPlayers: this.state.maxPlayers,
-                      })
-                    }
-                  >
-                    {(this.state.español && <Text>Amigos</Text>) || (
-                      <Text>Friends</Text>
-                    )}
-                  </TouchableOpacity>
-				  </>
-					}
-                 <TouchableOpacity
                     style={styles.opcionMenu}
                     onPress={() => {
                       this.setState({ español: !this.state.español });
@@ -118,39 +133,45 @@ export default class Cabecera extends Component {
                       <Text>Español</Text>
                     )}
                   </TouchableOpacity>
-					{!this.state.invitar &&
-					<>
-                  <View style={styles.linea} />
-                  <TouchableOpacity
-                    style={styles.opcionMenu}
-                    onPress={() =>
-                      this.props.navigation.navigate("Inicio", {
-                        español: this.state.español,
-                      })
-                    }
-                  >
-                    {(this.state.español && <Text>Cerrar sesión</Text>) || (
-                      <Text>Sign out</Text>
-                    )}
-                  </TouchableOpacity>
-				  </>
-					}
-					{this.state.invitar &&
-					<>
-						 <View style={styles.linea} />
-						  <TouchableOpacity
-							style={styles.opcionMenu}
-							onPress={() =>
-							  this.props.navigation.push("EsperaPartida" , { token: this.state.token, miId: this.state.miId, español: this.state.español, numBots: this.state.numBots, gameId: this.state.gameId, maxPlayers: this.state.maxPlayers} )
-							}
-						  >
-							{(this.state.español && <Text>Volver</Text>) || (
-						  <Text>Go Back</Text>
-						)}
-						  </TouchableOpacity>
-						  </>
-
-					}
+                  {!this.state.invitar && (
+                    <>
+                      <View style={styles.linea} />
+                      <TouchableOpacity
+                        style={styles.opcionMenu}
+                        onPress={() =>
+                          this.props.navigation.navigate("Inicio", {
+                            español: this.state.español,
+                          })
+                        }
+                      >
+                        {(this.state.español && <Text>Cerrar sesión</Text>) || (
+                          <Text>Sign out</Text>
+                        )}
+                      </TouchableOpacity>
+                    </>
+                  )}
+                  {this.state.invitar && (
+                    <>
+                      <View style={styles.linea} />
+                      <TouchableOpacity
+                        style={styles.opcionMenu}
+                        onPress={() =>
+                          this.props.navigation.push("EsperaPartida", {
+                            token: this.state.token,
+                            miId: this.state.miId,
+                            español: this.state.español,
+                            numBots: this.state.numBots,
+                            gameId: this.state.gameId,
+                            maxPlayers: this.state.maxPlayers,
+                          })
+                        }
+                      >
+                        {(this.state.español && <Text>Volver</Text>) || (
+                          <Text>Go Back</Text>
+                        )}
+                      </TouchableOpacity>
+                    </>
+                  )}
                 </View>
               </>
             )}
