@@ -12,16 +12,12 @@ class Registro extends React.Component {
       email: "",
       firstPassword: "",
       secondPassword: "",
-	  id: 5,
-	  token: 10,
-	  español: this.props.route.params.español,
+      id: 5,
+      token: 10,
+      español: this.props.route.params.español,
     };
   }
-registroylogin = async () => {
-	await this.registerHandler()
-	await this.login()
-};
-registerHandler = async () => {
+  registerHandler = async () => {
     if (this.state.alias.length < 1) {
       alert(
         (this.state.español && "Debe ingresar un alias") ||
@@ -54,21 +50,28 @@ registerHandler = async () => {
       );
       return;
     }
-    if (this.state.password.length < 1) {
+    if (this.state.firstPassword.length < 1) {
       alert(
         (this.state.español && "Debe ingresar una contraseña") ||
           "You must enter a password"
       );
       return;
     }
+    if (this.state.firstPassword !== this.state.secondPassword) {
+      alert(
+        (this.state.español && "Las dos contraseñas no coinciden") ||
+          "The two passwords don't match"
+      );
+      return;
+    }
     const data = await register({
       email: this.state.email,
       alias: this.state.alias,
-      password: this.state.password,
+      password: this.state.firstPassword,
     });
-    console.log(data);
+    await this.login();
   };
-login = async () => {
+  login = async () => {
     if (this.state.email.length < 1) {
       alert(
         (this.state.español && "Debe ingresar el correo") ||
@@ -76,16 +79,17 @@ login = async () => {
       );
       return;
     }
-    if (this.state.password.length < 1) {
+    if (this.state.firstPassword.length < 1) {
       alert(
         (this.state.español && "Debe ingresar la contraseña") ||
           "You must enter a password"
       );
       return;
     }
+
     const data = await authentication({
       email: this.state.email,
-      password: this.state.password,
+      password: this.state.firstPassword,
     });
     this.setState({ miId: data.id });
     this.setState({ token: data.token });
@@ -95,7 +99,7 @@ login = async () => {
       token: this.state.token,
       español: this.state.español,
     });
-  };  
+  };
   render() {
     return (
       <>
@@ -140,7 +144,9 @@ login = async () => {
                   this.pass1Input = input;
                 }}
                 style={styles.input}
-                onChangeText={(password) => this.setState({ password })}
+                onChangeText={(firstPassword) =>
+                  this.setState({ firstPassword })
+                }
                 secureTextEntry={true}
               />
               {(this.state.español && <Text>Repetir contraseña</Text>) || (
@@ -159,7 +165,7 @@ login = async () => {
               <View style={styles.buttonReg}>
                 <Button
                   title={(this.state.español && "Registrarse") || "Register"}
-                  onPress={() => this.registroylogin()}
+                  onPress={() => this.registerHandler()}
                 />
               </View>
             </View>
@@ -218,11 +224,11 @@ const styles = StyleSheet.create({
     width: "30%",
     alignSelf: "center",
   },
-  menu :{
-	position: 'absolute', 
-	top: 20,
-	left: 1200,
-	backgroundColor:'rgba(255, 255, 255, 0.7)',
+  menu: {
+    position: "absolute",
+    top: 20,
+    left: 1200,
+    backgroundColor: "rgba(255, 255, 255, 0.7)",
   },
 });
 
