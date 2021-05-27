@@ -21,8 +21,8 @@ class EditarUsuario extends React.Component {
       español: this.props.route.params.español,
       token: this.props.route.params.token,
       alias: this.props.route.params.alias,
+      emailInput: this.props.route.params.email,
       emailViejo: this.props.route.params.email,
-      email: null,
       miId: this.props.route.params.miId,
       avatarId: this.props.route.params.avatarId,
       boardId: this.props.route.params.boardId,
@@ -34,10 +34,21 @@ class EditarUsuario extends React.Component {
   }
 
   updateHandler = async () => {
+    if (this.state.alias.length > 15) {
+      alert(
+        (this.state.español && "El alias no puede exceder los 15 caracteres") ||
+          "The alias can't exceed 15 characters"
+      );
+      return;
+    }
+    let newEmail = null;
+    if (this.state.emailInput !== this.state.emailViejo) {
+      newEmail = this.state.emailInput;
+    }
     const params = {
       token: this.state.token,
       alias: this.state.alias,
-      email: this.state.email,
+      email: newEmail,
       avatarId: this.state.avatarId,
       boardId: this.state.boardId,
       cardsId: this.state.cardsId,
@@ -85,7 +96,7 @@ class EditarUsuario extends React.Component {
           style={styles.touchable}
           activeOpacity={0.5}
           onPress={() => {
-            this.state.avatarId = this.state.unlockedAvatars[i];;
+            this.state.avatarId = this.state.unlockedAvatars[i];
           }}
         >
           <Image
@@ -175,10 +186,9 @@ class EditarUsuario extends React.Component {
               )}
               <TextInput
                 style={styles.input}
-                value={this.state.emailViejo}
+                value={this.state.emailInput}
                 onChangeText={(email) => {
-                  this.setState({ email });
-                  this.setState({ emailViejo: email });
+                  this.setState({ emailInput: email });
                 }}
               />
             </View>

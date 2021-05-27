@@ -514,12 +514,17 @@ export default class MenuPrincipal extends Component {
                         borderColor: "black",
                         borderWidth: 1,
                         flex: 3,
+                        keyboardType: "numeric",
                       }}
                       placeholder={
                         (this.state.español && "Cantidad a apostar") ||
                         "Amount to bet"
                       }
-                      onChangeText={(bet) => this.setState({ bet })}
+                      onChangeText={(bet) => {
+                        bet = bet.replace(/[^0-9]/g, "");
+                        this.setState({ bet });
+                      }}
+                      value={this.state.bet}
                     />
                   </View>
                 )}
