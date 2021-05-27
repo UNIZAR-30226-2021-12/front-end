@@ -611,6 +611,7 @@ class Partida extends React.Component {
                 this.state.playerCards[i] +
                 ".png")}
             />
+            <Text style={{ opacity: 0 }}>hola</Text>
           </View>
         </TouchableOpacity>
       );
@@ -635,272 +636,257 @@ class Partida extends React.Component {
   }
   render() {
     return (
-      <>
-        <View style={styles.screen}>
-          <View style={styles.square1}>
-            <View style={styles.containerTitulo}>
-              <Image
-                style={styles.icono}
-                source={require("../assets/logos/logo_letra.png")}
-              />
-              <View style={styles.containterText}>
-                <Text style={styles.titulo}> UNOZAR </Text>
+      <View style={styles.square1}>
+        <View style={styles.containerTitulo}>
+          <Image
+            style={styles.icono}
+            source={require("../assets/logos/logo_letra.png")}
+          />
+          <View style={styles.containterText}>
+            <Text style={styles.titulo}> UNOZAR </Text>
+          </View>
+        </View>
+        <View style={styles.containerScreen1}>
+          <View style={styles.containerScreen2}>
+            <ImageBackground
+              style={styles.tablero}
+              source={require("../assets/tableros/" +
+                this.state.tablero +
+                ".png")}
+            >
+              <View style={styles.square3}>
+                <View style={styles.containerScreen3}>
+                  {this.state.maxPlayers >= 2 && (
+                    <View
+                      key={this.state.cambiaTurno[1]}
+                      style={[
+                        styles.container,
+                        {
+                          width: 372.3,
+                          height: 150,
+                          backgroundColor: this.state.turnoJugadores[1],
+                        },
+                      ]}
+                    >
+                      <View style={styles.containerScreen4}>
+                        <Image
+                          style={styles.iconoPerson2}
+                          source={require("../assets/avatares/" +
+                            this.state.avatarJugadores[1] +
+                            ".png")}
+                        />
+                        <View style={styles.containerScreen5}>
+                          <Text style={styles.sizeText}>
+                            {" "}
+                            {this.state.jugadores[1]}{" "}
+                          </Text>
+                          {(this.state.español && (
+                            <Text style={styles.sizeText}>
+                              Cartas: {this.state.playerNumCards[1]}
+                            </Text>
+                          )) || (
+                            <Text style={styles.sizeText}>
+                              Cards: {this.state.playerNumCards[1]}
+                            </Text>
+                          )}
+                        </View>
+                      </View>
+                    </View>
+                  )}
+                  {this.state.maxPlayers >= 3 && (
+                    <View
+                      key={this.state.cambiaTurno[2]}
+                      style={[
+                        styles.container,
+                        {
+                          width: 372.3,
+                          height: 150,
+                          backgroundColor: this.state.turnoJugadores[2],
+                        },
+                      ]}
+                    >
+                      <View style={styles.containerScreen4}>
+                        <Image
+                          style={styles.iconoPerson2}
+                          source={require("../assets/avatares/" +
+                            this.state.avatarJugadores[2] +
+                            ".png")}
+                        />
+                        <View style={styles.containerScreen5}>
+                          <Text style={styles.sizeText}>
+                            {" "}
+                            {this.state.jugadores[2]}{" "}
+                          </Text>
+                          {(this.state.español && (
+                            <Text style={styles.sizeText}>
+                              Cartas: {this.state.playerNumCards[2]}
+                            </Text>
+                          )) || (
+                            <Text style={styles.sizeText}>
+                              Cards: {this.state.playerNumCards[2]}
+                            </Text>
+                          )}
+                        </View>
+                      </View>
+                    </View>
+                  )}
+                  {this.state.maxPlayers == 4 && (
+                    <View
+                      key={this.state.cambiaTurno[3]}
+                      style={[
+                        styles.container,
+                        {
+                          width: 372.3,
+                          height: 150,
+                          backgroundColor: this.state.turnoJugadores[3],
+                        },
+                      ]}
+                    >
+                      <View style={styles.containerScreen4}>
+                        <Image
+                          style={styles.iconoPerson2}
+                          source={require("../assets/avatares/" +
+                            this.state.avatarJugadores[3] +
+                            ".png")}
+                        />
+                        <View style={styles.containerScreen5}>
+                          <Text style={styles.sizeText}>
+                            {" "}
+                            {this.state.jugadores[3]}{" "}
+                          </Text>
+                          {(this.state.español && (
+                            <Text style={styles.sizeText}>
+                              Cartas: {this.state.playerNumCards[3]}
+                            </Text>
+                          )) || (
+                            <Text style={styles.sizeText}>
+                              Cards: {this.state.playerNumCards[3]}
+                            </Text>
+                          )}
+                        </View>
+                      </View>
+                    </View>
+                  )}
+                </View>
               </View>
-            </View>
-            <View style={styles.containerScreen1}>
-              <View style={styles.containerScreen2}>
-                <ImageBackground
-                  style={styles.tablero}
-                  source={require("../assets/tableros/" +
-                    this.state.tablero +
-                    ".png")}
-                >
-                  <View style={styles.square3}>
-                    <View style={styles.containerScreen3}>
-                      {this.state.maxPlayers >= 2 && (
-                        <View
-                          key={this.state.cambiaTurno[1]}
-                          style={[
-                            styles.container,
-                            {
-                              width: 372.3,
-                              height: 150,
-                              backgroundColor: this.state.turnoJugadores[1],
-                            },
-                          ]}
-                        >
-                          <View style={styles.containerScreen4}>
-                            <Image
-                              style={styles.iconoPerson2}
-                              source={require("../assets/avatares/" +
-                                this.state.avatarJugadores[1] +
-                                ".png")}
-                            />
-                            <View style={styles.containerScreen5}>
-                              <Text style={styles.sizeText}>
-                                {" "}
-                                {this.state.jugadores[1]}{" "}
-                              </Text>
-                              {(this.state.español && (
-                                <Text style={styles.sizeText}>
-                                  Cartas: {this.state.playerNumCards[1]}
-                                </Text>
-                              )) || (
-                                <Text style={styles.sizeText}>
-                                  Cards: {this.state.playerNumCards[1]}
-                                </Text>
-                              )}
-                            </View>
-                          </View>
-                        </View>
-                      )}
-                      {this.state.maxPlayers >= 3 && (
-                        <View
-                          key={this.state.cambiaTurno[2]}
-                          style={[
-                            styles.container,
-                            {
-                              width: 372.3,
-                              height: 150,
-                              backgroundColor: this.state.turnoJugadores[2],
-                            },
-                          ]}
-                        >
-                          <View style={styles.containerScreen4}>
-                            <Image
-                              style={styles.iconoPerson2}
-                              source={require("../assets/avatares/" +
-                                this.state.avatarJugadores[2] +
-                                ".png")}
-                            />
-                            <View style={styles.containerScreen5}>
-                              <Text style={styles.sizeText}>
-                                {" "}
-                                {this.state.jugadores[2]}{" "}
-                              </Text>
-                              {(this.state.español && (
-                                <Text style={styles.sizeText}>
-                                  Cartas: {this.state.playerNumCards[2]}
-                                </Text>
-                              )) || (
-                                <Text style={styles.sizeText}>
-                                  Cards: {this.state.playerNumCards[2]}
-                                </Text>
-                              )}
-                            </View>
-                          </View>
-                        </View>
-                      )}
-                      {this.state.maxPlayers == 4 && (
-                        <View
-                          key={this.state.cambiaTurno[3]}
-                          style={[
-                            styles.container,
-                            {
-                              width: 372.3,
-                              height: 150,
-                              backgroundColor: this.state.turnoJugadores[3],
-                            },
-                          ]}
-                        >
-                          <View style={styles.containerScreen4}>
-                            <Image
-                              style={styles.iconoPerson2}
-                              source={require("../assets/avatares/" +
-                                this.state.avatarJugadores[3] +
-                                ".png")}
-                            />
-                            <View style={styles.containerScreen5}>
-                              <Text style={styles.sizeText}>
-                                {" "}
-                                {this.state.jugadores[3]}{" "}
-                              </Text>
-                              {(this.state.español && (
-                                <Text style={styles.sizeText}>
-                                  Cartas: {this.state.playerNumCards[3]}
-                                </Text>
-                              )) || (
-                                <Text style={styles.sizeText}>
-                                  Cards: {this.state.playerNumCards[3]}
-                                </Text>
-                              )}
-                            </View>
-                          </View>
-                        </View>
-                      )}
-                    </View>
-                  </View>
 
-                  <View
-                    key={this.state.restart}
-                    style={styles.containerTablero}
-                  >
-                    <Image
-                      style={styles.deck}
-                      source={require("../assets/dorsos/" +
-                        this.state.dorso +
-                        ".png")}
-                    />
-                    <Image
-                      style={styles.carta}
-                      source={require("../assets/cartas/" +
-                        this.state.topDiscard +
-                        ".png")}
-                    />
-                    <View style={styles.containerColor}>
-                      {this.state.showColor && (
-                        <>
-                          <Button
-                            title={(this.state.español && "Rojo") || "Red"}
-                            color="#f71313"
-                            onPress={() => this.setState({ cartaColor: "R" })}
-                          />
-                          <Button
-                            title={(this.state.español && "Azul") || "Blue"}
-                            color="#1385f7"
-                            onPress={() => this.setState({ cartaColor: "B" })}
-                          />
-                          <Button
-                            title={
-                              (this.state.español && "Amarillo") || "Yellow"
-                            }
-                            color="#f4f713"
-                            onPress={() => this.setState({ cartaColor: "Y" })}
-                          />
-                          <Button
-                            title={(this.state.español && "Verde") || "Green"}
-                            color="#47f713"
-                            onPress={() => this.setState({ cartaColor: "G" })}
-                          />
-                        </>
-                      )}
-                    </View>
-                  </View>
-                  <View
-                    key={-this.state.restart}
-                    style={styles.containerplayerCards}
-                  >
-                    <ScrollView horizontal>{this.verplayerCards()}</ScrollView>
-                  </View>
-                </ImageBackground>
+              <View key={this.state.restart} style={styles.containerTablero}>
+                <Image
+                  style={styles.deck}
+                  source={require("../assets/dorsos/" +
+                    this.state.dorso +
+                    ".png")}
+                />
+                <Image
+                  style={styles.carta}
+                  source={require("../assets/cartas/" +
+                    this.state.topDiscard +
+                    ".png")}
+                />
+                <View style={styles.containerColor}>
+                  {this.state.showColor && (
+                    <>
+                      <Button
+                        title={(this.state.español && "Rojo") || "Red"}
+                        color="#f71313"
+                        onPress={() => this.setState({ cartaColor: "R" })}
+                      />
+                      <Button
+                        title={(this.state.español && "Azul") || "Blue"}
+                        color="#1385f7"
+                        onPress={() => this.setState({ cartaColor: "B" })}
+                      />
+                      <Button
+                        title={(this.state.español && "Amarillo") || "Yellow"}
+                        color="#f4f713"
+                        onPress={() => this.setState({ cartaColor: "Y" })}
+                      />
+                      <Button
+                        title={(this.state.español && "Verde") || "Green"}
+                        color="#47f713"
+                        onPress={() => this.setState({ cartaColor: "G" })}
+                      />
+                    </>
+                  )}
+                </View>
               </View>
               <View
-                key={this.state.cambiaTurno[0]}
-                style={[
-                  styles.container,
-                  {
-                    top: 40,
-                    width: 240,
-                    height: 590,
-                    backgroundColor: this.state.turnoJugadores[0],
-                  },
-                ]}
+                key={-this.state.restart}
+                style={styles.containerplayerCards}
               >
-                <View style={styles.containerPerfil}>
-                  <Image
-                    style={styles.iconoPerson}
-                    source={require("../assets/avatares/" +
-                      this.state.avatarJugadores[0] +
-                      ".png")}
-                  />
-                  <View style={styles.containerInfo}>
-                    <Text style={styles.sizeText}>
-                      {this.state.jugadores[0]}
-                    </Text>
-                    {(this.state.español && (
-                      <Text style={styles.sizeText}>
-                        Mis cartas: {this.state.playerNumCards[0]}
-                      </Text>
-                    )) || (
-                      <Text style={styles.sizeText}>
-                        My cards: {this.state.playerNumCards[0]}
-                      </Text>
-                    )}
-                  </View>
-                  <View style={styles.containerBotones}>
-                    <Button
-                      title={
-                        (this.state.español && "PONER CARTA") || "PLAY CARD"
-                      }
-                      style={styles.botones}
-                      color="#e1a81a"
-                      onPress={() => {
-                        this.setState({ estado: 2 });
-                      }}
-                    />
-                    <Button
-                      title={
-                        (this.state.español && "ROBAR CARTA") || "DRAW CARD"
-                      }
-                      style={styles.botones}
-                      color="#e1a81a"
-                      onPress={() => this.setState({ estado: 3 })}
-                    />
-                    <Button
-                      title={(this.state.español && "PAUSA") || "PAUSE"}
-                      style={styles.botones}
-                      color="#e1a81a"
-                      onPress={() => this.setState({ estado: 7 })}
-                    />
-                    <Button
-                      title="UNOZAR"
-                      style={styles.botones}
-                      color="#00ff00"
-                      onPress={() => this.setState({ hasSaidUnozar: true })}
-                    />
-                    <Button
-                      title={(this.state.español && "SALIR") || "QUIT"}
-                      style={styles.botones}
-                      color="#ff0000"
-                      onPress={() => this.setState({ estado: 5 })}
-                    />
-                  </View>
-                </View>
+                <ScrollView horizontal style={{ marginBottom: 10 }}>
+                  {this.verplayerCards()}
+                </ScrollView>
+              </View>
+            </ImageBackground>
+          </View>
+          <View
+            key={this.state.cambiaTurno[0]}
+            style={[
+              styles.container,
+              {
+                flex: 1,
+                backgroundColor: this.state.turnoJugadores[0],
+              },
+            ]}
+          >
+            <View style={styles.containerPerfil}>
+              <Image
+                style={styles.iconoPerson}
+                source={require("../assets/avatares/" +
+                  this.state.avatarJugadores[0] +
+                  ".png")}
+              />
+              <View style={styles.containerInfo}>
+                <Text style={styles.sizeText}>{this.state.jugadores[0]}</Text>
+                {(this.state.español && (
+                  <Text style={styles.sizeText}>
+                    Mis cartas: {this.state.playerNumCards[0]}
+                  </Text>
+                )) || (
+                  <Text style={styles.sizeText}>
+                    My cards: {this.state.playerNumCards[0]}
+                  </Text>
+                )}
+              </View>
+              <View style={styles.containerBotones}>
+                <Button
+                  title={(this.state.español && "PONER CARTA") || "PLAY CARD"}
+                  style={styles.botones}
+                  color="#e1a81a"
+                  onPress={() => {
+                    this.setState({ estado: 2 });
+                  }}
+                />
+                <Button
+                  title={(this.state.español && "ROBAR CARTA") || "DRAW CARD"}
+                  style={styles.botones}
+                  color="#e1a81a"
+                  onPress={() => this.setState({ estado: 3 })}
+                />
+                <Button
+                  title={(this.state.español && "PAUSA") || "PAUSE"}
+                  style={styles.botones}
+                  color="#e1a81a"
+                  onPress={() => this.setState({ estado: 7 })}
+                />
+                <Button
+                  title="UNOZAR"
+                  style={styles.botones}
+                  color="#00ff00"
+                  onPress={() => this.setState({ hasSaidUnozar: true })}
+                />
+                <Button
+                  title={(this.state.español && "SALIR") || "QUIT"}
+                  style={styles.botones}
+                  color="#ff0000"
+                  onPress={() => this.setState({ estado: 5 })}
+                />
               </View>
             </View>
           </View>
         </View>
-      </>
+      </View>
     );
   }
 }
@@ -917,8 +903,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   square1: {
-    width: 1358,
-    height: 60,
+    flex: 1,
     backgroundColor: "rgba(140, 200, 60)",
   },
   icono: {
@@ -927,7 +912,6 @@ const styles = StyleSheet.create({
     height: 50,
   },
   titulo: {
-    lineHeight: 100,
     fontStyle: "Roboto",
     fontSize: 30,
   },
@@ -965,10 +949,11 @@ const styles = StyleSheet.create({
   },
   containerScreen1: {
     flexDirection: "row",
+    flex: 11,
   },
-  containerScreen2: {},
+  containerScreen2: { flex: 4 },
   containterText: {
-    top: -28,
+    flex: 1,
   },
   square4: {
     top: 40,
@@ -1032,9 +1017,10 @@ const styles = StyleSheet.create({
     width: 200,
   },
   containerplayerCards: {
-    top: 100,
+    top: 120,
     flexDirection: "row",
     justifyContent: "center",
+    marginBottom: 20,
   },
   cartaplayerCards: {
     flex: 1,
@@ -1046,6 +1032,7 @@ const styles = StyleSheet.create({
   },
   cartaTouchable: {
     flex: 1,
+    marginBottom: 15,
   },
   containerColor: {
     flexDirection: "column",
@@ -1053,9 +1040,7 @@ const styles = StyleSheet.create({
     top: 50,
   },
   tablero: {
-    top: 40,
-    width: 1117,
-    height: 590,
+    flex: 1,
   },
   botones: {
     overflow: "hidden",
