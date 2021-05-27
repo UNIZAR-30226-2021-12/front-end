@@ -38,7 +38,6 @@ export default class Inicio extends Component {
     if (data !== -1) {
       this.setState({ playerId: data.id });
       this.setState({ token: data.token });
-      console.log("Inicio playerId: " + this.state.playerId);
       this.props.navigation.push("MenuPrincipal", {
         playerId: this.state.playerId,
         token: this.state.token,

@@ -8,7 +8,6 @@ import refreshToken from "../functions/refreshToken";
 class Perfil extends React.Component {
   constructor(props) {
     super(props);
-    console.log(this.props);
     this.Cabecera = React.createRef();
     this.state = {
       español: this.props.route.params.español,

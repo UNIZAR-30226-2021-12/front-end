@@ -85,7 +85,7 @@ class EditarUsuario extends React.Component {
           style={styles.touchable}
           activeOpacity={0.5}
           onPress={() => {
-            this.state.avatarId = i;
+            this.state.avatarId = this.state.unlockedAvatars[i];
           }}
         >
           <Image
@@ -108,7 +108,7 @@ class EditarUsuario extends React.Component {
           key={i}
           style={styles.touchable}
           activeOpacity={0.5}
-          onPress={() => this.setState({ boardId: i })}
+          onPress={() => (this.state.boardId = this.state.unlockedBoards[i])}
         >
           <Image
             key={i}
@@ -130,7 +130,7 @@ class EditarUsuario extends React.Component {
           key={i}
           style={styles.touchable}
           activeOpacity={0.5}
-          onPress={() => this.this.setState({ cardsId: i })}
+          onPress={() => (this.state.cardsId = this.state.unlockedCards[i])}
         >
           <Image
             key={i}

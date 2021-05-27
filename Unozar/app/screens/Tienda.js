@@ -148,7 +148,7 @@ class Perfil extends React.Component {
       }),
     };
     console.log("dorso id:" + this.state.dorsos[i]);
-    if (this.state.money < 500) {
+    if (this.state.money < 750) {
       alert(
         (this.state.español && "No tienes suficiente dinero") ||
           "You don't have enough money"
@@ -187,7 +187,7 @@ class Perfil extends React.Component {
       }),
     };
     console.log("tablero id:" + this.state.tableros[i]);
-    if (this.state.money < 700) {
+    if (this.state.money < 500) {
       alert(
         (this.state.español && "No tienes suficiente dinero") ||
           "You don't have enough money"

@@ -7,9 +7,9 @@ export default async function updatePlayer(params) {
       alias: params.alias,
       email: params.email,
       password: params.password,
-      avatarId: params.avatarId,
-      boardId: params.boardId,
-      cardsId: params.cardsId,
+      avatar: params.avatarId,
+      board: params.boardId,
+      cards: params.cardsId,
     }),
   };
   const response = await fetch(
