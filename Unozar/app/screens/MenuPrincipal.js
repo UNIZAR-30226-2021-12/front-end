@@ -35,6 +35,7 @@ export default class MenuPrincipal extends Component {
       giftClaimedToday: false,
       español: this.props.route.params.español,
       bet: 0,
+      money: 0,
     };
   }
   componentDidMount() {
@@ -62,24 +63,18 @@ export default class MenuPrincipal extends Component {
     const data = await readPlayer(this.state.miId);
     if (data !== -1) {
       this.setState({ giftClaimedToday: data.giftClaimedToday });
+      this.setState({ money: data.money });
       if (!this.state.giftClaimedToday) {
         this.ruleta();
       }
     }
   };
   crearPartida = async () => {
-    if (!(this.state.bet >= 0)) {
-      alert("La apuesta no es un valor numérico");
-      return;
-    } else if (this.state.numBots >= this.state.maxPlayers) {
-      alert("Al menos tiene que haber un jugador no bot en partida");
-      return;
-    } else if (this.state.numBots > 0 && !this.state.isprivate) {
-      alert("No puedes añadir bots a una partida privada");
-      return;
-    } else if (this.state.isprivate && this.state.bet > 0) {
-      // ??????????????????
-      alert("No puedes añadir apuesta a una partida privada");
+    if (this.state.bet > this.state.money) {
+      alert(
+        (this.state.español && "No puede apostar más dinero del que posee") ||
+          "You can't bet more than the money you own"
+      );
       return;
     }
     const requestOptions = {
@@ -486,7 +481,35 @@ export default class MenuPrincipal extends Component {
                       "Public game"}
                   </Text>
                 </View>
-
+                {!this.state.isprivate && (
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignSelf: "center",
+                      width: "40%",
+                      marginTop: 10,
+                    }}
+                  >
+                    {(this.state.español && (
+                      <Text
+                        style={{ fontStyle: "Roboto", fontSize: 15, flex: 1 }}
+                      >
+                        Dinero actual:{" "}
+                      </Text>
+                    )) || (
+                      <Text
+                        style={{ fontStyle: "Roboto", fontSize: 15, flex: 1 }}
+                      >
+                        Current money:{" "}
+                      </Text>
+                    )}
+                    <Text
+                      style={{ fontStyle: "Roboto", fontSize: 15, flex: 1 }}
+                    >
+                      {this.state.money}
+                    </Text>
+                  </View>
+                )}
                 {!this.state.isprivate && (
                   <View
                     style={{
