@@ -38,8 +38,8 @@ class Perfil extends React.Component {
     const data = await readPlayer(this.state.miId);
 
     this.setState({ avatarId: data.avatarId });
-    this.setState({ avatarId: data.boardId });
-    this.setState({ avatarId: data.cardsId });
+    this.setState({ boardId: data.boardId });
+    this.setState({ cardsId: data.cardsId });
     this.setState({ money: data.money });
     this.setState({ unlockedAvatars: data.unlockedAvatars });
     this.setState({ unlockedBoards: data.unlockedBoards });

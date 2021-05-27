@@ -38,7 +38,7 @@ class Partida extends React.Component {
 		avatarJugadores: ['1','0','2','3'],
 		turnos: [],
 		miTurno: -1,
-		turnoJugadores: ['rgba(145, 20, 20, 0.4)','rgba(145, 20, 20, 0.4)','rgba(145, 20, 20, 0.4)','rgba(145, 20, 20, 0.4)'],
+		turnoJugadores: ['rgba(145, 20, 20)','rgba(145, 20, 20)','rgba(145, 20, 20)','rgba(145, 20, 20)'],
 		cartaSeleccionada: false,
 		carta: '',
 		cartaColor: 'R',
@@ -208,7 +208,7 @@ playCardHandler = async () => {
 		if(await this.state.playerNumCards[0]==1){
 			await clearInterval(this.timer1);
 			await alert('!!!VICTORIA!!!')
-			await this.salirHandler()
+			await this.props.navigation.push("MenuPrincipal", { token: this.state.token, miId: this.state.miId, español: this.state.español});
 		}
 		await this.setState({ token: data.token });
 		await this.setState({hasSaidUnozar: false });
@@ -302,7 +302,7 @@ gameResponseHandler = async () => {
 				if( await this.state.playerNumCards[i] == 0){
 					clearInterval(this.timer1);
 					await alert('DERROTA')
-					await this.salirHandler()
+					await this.props.navigation.push("MenuPrincipal", { token: this.state.token, miId: this.state.miId, español: this.state.español});
 				}
 			}
 			await this.setState({ restart: this.state.restart+1 }) 
