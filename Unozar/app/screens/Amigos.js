@@ -9,58 +9,54 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native";
-import Cabecera from "../components/Cabecera";
+import Cabecera from "../components/CabeceraAmigos";
 
 class Amigos extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      restart: 1,
-      playerId: this.props.route.params.playerId,
-      token: this.props.route.params.token,
-      invitar: this.props.route.params.invitar,
-      gameId: this.props.route.params.gameId,
-      nombreJugador1: this.props.route.params.nombreJugador1,
-      friendId: "",
-      friendIds: [],
-      alias: [],
-      emails: [],
-      avatarIds: [],
-      español: this.props.route.params.español,
-      numBots: this.props.route.params.numBots,
-      maxPlayers: this.props.route.params.maxPlayers,
+		restart: 1,
+		miId: this.props.route.params.miId,
+		token: this.props.route.params.token,
+		invitar: this.props.route.params.invitar,
+		gameId: this.props.route.params.gameId,
+		friendId: '',
+		friendIds: [],
+		alias: [],
+		emails: [],
+		avatarIds: [],
+		español: this.props.route.params.español,
+		numBots: this.props.route.params.numBots,
+		maxPlayers: this.props.route.params.maxPlayers,
     };
-  }
-  addFriend = async () => {
-    const requestOptions = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        token: this.state.token,
-        friendId: this.state.friendId,
-      }),
-    };
-    let data;
-    let response;
-    let statusCode;
-    response = await fetch(
-      "https://unozar.herokuapp.com/player/addFriend",
-      requestOptions
-    );
-    data = await response.json();
-    statusCode = response.status;
-    if ((await statusCode) != 200) {
-      clearInterval(this.timer1);
-      console.log("¡¡¡ERROR FETCH!!!");
-    } else {
-      await this.setState({ token: data.token });
-      console.log("Amigo añadido");
-      await this.readFriends();
-      await this.setState({ restart: this.state.restart + 1 });
-      await console.log("token amigos: " + this.state.token);
-    }
-  };
-  readFriends = async () => {
+	}
+addFriend = async () => {;
+	const requestOptions = {
+	  method: "POST",
+	  headers: { "Content-Type": "application/json" },
+	  body: JSON.stringify({
+		token: this.state.token,
+		friendId: this.state.friendId,
+	  }),
+	};
+	let data;
+	let response;
+	let statusCode
+	response = await fetch('https://unozar.herokuapp.com/player/addFriend', requestOptions)
+	data = await response.json();
+	statusCode = response.status;
+	if( await statusCode != 200 ){
+		clearInterval(this.timer1);
+		console.log('¡¡¡ERROR FETCH!!!')
+	}else{
+		await this.setState({ token: data.token});
+		console.log('Amigo añadido')
+		await this.readFriends();
+		await this.setState({ restart: this.state.restart+1})
+		await console.log('token amigos: ' + this.state.token)
+	}
+};
+readFriends = async () => {
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -102,15 +98,14 @@ class Amigos extends React.Component {
       );
     }
   };
-  auxiliar = async () => {
-    await this.readFriends();
-  };
-  verAmigo = async (i) => {
-    if (this.state.invitar) {
+auxiliar = async () => {
+	await this.readFriends();
+};
+verAmigo = async (i) => {
       console.log("Con amigos");
       this.props.navigation.push("PerfilAmigos", {
         token: this.state.token,
-        playerId: this.state.playerId,
+        miId: this.state.miId,
         gameId: this.state.gameId,
         invitar: this.state.invitar,
         nombreJugador1: this.state.nombreJugador1,
@@ -119,24 +114,13 @@ class Amigos extends React.Component {
         numBots: this.state.numBots,
         maxPlayers: this.state.maxPlayers,
       });
-    } else {
-      this.props.navigation.push("Perfil", {
-        token: this.state.token,
-        playerId: this.state.playerId,
-        gameId: this.state.gameId,
-        invitar: this.state.invitar,
-        nombreJugador1: this.state.nombreJugador1,
-        idJugadorInvitar: this.state.friendIds[i],
-        español: this.state.español,
-      });
-    }
   };
-  componentDidMount() {
-    console.log("hola");
-    console.log("token amigos: " + this.state.token);
-    this.auxiliar();
-  }
-  verListaAmigos = () => {
+componentDidMount(){
+	console.log('hola')
+	console.log('token amigos: ' +this.state.token)
+	this.auxiliar()
+}
+verListaAmigos = () => {
     let table = [];
     let i = 0;
     //console.log('LOGIN :{['+this.state.token+'], ['+this.state.friendIds+'], ['+this.state.alias+'], ['+this.state.emails+'], ['+this.state.avatarIds+']}')
@@ -230,88 +214,100 @@ class Amigos extends React.Component {
 
     return table;
   };
-
-  changeLanguage = () => {
+changeLanguage = () => {
     this.setState({ español: !this.state.español });
   };
-
+  
   render() {
     return (
-      <>
-        <Cabecera
-          ref={this.Cabecera}
-          style={{ position: "absolute" }}
-          params={{
-            token: this.state.token,
-            playerId: this.state.playerId,
-            español: this.state.español,
-          }}
-          navigation={this.props.navigation}
-          updateParent={this.changeLanguage}
-        >
-          <View style={styles.screen}>
-            <View style={styles.square1}>
-              <View style={styles.containerLista}>
-                <ScrollView>{this.verListaAmigos()}</ScrollView>
-              </View>
-            </View>
-            <View key={this.state.restart} style={styles.buttonAñadir}>
-              <TextInput
-                style={styles.input}
-                placeholder={
-                  (this.state.español && "ID de amigo") || "Friend ID"
-                }
-                onChangeText={(friendId) => this.setState({ friendId })}
-              />
-              <Button
-                title={(this.state.español && "Añadir amigo") || "Add friend"}
-                onPress={() => this.addFriend()}
-              />
-            </View>
-          </View>
-        </Cabecera>
-      </>
+	<>
+		<View style={styles.screen}>
+			<Cabecera
+			  ref={this.Cabecera}
+			  style={{ position: "absolute" }}
+			  params={{
+				español: this.state.español,
+				miId: this.state.miId,
+				token: this.state.token,
+				invitar: this.state.invitar,
+				numBots: this.state.numBots,
+				maxPlayers: this.state.maxPlayers,
+				gameId: this.state.gameId,
+			  }}
+			  navigation={this.props.navigation}
+			  updateParent={this.changeLanguage}
+			>
+				<View style={styles.square1}>
+					<View style={styles.containerLista}>
+						<ScrollView  >
+							{this.verListaAmigos()}
+						</ScrollView>
+					</View>
+				</View>
+				<View key={this.state.restart} style={styles.buttonAñadir}>
+					<TextInput
+						style={styles.input}
+						placeholder={
+						  (this.state.español && "ID de amigo") || "Friend ID"
+						}
+						onChangeText={(friendId) => this.setState({ friendId })}
+					  />
+					  <Button
+						title={(this.state.español && "Añadir amigo") || "Add friend"}
+						onPress={() => this.addFriend()}
+					  />
+					{this.state.invitar &&
+						<Button
+						title={(this.state.español && "Volver") || "Go back"}
+						onPress={() => this.props.navigation.push("EsperaPartida" , { token: this.state.token, miId: this.state.miId, español: this.state.español, numBots: this.state.numBots, gameId: this.state.gameId, maxPlayers: this.state.maxPlayers} )}
+					  />
+					}
+				</View>
+			</Cabecera>
+		</View>
+	</>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  screen: { padding: 50 },
+  screen: { backgroundColor: "#b6eb5f",
+    flex: 1, },
   containerLista: {
-    width: 1255,
+	width: 1255,
     height: 350,
-    flexDirection: "column",
+	flexDirection: 'column',  
   },
   avatar: {
-    resizeMode: "contain",
-    height: 150,
-    width: 120,
+	resizeMode: "contain",
+	height: 150,
+	width: 120 
   },
   texto: {
-    fontStyle: "Roboto",
-    fontSize: 18,
+	fontStyle: "Roboto",
+	fontSize: 18   
   },
   square1: {
-    width: 1260,
+	width: 1260,
     height: 350,
-    backgroundColor: "rgba(140, 200, 60, 0.4)",
+    backgroundColor:'rgba(140, 200, 60, 0.4)',
   },
   containerAmigos: {
-    flex: 1,
-    flexDirection: "column",
-    justifyContent: "center",
+	flex: 1,
+	flexDirection: 'column', 
+	justifyContent: 'center' 
   },
   containerDosAmigos: {
-    flex: 1,
-    flexDirection: "row",
+	flex: 1,
+	flexDirection: 'row',   
   },
   buttonAñadir: {
-    top: 50,
-    width: "30%",
-    flex: 1,
-    justifyContent: "center",
-    alignContent: "center",
-    alignSelf: "center",
+	top: 50,
+	width: "30%",
+	flex: 1,
+	justifyContent: 'center',  
+	alignContent: "center",
+	alignSelf: "center",
   },
   input: {
     borderColor: "black",
@@ -320,11 +316,11 @@ const styles = StyleSheet.create({
     padding: 10,
     width: "100%",
   },
-  menu: {
-    position: "absolute",
-    top: 20,
-    left: 1200,
-    backgroundColor: "rgba(255, 255, 255, 0.7)",
+  menu :{
+	position: 'absolute', 
+	top: 20,
+	left: 1200,
+	backgroundColor:'rgba(255, 255, 255, 0.7)',
   },
 });
 

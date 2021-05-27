@@ -14,7 +14,7 @@ class Perfil extends React.Component {
       token: this.props.route.params.token,
       alias: "",
       email: "",
-      playerId: this.props.route.params.playerId,
+      miId: this.props.route.params.miId,
       publicTotal: 0,
       publicWins: 0,
       privateTotal: 0,
@@ -39,7 +39,7 @@ class Perfil extends React.Component {
   };
 
   readHandler = async () => {
-    const data = await readPlayer(this.state.playerId);
+    const data = await readPlayer(this.state.miId);
     if (data !== -1) {
       this.setState({ alias: data.alias });
       this.setState({ email: data.email });
@@ -96,7 +96,7 @@ class Perfil extends React.Component {
           ref={this.Cabecera}
           params={{
             token: this.state.token,
-            playerId: this.state.playerId,
+            miId: this.state.miId,
             español: this.state.español,
           }}
           navigation={this.props.navigation}
@@ -141,7 +141,7 @@ class Perfil extends React.Component {
 
               <Text style={styles.textoCampos}>
                 Id:{" "}
-                <Text style={styles.textoInterior}>{this.state.playerId}</Text>{" "}
+                <Text style={styles.textoInterior}>{this.state.miId}</Text>{" "}
               </Text>
 
               {(this.state.español && (

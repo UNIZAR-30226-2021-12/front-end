@@ -1,0 +1,40 @@
+{
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "eject": "expo eject",
+    "build": "expo build:web"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^4.6.2",
+    "@react-navigation/native": "^5.9.4",
+    "@react-navigation/stack": "^5.14.4",
+    "expo": "~40.0.0",
+    "expo-status-bar": "~1.0.3",
+    "link": "^0.1.5",
+    "primereact": "^6.2.1",
+    "react": "16.13.1",
+    "react-dom": "16.13.1",
+    "react-js-pagination": "^3.0.3",
+    "react-native": "https://github.com/expo/react-native/archive/sdk-40.0.1.tar.gz",
+    "react-native-elements": "^3.4.1",
+    "react-native-gesture-handler": "^1.10.3",
+    "react-native-localization": "^2.1.7",
+    "react-native-restart": "0.0.22",
+    "react-native-screens": "^3.1.0",
+    "react-native-web": "~0.13.12",
+    "react-transition-group": "^4.4.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.9.0",
+    "@expo/webpack-config": "^0.12.73",
+    "expo-cli": "^4.4.9"
+  },
+  "engines": {
+    "node": "14.16.0"
+  },
+  "private": true
+}

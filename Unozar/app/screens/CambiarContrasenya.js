@@ -21,7 +21,7 @@ class CambiarContrasenya extends React.Component {
     this.state = {
       español: this.props.route.params.español,
       token: this.props.route.params.token,
-      playerId: this.props.route.params.playerId,
+      miId: this.props.route.params.miId,
       email: this.props.route.params.email,
       avatarId: this.props.route.params.avatarId,
       boardId: this.props.route.params.boardId,
@@ -54,7 +54,7 @@ class CambiarContrasenya extends React.Component {
     if (token !== -1) {
       this.props.navigation.push("Perfil", {
         token: token,
-        playerId: this.state.playerId,
+        miId: this.state.miId,
         español: this.state.español,
       });
     }
@@ -91,7 +91,7 @@ class CambiarContrasenya extends React.Component {
           ref={this.Cabecera}
           params={{
             token: this.state.token,
-            playerId: this.state.playerId,
+            miId: this.state.miId,
             español: this.state.español,
           }}
           navigation={this.props.navigation}
@@ -134,7 +134,7 @@ class CambiarContrasenya extends React.Component {
                   onPress={() =>
                     this.props.navigation.push("Perfil", {
                       token: this.state.token,
-                      playerId: this.state.playerId,
+                      miId: this.state.miId,
                       español: this.state.español,
                     })
                   }

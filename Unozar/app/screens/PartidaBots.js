@@ -1,34 +1,38 @@
 import React from "react";
 import { Button, StyleSheet, View, Text, TextInput } from "react-native";
+import { Menu } from 'primereact/menu';
 
 class PartidaBots extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
-  }
-
+    this.state = {
+    };
+	}
+	
   render() {
-    const { bots } = this.props.route.params;
+	const { bots } = this.props.route.params;
     return (
-      <View style={styles.screen}>
-        <View style={styles.formContainer}>
-          <View style={styles.titulo}>
-            <Text> Partida </Text>
-          </View>
-          <View>
-            <Text> Nº Bots: {JSON.stringify(bots)} </Text>
-          </View>
-        </View>
-      </View>
+		<View style={styles.screen}>
+			<View style={styles.formContainer}>
+				
+				<View style={styles.titulo}>
+					<Text> Partida </Text>
+				</View>
+				<View>
+					<Text> Nº Bots: {JSON.stringify(bots)} </Text>
+				</View>
+			</View>
+		</View>
     );
   }
 }
-
+	
 const styles = StyleSheet.create({
   screen: { padding: 50 },
   titulo: {
-    fontSize: 50,
-    right: 200,
+	  fontSize: 50,
+	right: 200,
+	
   },
   formContainer: {
     alignSelf: "center",
@@ -36,10 +40,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignContent: "center",
   },
-  menu: {
-    position: "absolute",
-    top: 20,
-    left: 1200,
+  menu :{
+	position: 'absolute', 
+	top: 20,
+	left: 1200
   },
   input: {
     borderColor: "black",

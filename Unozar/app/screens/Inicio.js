@@ -9,14 +9,14 @@ export default class Inicio extends Component {
     this.state = {
       email: "prueba",
       password: "",
-      data: [],
-      playerId: "",
-      token: "",
-      show1: false,
-      español: this.props.route.params.español,
+	  data: [],
+	  miId: "1",
+	  token: "2",
+	  show1: false,
+	  español: this.props.route.params.español,
     };
   }
-  login = async () => {
+login = async () => {
     if (this.state.email.length < 1) {
       alert(
         (this.state.español && "Debe ingresar el correo") ||
@@ -36,10 +36,10 @@ export default class Inicio extends Component {
       password: this.state.password,
     });
     if (data !== -1) {
-      this.setState({ playerId: data.id });
+      this.setState({ miId: data.id });
       this.setState({ token: data.token });
       this.props.navigation.push("MenuPrincipal", {
-        playerId: this.state.playerId,
+        miId: this.state.miId,
         token: this.state.token,
         español: this.state.español,
       });
@@ -49,81 +49,82 @@ export default class Inicio extends Component {
           "Incorrect email or password"
       );
     }
-  };
+  }; 
 
-  changeLanguage = () => {
-    this.setState({ español: !this.state.español });
+changeLanguage = () => {
+	this.setState({ español: !this.state.español });
   };
-
   render() {
     return (
-      <View style={styles.screen}>
-        <Cabecera
-          ref={this.Cabecera}
-          params={{
-            token: this.state.token,
-            playerId: this.state.playerId,
-            español: this.state.español,
-          }}
-          navigation={this.props.navigation}
-          updateParent={this.changeLanguage}
-        >
-          <View style={styles.formContainer}>
-            <View>
-              {(this.state.español && <Text>Correo electrónico</Text>) || (
-                <Text>Email</Text>
-              )}
-              <TextInput
-                style={styles.input}
-                placeholder={
-                  (this.state.español && "ejemplo@unizar.es") ||
-                  "example@unizar.es"
-                }
-                onChangeText={(email) => this.setState({ email })}
-              />
-            </View>
-            <View>
-              {(this.state.español && <Text>Contraseña</Text>) || (
-                <Text>Password</Text>
-              )}
-              <TextInput
-                ref={(input) => {
-                  this.textInput = input;
-                }}
-                style={styles.input}
-                onChangeText={(password) => this.setState({ password })}
-                secureTextEntry={true}
-              />
-            </View>
-            <View style={styles.container}>
-              <View style={styles.buttonLog}>
-                <Button
-                  title={(this.state.español && "Iniciar Sesión") || "Sign in"}
-                  onPress={() => this.login()}
-                />
-              </View>
-            </View>
-          </View>
-          <View style={styles.regContainer}>
-            {(this.state.español && (
-              <Text style={styles.regText}>¿No está registrado?</Text>
-            )) || (
-              <Text style={styles.regText}>You don't have an account?</Text>
-            )}
-            <View style={styles.buttonReg}>
-              <Button
-                onPress={() => this.props.navigation.push("Registro")}
-                title={(this.state.español && "Registrarse") || "Register"}
-                onPress={() =>
-                  this.props.navigation.push("Registro", {
-                    español: this.state.español,
-                  })
-                }
-              />
-            </View>
-          </View>
-        </Cabecera>
-      </View>
+		<View style={styles.screen}>
+			<Cabecera
+			  ref={this.Cabecera}
+			  params={{
+				token: this.state.token,
+				miId: this.state.miId,
+				español: this.state.español,
+			  }}
+			  navigation={this.props.navigation}
+			updateParent={this.changeLanguage}
+			>
+				<View style={styles.formContainer}>
+				<form>
+				  <View>
+					{(this.state.español && <Text>Correo electrónico</Text>) || (
+						<Text>Email</Text>
+					  )}
+					<TextInput
+						style={styles.input}
+						placeholder={
+						  (this.state.español && "ejemplo@unizar.es") ||
+						  "example@unizar.es"
+						}
+						onChangeText={(email) => this.setState({ email })}
+					  />
+				  </View>
+				  <View>
+					 {(this.state.español && <Text>Contraseña</Text>) || (
+						<Text>Password</Text>
+					  )}
+					<TextInput
+						ref={(input) => {
+						  this.textInput = input;
+						}}
+						style={styles.input}
+						onChangeText={(password) => this.setState({ password })}
+						secureTextEntry={true}
+					  />
+				  </View>
+				  <View style={styles.container}>
+					<View style={styles.buttonLog}>
+					  <Button
+					  title={(this.state.español && "Iniciar Sesión") || "Sign in"}
+					  onPress={() => this.login()}
+					/>
+					</View>
+				  </View>
+				  </form>
+				</View>
+				<View style={styles.regContainer}>
+				  {(this.state.español && (
+					  <Text style={styles.regText}>¿No está registrado?</Text>
+					)) || (
+					  <Text style={styles.regText}>You don't have an account?</Text>
+					)}
+				  <View style={styles.buttonReg}>
+					<Button
+						onPress={() => this.props.navigation.push("Registro")}
+						title={(this.state.español && "Registrarse") || "Register"}
+						onPress={() =>
+						  this.props.navigation.push("Registro", {
+							español: this.state.español,
+						  })
+						}
+					  />
+				  </View>
+				</View>
+			</Cabecera>
+		</View>
     );
   }
 }

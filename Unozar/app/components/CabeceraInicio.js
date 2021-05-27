@@ -16,7 +16,7 @@ export default class Cabecera extends Component {
       español: this.props.params.español,
       user: this.props.params.email,
       pass: this.props.params.password,
-      playerId: this.props.params.playerId,
+      miId: this.props.params.miId,
       token: this.props.params.token,
     };
   }
@@ -39,19 +39,6 @@ export default class Cabecera extends Component {
         <TouchableWithoutFeedback onPress={this.closeMenu}>
           <View>
             <Header
-              leftComponent={{
-                icon: "home",
-                color: "#fff",
-                onPress: () => {
-                  this.props.navigation.push("MenuPrincipal", {
-                    español: this.state.español,
-                    user: this.state.email,
-                    pass: this.state.password,
-                    playerId: this.state.playerId,
-                    token: this.state.token,
-                  });
-                },
-              }}
               centerComponent={{
                 text: "UNOZAR",
                 style: { color: "#fff", fontSize: 20 },

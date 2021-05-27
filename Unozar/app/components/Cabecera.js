@@ -16,7 +16,7 @@ export default class Cabecera extends Component {
       español: this.props.params.español,
       user: this.props.params.email,
       pass: this.props.params.password,
-      playerId: this.props.params.playerId,
+      miId: this.props.params.miId,
       token: this.props.params.token,
     };
   }
@@ -47,7 +47,7 @@ export default class Cabecera extends Component {
                     español: this.state.español,
                     user: this.state.email,
                     pass: this.state.password,
-                    playerId: this.state.playerId,
+                    miId: this.state.miId,
                     token: this.state.token,
                   });
                 },
@@ -73,7 +73,7 @@ export default class Cabecera extends Component {
                     onPress={() =>
                       this.props.navigation.push("Perfil", {
                         token: this.state.token,
-                        playerId: this.state.playerId,
+                        miId: this.state.miId,
                         español: this.state.español,
                       })
                     }
@@ -88,7 +88,7 @@ export default class Cabecera extends Component {
                     onPress={() =>
                       this.props.navigation.push("Amigos", {
                         token: this.state.token,
-                        playerId: this.state.playerId,
+                        miId: this.state.miId,
                         invitar: false,
                         español: this.state.español,
                       })
@@ -104,7 +104,7 @@ export default class Cabecera extends Component {
                     onPress={() =>
                       this.props.navigation.push("Tienda", {
                         token: this.state.token,
-                        playerId: this.state.playerId,
+                        miId: this.state.miId,
                         español: this.state.español,
                       })
                     }

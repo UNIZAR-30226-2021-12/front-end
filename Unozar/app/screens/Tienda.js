@@ -18,7 +18,7 @@ class Perfil extends React.Component {
     this.state = {
       show: false,
       token: this.props.route.params.token,
-      playerId: this.props.route.params.playerId,
+      miId: this.props.route.params.miId,
       avatarId: "0",
       boardId: "0",
       cardsId: "0",
@@ -35,7 +35,7 @@ class Perfil extends React.Component {
   }
 
   readHandler = async () => {
-    const data = await readPlayer(this.state.playerId);
+    const data = await readPlayer(this.state.miId);
 
     this.setState({ avatarId: data.avatarId });
     this.setState({ avatarId: data.boardId });
@@ -94,7 +94,7 @@ class Perfil extends React.Component {
     await this.setState({ restart: this.state.restart + 1 });
   };
   componentDidMount() {
-    console.log("playerId: " + this.state.playerId);
+    console.log("miId: " + this.state.miId);
     console.log("token: " + this.state.token);
     this.readHandler();
   }
@@ -316,7 +316,7 @@ class Perfil extends React.Component {
           style={{ position: "absolute" }}
           params={{
             token: this.state.token,
-            playerId: this.state.playerId,
+            miId: this.state.miId,
             español: this.state.español,
           }}
           navigation={this.props.navigation}

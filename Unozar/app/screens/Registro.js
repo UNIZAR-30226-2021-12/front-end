@@ -3,24 +3,25 @@ import { Button, StyleSheet, View, Text, TextInput } from "react-native";
 import Cabecera from "../components/CabeceraInicio";
 import authentication from "../functions/authentication";
 import register from "../functions/register";
+
 class Registro extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       alias: "",
       email: "",
-      password: "",
+      firstPassword: "",
       secondPassword: "",
-      playerId: 0,
-      token: 0,
-      español: this.props.route.params.español,
+	  id: 5,
+	  token: 10,
+	  español: this.props.route.params.español,
     };
   }
-  registroylogin = async () => {
-    await this.registerHandler();
-    await this.login();
-  };
-  registerHandler = async () => {
+registroylogin = async () => {
+	await this.registerHandler()
+	await this.login()
+};
+registerHandler = async () => {
     if (this.state.alias.length < 1) {
       alert(
         (this.state.español && "Debe ingresar un alias") ||
@@ -67,8 +68,7 @@ class Registro extends React.Component {
     });
     console.log(data);
   };
-
-  login = async () => {
+login = async () => {
     if (this.state.email.length < 1) {
       alert(
         (this.state.español && "Debe ingresar el correo") ||
@@ -87,20 +87,15 @@ class Registro extends React.Component {
       email: this.state.email,
       password: this.state.password,
     });
-    this.setState({ playerId: data.id });
+    this.setState({ miId: data.id });
     this.setState({ token: data.token });
-    console.log("Inicio playerId: " + this.state.playerId);
+    console.log("Inicio miId: " + this.state.miId);
     this.props.navigation.push("MenuPrincipal", {
-      playerId: this.state.playerId,
+      miId: this.state.miId,
       token: this.state.token,
       español: this.state.español,
     });
-  };
-
-  changeLanguage = () => {
-    this.setState({ español: !this.state.español });
-  };
-
+  };  
   render() {
     return (
       <>
@@ -108,7 +103,7 @@ class Registro extends React.Component {
           ref={this.Cabecera}
           params={{
             token: this.state.token,
-            playerId: this.state.playerId,
+            miId: this.state.miId,
             español: this.state.español,
           }}
           navigation={this.props.navigation}
@@ -223,11 +218,11 @@ const styles = StyleSheet.create({
     width: "30%",
     alignSelf: "center",
   },
-  menu: {
-    position: "absolute",
-    top: 20,
-    left: 1200,
-    backgroundColor: "rgba(255, 255, 255, 0.7)",
+  menu :{
+	position: 'absolute', 
+	top: 20,
+	left: 1200,
+	backgroundColor:'rgba(255, 255, 255, 0.7)',
   },
 });
 
