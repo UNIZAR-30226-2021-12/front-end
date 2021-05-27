@@ -140,8 +140,7 @@ class Perfil extends React.Component {
               )}
 
               <Text style={styles.textoCampos}>
-                Id:{" "}
-                <Text style={styles.textoInterior}>{this.state.miId}</Text>{" "}
+                Id: <Text style={styles.textoInterior}>{this.state.miId}</Text>{" "}
               </Text>
 
               {(this.state.español && (
@@ -316,13 +315,12 @@ const styles = StyleSheet.create({
     color: "white",
     backgroundColor: "#2196F3",
     width: "100%",
+    fontWeight: "Bold",
   },
   tituloView: {
     alignSelf: "center",
     alignContent: "center",
     justifyContent: "center",
-    fontFamily: "Cochin",
-    fontWeight: "Bold",
   },
   avatar: {
     resizeMode: "contain",
