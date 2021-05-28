@@ -42,6 +42,7 @@ login = async () => {
         miId: this.state.miId,
         token: this.state.token,
         español: this.state.español,
+		bunker: true,
       });
     } else {
       alert(

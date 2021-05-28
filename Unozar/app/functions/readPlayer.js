@@ -14,7 +14,9 @@ export default async function readPlayer(id) {
   if (statusCode != 200) {
     console.log("Error readPlayer. Status: " + statusCode);
     return -1;
-  } else {
+  }else if (statusCode == 410 ){
+	console.log('LOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLLOLOL')
+  }	  else {
     const data = await response.json();
     console.log("lectura perfil");
     return data;

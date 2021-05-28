@@ -37,6 +37,7 @@ export default class MenuPrincipal extends Component {
       español: this.props.route.params.español,
       bet: 0,
       money: 0,
+	  bunker: this.props.route.params.bunker,
     };
   }
   componentDidMount() {
@@ -70,13 +71,15 @@ export default class MenuPrincipal extends Component {
       await this.setState({ money: data.money });
       await this.setState({ gameId: data.gameId });
       console.log("ID GAME: " + this.state.gameId);
-      if ((await this.state.gameId) != "NONE") {
+      if ((await this.state.gameId) != "NONE" && this.state.bunker) {
         await this.props.navigation.push("Partida", {
           token: this.state.token,
           miId: this.state.miId,
           español: this.state.español,
         });
-      }
+      }else{
+		 await this.salirHandler()
+	  }
     }
   };
   crearPartida = async () => {

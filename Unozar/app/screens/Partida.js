@@ -91,7 +91,7 @@ readPlayerHandler = async (i,id,turno) => {
 			this.state.jugadores[i]= await data.alias
 			this.state.turnos[i]= await turno
 			this.state.avatarJugadores[i]= await data.avatarId
-			if(this.state.miId=id){
+			if(this.state.miId==id){
 				await this.setState({ tablero: data.boardId });
 				await this.setState({ dorso: data.cardsId });
 			}
@@ -227,12 +227,12 @@ playCardHandler = async () => {
 		clearInterval(this.timer1);
 		console.log('¡¡¡ERROR FETCH!!!')
 	}else{
+		await this.setState({ token: data.token });
 		if(await this.state.playerNumCards[0]==1){
 			await clearInterval(this.timer1);
 			await alert('!!!VICTORIA!!!')
-			await this.props.navigation.push("MenuPrincipal", { token: this.state.token, miId: this.state.miId, español: this.state.español});
+			await this.props.navigation.push("MenuPrincipal", { token: this.state.token, miId: this.state.miId, español: this.state.español, bunker: false});
 		}
-		await this.setState({ token: data.token });
 		await this.setState({hasSaidUnozar: false });
 		this.setState({ cartaSeleccionada: false })
 	}
@@ -285,10 +285,11 @@ salirHandler = async () => {
           "Ha sido expulsado de la partida por inactividad") ||
           "You have been kicked out from the game due to inactivity"
       );
-      this.props.navigation.push("MenuPrincipal", {
+      await this.props.navigation.push("MenuPrincipal", {
         token: this.state.token,
         miId: this.state.miId,
         español: this.state.español,
+		bunker: false,
       });
     } else {
       data = await response.json();
@@ -298,6 +299,7 @@ salirHandler = async () => {
         token: this.state.token,
         miId: this.state.miId,
         español: this.state.español,
+		bunker: false,
       });
     }
   };
@@ -316,11 +318,11 @@ salirHandler = async () => {
 		clearInterval(this.timer1);
 		console.log('¡¡¡ERROR FETCH!!!')
 		//this.salirHandler()
-		await this.props.navigation.push("MenuPrincipal", { token: this.state.token, miId: this.state.miId, español: this.state.español});
+		await this.props.navigation.push("MenuPrincipal", { token: this.state.token, miId: this.state.miId, español: this.state.español, bunker: false});
 	}else if(await statusCode != 200){
 			clearInterval(this.timer1);
 			//this.salirHandler()
-			await this.props.navigation.push("MenuPrincipal", { token: this.state.token, miId: this.state.miId, español: this.state.español});
+			await this.props.navigation.push("MenuPrincipal", { token: this.state.token, miId: this.state.miId, español: this.state.español, bunker: false});
 	}else{
 		data = await response.json();
 		await this.setState({gamePaused: data.gamePaused})
@@ -331,10 +333,12 @@ salirHandler = async () => {
 		await this.setState({ maxPlayers: data.maxPlayers });
 		await this.setState({ playersIds: data.playersIds });
 		for(let i = 0; i<this.state.maxPlayers; i++){
-			if(await this.state.playersIds[i]=='BOT'){
+			if(await this.state.playersIds[this.state.turnos[i]]=='BOT'){
 				 this.state.jugadores[i]= await 'BOT'
-			}else if(await this.state.playersIds[i]=='EMPTY'){
+				 this.state.avatarJugadores[i]= await '1'
+			}else if(await this.state.playersIds[this.state.turnos[i]]=='EMPTY'){
 				 this.state.jugadores[i]= await 'EMPTY'
+				 this.state.avatarJugadores[i]= await '1'
 			}
 		}
 		if(await data.playersIds[this.state.miTurno] == 'BOT'){
@@ -363,7 +367,7 @@ salirHandler = async () => {
 				if( await this.state.playerNumCards[i] == 0){
 					clearInterval(this.timer1);
 					await alert('DERROTA')
-					await this.props.navigation.push("MenuPrincipal", { token: this.state.token, miId: this.state.miId, español: this.state.español});
+					await this.props.navigation.push("MenuPrincipal", { token: this.state.token, miId: this.state.miId, español: this.state.español, bunker: false});
 				}
 			}
 			await this.setState({ restart: this.state.restart+1 }) 
@@ -419,18 +423,16 @@ pausa = async () => {
     };
 	let data;
 	const response = await fetch('https://unozar.herokuapp.com/game/pause', requestOptions);
-	data = await response.json();
 	let statusCode = response.status;
 	if( await statusCode != 200 ){
-		clearInterval(this.timer1);
-		console.log('¡¡¡ERROR FETCH!!!')
+		await this.setState({estado: 6})
 	}else{
+		data = await response.json();
 		await this.setState({token: data.token})
 		await this.setState({estado: 6})
 	}
 }	
 	estados = async () => {
-		await this.refreshHandler();
 		if(this.state.estado==0){
 			await console.log('ESTADO TOKEN0: '+this.state.token)
 			await this.gameResponseHandler();
@@ -450,7 +452,7 @@ pausa = async () => {
 			await this.setState({ estado: 1})
 		}else if(this.state.estado==4){
 			await clearInterval(this.timer1);
-			await this.props.navigation.push("MenuPrincipal", { miId: this.state.miId, token: this.state.token, español: this.state.español});
+			await this.props.navigation.push("MenuPrincipal", { miId: this.state.miId, token: this.state.token, español: this.state.español, bunker: false});
 		}else if(this.state.estado==5){
 			await this.salirHandler()
 		}else if(this.state.estado==6){
@@ -462,7 +464,7 @@ pausa = async () => {
 	componentDidMount(){
 		//console.log('		MI ID: '+this.state.miId)
 		this.readHandler();
-		this.timer1 = setInterval(() => this.estados(), 1000);
+		this.timer1 = setInterval(() => this.estados(), 2000);
 		//this.createplayerCards();
 	}
 	createplayerCards = () => {

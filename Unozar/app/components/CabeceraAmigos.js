@@ -50,6 +50,7 @@ export default class Cabecera extends Component {
                     español: this.state.español,
                     miId: this.state.miId,
                     token: this.state.token,
+					bunker: false,
                   });
                 },
               }}

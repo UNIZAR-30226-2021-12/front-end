@@ -163,12 +163,7 @@ componentDidMount(){
 			<View style={styles.formContainer}>
 					<Image style={styles.avatar} source={require('../assets/avatares/'+this.state.avatarId+'.png')} />
 					<Text style={styles.texto}> {this.state.alias} {this.state.email} </Text>
-					{!this.state.amigo &&
-					<Text style={styles.texto}> {this.state.miId} </Text>
-					}
-					{this.state.amigo &&
 					<Text style={styles.texto}> {this.state.idJugadorInvitar} </Text>
-					}
 					<Text style={styles.texto}> Partidas públicas </Text>
 					<Text style={styles.texto}> J: {this.state.publicTotal} W: {this.state.publicWins}</Text>
 					<Text style={styles.texto}> Partidas privadas </Text>

@@ -45,10 +45,9 @@ export default class Cabecera extends Component {
                 onPress: () => {
                   this.props.navigation.push("MenuPrincipal", {
                     español: this.state.español,
-                    user: this.state.email,
-                    pass: this.state.password,
                     miId: this.state.miId,
                     token: this.state.token,
+					bunker: false,
                   });
                 },
               }}

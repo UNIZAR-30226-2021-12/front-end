@@ -262,7 +262,7 @@ readPlayerHandler = async (datab) => {
 			}
 		}
 	}
-	if(this.state.miId2!=datab.playersIds[1]&&this.state.maxPlayers==2){
+	if(this.state.miId2!=datab.playersIds[1]&&this.state.maxPlayers>=2){
 		if (datab.playersIds[1]=='EMPTY'){
 			await this.setState({ nombreJugador2: '' });
 		}else{
@@ -278,7 +278,7 @@ readPlayerHandler = async (datab) => {
 			}
 		}
 	}
-	if(this.state.miId3!=datab.playersIds[2]&&this.state.maxPlayers==3){
+	if(this.state.miId3!=datab.playersIds[2]&&this.state.maxPlayers>=3){
 		if(datab.playersIds[2]=='EMPTY'){
 			await this.setState({ nombreJugador3: '' });
 		}else{
@@ -337,6 +337,7 @@ salirSala = async () => {
         token: this.state.token,
         miId: this.state.miId,
         español: this.state.español,
+		bunker: false,
       });
     }
   };
@@ -396,8 +397,9 @@ salirSala = async () => {
 }
 
 const styles = StyleSheet.create({
-  screen: { padding: 0 },
+  screen: { padding: 0, flex: 1 },
   square1: {
+	flex: 1,
     width: 1358,
     height: 500,
     backgroundColor:'rgba(140, 200, 60, 0.4)',
