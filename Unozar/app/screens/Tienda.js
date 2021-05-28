@@ -37,7 +37,7 @@ class Perfil extends React.Component {
   }
 
   readHandler = async () => {
-	  this.refreshHandler();
+	  await this.refreshHandler();
     const data = await readPlayer(this.state.miId);
 
     this.setState({ avatarId: data.avatarId });
@@ -97,7 +97,6 @@ class Perfil extends React.Component {
     await this.setState({ restart: this.state.restart + 1 });
   };
   componentDidMount() {
-	 this.refreshHandler();
     console.log("miId: " + this.state.miId);
     console.log("token: " + this.state.token);
     this.readHandler();
@@ -118,7 +117,7 @@ refreshHandler = async () => {
     }
   };
   desbloquearAvatar = async (i) => {
-	  this.refreshHandler();
+	 await this.refreshHandler();
     const requestOptions1 = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -158,7 +157,7 @@ refreshHandler = async () => {
     }
   };
   desbloquearDorso = async (i) => {
-	  this.refreshHandler();
+	await  this.refreshHandler();
     const requestOptions1 = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -198,7 +197,7 @@ refreshHandler = async () => {
     }
   };
   desbloquearTablero = async (i) => {
-	  this.refreshHandler();
+	 await this.refreshHandler();
     const requestOptions1 = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -238,7 +237,7 @@ refreshHandler = async () => {
     }
   };
   addMoney = async () => {
-	  this.refreshHandler();
+	 await this.refreshHandler();
     const requestOptions1 = {
       method: "POST",
       headers: { "Content-Type": "application/json" },

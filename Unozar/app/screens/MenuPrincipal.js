@@ -15,38 +15,38 @@ import refreshToken from "../functions/refreshToken";
 export default class MenuPrincipal extends Component {
   constructor(props) {
     super(props);
-    this.Cabecera = React.createRef();
+	this.Cabecera = React.createRef();
     this.state = {
-      show1: false,
-      show2: false,
-      show3: false,
-      isprivate: false,
-      maxPlayers: 2,
-      numBots: 0,
-      alias: null,
-      password: null,
-      email: null,
-      miId: this.props.route.params.miId,
-      token: this.props.route.params.token,
-      gameId: "",
-      gameStarted: false,
-      playersIds: [],
-      gift: "",
-      giftClaimedToday: false,
-      español: this.props.route.params.español,
-      bet: 0,
-      money: 0,
-    };
-  }
-  componentDidMount() {
-    console.log(this.state.miId);
-    this.readHandler();
-    //let timer = setInterval(() => alert("aux"), 3000);
-  }
-  changeLanguage = () => {
-    this.setState({ español: !this.state.español });
+		show1: false,
+		show2: false,
+		show3: false,
+		isprivate: false,
+		maxPlayers: 2,
+		numBots: 0,
+		alias: null,
+		password: null,
+		email: null,
+		miId: this.props.route.params.miId,
+		token: this.props.route.params.token,
+		gameId: '',
+		gameStarted: false,
+		playersIds: [],
+		gift: '',
+		giftClaimedToday: false,
+		español: this.props.route.params.español,
+		bet: 0,
+		money: 0,
+	};
+	}
+	componentDidMount(){
+		console.log(this.state.miId)
+		this.readHandler();
+		//let timer = setInterval(() => alert("aux"), 3000);
+	}
+	changeLanguage = () => {
+	this.setState({ español: !this.state.español });
   };
-  refreshHandler = async () => {
+refreshHandler = async () => {
     const token = await refreshToken(this.state.token);
     if (token !== -1) {
       this.setState({ token: token });
@@ -61,7 +61,7 @@ export default class MenuPrincipal extends Component {
       });
     }
   };
-  readHandler = async () => {
+readHandler = async () => {
     await this.refreshHandler();
     const data = await readPlayer(this.state.miId);
     if (data !== -1) {
@@ -77,9 +77,9 @@ export default class MenuPrincipal extends Component {
         });
       }
     }
-  };
-  crearPartida = async () => {
-    if (this.state.bet > this.state.money) {
+  };	
+crearPartida = async () => {
+   if (this.state.bet > this.state.money) {
       alert(
         (this.state.español && "No puede apostar más dinero del que posee") ||
           "You can't bet more than the money you own"
@@ -137,7 +137,7 @@ export default class MenuPrincipal extends Component {
     }
   };
 
-  joinPartida = async () => {
+joinPartida = async () => {
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -164,7 +164,7 @@ export default class MenuPrincipal extends Component {
       español: this.state.español,
     });
   };
-  joinPartidaPublica = async () => {
+joinPartidaPublica = async () => {
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -189,7 +189,7 @@ export default class MenuPrincipal extends Component {
       miId: this.state.miId,
     });
   };
-  salirHandler = async () => {
+salirHandler = async () => {
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -205,8 +205,8 @@ export default class MenuPrincipal extends Component {
     data = await response.json();
     await this.setState({ token: data.token });
     console.log("salido");
-  };
-  ruleta = async () => {
+  };	
+ruleta = async () => {
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -242,7 +242,6 @@ export default class MenuPrincipal extends Component {
       );
     }
   };
-
   render() {
     return (
       <>
@@ -596,6 +595,7 @@ export default class MenuPrincipal extends Component {
   }
 }
 
+
 const styles = StyleSheet.create({
   screen: { backgroundColor: "#ffffff", flex: 1 },
   menu: {
@@ -655,3 +655,4 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
 });
+

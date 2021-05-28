@@ -50,7 +50,7 @@ mailto = () => {
     window.open(url);
 }
 readYo = async () => {
-	this.refreshHandler();
+	await this.refreshHandler();
 	const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -88,7 +88,7 @@ refreshHandler = async () => {
     }
   };
 readHandler = async (i) => {
-	this.refreshHandler();
+	await this.refreshHandler();
 	const requestOptions1 = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -117,7 +117,7 @@ readHandler = async (i) => {
 	}
 };
 deleteAmigo = async () => {
-	this.refreshHandler();
+	await this.refreshHandler();
 	const requestOptions = {
 	  method: "POST",
 	  headers: { "Content-Type": "application/json" },
@@ -142,7 +142,6 @@ deleteAmigo = async () => {
 };
 
 componentDidMount(){
-	this.refreshHandler();
 	console.log('Jugador invitado: '+this.state.idJugadorInvitar)
 	this.readHandler(this.state.idJugadorInvitar)
 }

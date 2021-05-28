@@ -65,7 +65,6 @@ refreshHandler = async () => {
     }
   };	
 estados = async () => {
-	await this.refreshHandler();
     if (this.state.estado == 0) {
       await console.log("ESTADO ACTUAL: " + this.state.estado);
       await this.readHandler();
@@ -78,15 +77,17 @@ estados = async () => {
           español: this.state.español,
         });
       }
-      await this.setState({ estado: 0 });
+      await this.setState({ estado: 5 });
     } else if (this.state.estado == 2) {
       clearInterval(this.timer1);
       await this.startHandler();
+	  await this.setState({ estado: 5 });
     } else if (this.state.estado == 3) {
       await clearInterval(this.timer1);
       await this.salirSala();
     } else if (this.state.estado == 4) {
       clearInterval(this.timer1);
+	  await this.setState({ estado: 5 });
       this.props.navigation.push("Amigos", {
         token: this.state.token,
         miId: this.state.miId,

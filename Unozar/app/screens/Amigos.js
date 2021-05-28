@@ -116,11 +116,12 @@ readFriends = async () => {
     }
   };
 auxiliar = async () => {
+	await this.refreshHandler();
 	await this.readFriends();
 };
 verAmigo = async (i) => {
       console.log("Con amigos");
-      this.props.navigation.push("PerfilAmigos", {
+      await this.props.navigation.push("PerfilAmigos", {
         token: this.state.token,
         miId: this.state.miId,
         gameId: this.state.gameId,
@@ -136,7 +137,6 @@ componentDidMount(){
 	console.log('hola')
 	console.log('token amigos: ' +this.state.token)
 	this.auxiliar()
-	this.refreshHandler();
 }
 verListaAmigos = () => {
     let table = [];
