@@ -15,38 +15,39 @@ import refreshToken from "../functions/refreshToken";
 export default class MenuPrincipal extends Component {
   constructor(props) {
     super(props);
-	this.Cabecera = React.createRef();
+    this.Cabecera = React.createRef();
     this.state = {
-		show1: false,
-		show2: false,
-		show3: false,
-		isprivate: false,
-		maxPlayers: 2,
-		numBots: 0,
-		alias: null,
-		password: null,
-		email: null,
-		miId: this.props.route.params.miId,
-		token: this.props.route.params.token,
-		gameId: '',
-		gameStarted: false,
-		playersIds: [],
-		gift: '',
-		giftClaimedToday: false,
-		español: this.props.route.params.español,
-		bet: 0,
-		money: 0,
-	};
-	}
-	componentDidMount(){
-		console.log(this.state.miId)
-		this.readHandler();
-		//let timer = setInterval(() => alert("aux"), 3000);
-	}
-	changeLanguage = () => {
-	this.setState({ español: !this.state.español });
+      show1: false,
+      show2: false,
+      show3: false,
+      isprivate: false,
+      numPlayers: 2,
+      maxPlayers: 2,
+      numBots: 0,
+      alias: null,
+      password: null,
+      email: null,
+      miId: this.props.route.params.miId,
+      token: this.props.route.params.token,
+      gameId: "",
+      gameStarted: false,
+      playersIds: [],
+      gift: "",
+      giftClaimedToday: false,
+      español: this.props.route.params.español,
+      bet: 0,
+      money: 0,
+    };
+  }
+  componentDidMount() {
+    console.log(this.state.miId);
+    this.readHandler();
+    //let timer = setInterval(() => alert("aux"), 3000);
+  }
+  changeLanguage = () => {
+    this.setState({ español: !this.state.español });
   };
-refreshHandler = async () => {
+  refreshHandler = async () => {
     const token = await refreshToken(this.state.token);
     if (token !== -1) {
       this.setState({ token: token });
@@ -61,7 +62,7 @@ refreshHandler = async () => {
       });
     }
   };
-readHandler = async () => {
+  readHandler = async () => {
     await this.refreshHandler();
     const data = await readPlayer(this.state.miId);
     if (data !== -1) {
@@ -77,9 +78,9 @@ readHandler = async () => {
         });
       }
     }
-  };	
-crearPartida = async () => {
-   if (this.state.bet > this.state.money) {
+  };
+  crearPartida = async () => {
+    if (this.state.bet > this.state.money) {
       alert(
         (this.state.español && "No puede apostar más dinero del que posee") ||
           "You can't bet more than the money you own"
@@ -137,7 +138,7 @@ crearPartida = async () => {
     }
   };
 
-joinPartida = async () => {
+  joinPartida = async () => {
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -164,12 +165,12 @@ joinPartida = async () => {
       español: this.state.español,
     });
   };
-joinPartidaPublica = async () => {
+  joinPartidaPublica = async () => {
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        numPlayers: this.state.maxPlayers,
+        numPlayers: this.state.numPlayers,
         token: this.state.token,
       }),
     };
@@ -187,9 +188,13 @@ joinPartidaPublica = async () => {
     await this.props.navigation.push("EsperaPartida", {
       token: this.state.token,
       miId: this.state.miId,
+      maxPlayers: this.state.numPlayers,
+      numBots: this.state.numBots,
+      español: this.state.español,
+      gameId: this.state.gameId,
     });
   };
-salirHandler = async () => {
+  salirHandler = async () => {
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -205,8 +210,8 @@ salirHandler = async () => {
     data = await response.json();
     await this.setState({ token: data.token });
     console.log("salido");
-  };	
-ruleta = async () => {
+  };
+  ruleta = async () => {
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -299,13 +304,86 @@ ruleta = async () => {
                   {(this.state.español && (
                     <Text style={styles.titulo2}>Unirse a partida pública</Text>
                   )) || <Text style={styles.titulo2}>Join a public game</Text>}
+
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignSelf: "center",
+                      width: "50%",
+                    }}
+                  >
+                    {(this.state.español && (
+                      <Text
+                        style={{ fontStyle: "Roboto", fontSize: 15, flex: 1 }}
+                      >
+                        Número de jugadores:{" "}
+                      </Text>
+                    )) || (
+                      <Text
+                        style={{ fontStyle: "Roboto", fontSize: 15, flex: 1 }}
+                      >
+                        Number of players:{" "}
+                      </Text>
+                    )}
+
+                    {(this.state.numPlayers > 2 && (
+                      <View style={{ flex: 1 }}>
+                        <Button
+                          title="-"
+                          onPress={() => {
+                            this.setState({
+                              numPlayers: this.state.numPlayers - 1,
+                            });
+                          }}
+                        />
+                      </View>
+                    )) || (
+                      <View style={{ flex: 1 }}>
+                        <Button title="-" disabled={true} />
+                      </View>
+                    )}
+                    <View
+                      style={{
+                        flex: 1,
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontStyle: "Roboto",
+                          fontSize: 15,
+                        }}
+                      >
+                        {this.state.numPlayers}
+                      </Text>
+                    </View>
+
+                    {(this.state.numPlayers < 4 && (
+                      <View style={{ flex: 1 }}>
+                        <Button
+                          title="+"
+                          onPress={() =>
+                            this.setState({
+                              numPlayers: this.state.numPlayers + 1,
+                            })
+                          }
+                        />
+                      </View>
+                    )) || (
+                      <View style={{ flex: 1 }}>
+                        <Button title="+" disabled={true} />
+                      </View>
+                    )}
+                  </View>
+
                   <View style={{ width: "50%", alignSelf: "center" }}>
                     <Button
                       title={
                         (this.state.español && "Entrar a partida") ||
                         "Join game"
                       }
-                      onPress={() => this.joinPartida()}
+                      onPress={() => this.joinPartidaPublica()}
                     />
                   </View>
                 </View>
@@ -595,7 +673,6 @@ ruleta = async () => {
   }
 }
 
-
 const styles = StyleSheet.create({
   screen: { backgroundColor: "#ffffff", flex: 1 },
   menu: {
@@ -655,4 +732,3 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
 });
-
