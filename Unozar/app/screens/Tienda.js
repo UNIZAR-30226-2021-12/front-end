@@ -375,8 +375,24 @@ class Perfil extends React.Component {
         >
           <View style={styles.screen}>
             {(this.state.español && (
-              <Text style={styles.textTitulo}>TIENDA</Text>
-            )) || <Text style={styles.textTitulo}>SHOP</Text>}
+              <Text
+                style={
+                  (styles.textTitulo,
+                  { color: "#ebe700", fontWeight: "bold", fontSize: 40 })
+                }
+              >
+                TIENDA
+              </Text>
+            )) || (
+              <Text
+                style={
+                  (styles.textTitulo,
+                  { color: "#ebe700", fontWeight: "bold", fontSize: 40 })
+                }
+              >
+                SHOP
+              </Text>
+            )}
             {(this.state.español && (
               <Text style={styles.textTitulo}>Dinero: {this.state.money}</Text>
             )) || (
