@@ -37,7 +37,7 @@ class Perfil extends React.Component {
   }
 
   readHandler = async () => {
-	  await this.refreshHandler();
+    await this.refreshHandler();
     const data = await readPlayer(this.state.miId);
 
     this.setState({ avatarId: data.avatarId });
@@ -101,7 +101,7 @@ class Perfil extends React.Component {
     console.log("token: " + this.state.token);
     this.readHandler();
   }
-refreshHandler = async () => {
+  refreshHandler = async () => {
     const token = await refreshToken(this.state.token);
     if (token !== -1) {
       this.setState({ token: token });
@@ -117,7 +117,7 @@ refreshHandler = async () => {
     }
   };
   desbloquearAvatar = async (i) => {
-	 await this.refreshHandler();
+    await this.refreshHandler();
     const requestOptions1 = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -157,7 +157,7 @@ refreshHandler = async () => {
     }
   };
   desbloquearDorso = async (i) => {
-	await  this.refreshHandler();
+    await this.refreshHandler();
     const requestOptions1 = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -197,7 +197,7 @@ refreshHandler = async () => {
     }
   };
   desbloquearTablero = async (i) => {
-	 await this.refreshHandler();
+    await this.refreshHandler();
     const requestOptions1 = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -237,7 +237,7 @@ refreshHandler = async () => {
     }
   };
   addMoney = async () => {
-	 await this.refreshHandler();
+    await this.refreshHandler();
     const requestOptions1 = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -266,7 +266,17 @@ refreshHandler = async () => {
           key={i}
           style={styles.touchable}
           activeOpacity={0.5}
-          onPress={() => this.desbloquearAvatar(i)}
+          onPress={() => {
+            if (
+              window.confirm(
+                (this.state.español &&
+                  "¿Desea comprar este avatar por 250 monedas?") ||
+                  "Do you wish to buy this avatar for 250 coins?"
+              )
+            ) {
+              this.desbloquearAvatar(i);
+            }
+          }}
         >
           <Image
             key={i}
@@ -288,7 +298,17 @@ refreshHandler = async () => {
           key={i}
           style={styles.touchable}
           activeOpacity={0.5}
-          onPress={() => this.desbloquearTablero(i)}
+          onPress={() => {
+            if (
+              window.confirm(
+                (this.state.español &&
+                  "¿Desea comprar este tablero por 500 monedas?") ||
+                  "Do you wish to buy this board for 500 coins?"
+              )
+            ) {
+              this.desbloquearTablero(i);
+            }
+          }}
         >
           <Image
             key={i}
@@ -310,7 +330,17 @@ refreshHandler = async () => {
           key={i}
           style={styles.touchable}
           activeOpacity={0.5}
-          onPress={() => this.desbloquearDorso(i)}
+          onPress={() => {
+            if (
+              window.confirm(
+                (this.state.español &&
+                  "¿Desea comprar este reverso de carta por 750 monedas?") ||
+                  "Do you wish to buy this card back for 750 coins?"
+              )
+            ) {
+              this.desbloquearDorso(i);
+            }
+          }}
         >
           <Image
             key={i}
@@ -347,9 +377,16 @@ refreshHandler = async () => {
             {(this.state.español && (
               <Text style={styles.textTitulo}>TIENDA</Text>
             )) || <Text style={styles.textTitulo}>SHOP</Text>}
-            <Text style={styles.textTitulo}>{this.state.money}</Text>
+            {(this.state.español && (
+              <Text style={styles.textTitulo}>Dinero: {this.state.money}</Text>
+            )) || (
+              <Text style={styles.textTitulo}>Dinero: {this.state.money}</Text>
+            )}
             <View style={styles.avatar_desbloqueables}>
               <View style={styles.avatarContainer}>
+                {(this.state.español && (
+                  <Text style={styles.textAvatar}>Avatar actual</Text>
+                )) || <Text style={styles.textAvatar}>Current avatar</Text>}
                 <Image
                   style={styles.avatarPerfil}
                   source={require("../assets/avatares/" +
@@ -357,17 +394,8 @@ refreshHandler = async () => {
                     ".png")}
                 />
                 {(this.state.español && (
-                  <Text style={styles.textAvatar}>Avatar actual</Text>
-                )) || <Text style={styles.textAvatar}>Current avatar</Text>}
-                <Image
-                  style={styles.dorsoPerfil}
-                  source={require("../assets/dorsos/" +
-                    this.state.cardsId +
-                    ".png")}
-                />
-                {(this.state.español && (
-                  <Text style={styles.textAvatar}>Dorso actual</Text>
-                )) || <Text style={styles.textAvatar}>Current card back</Text>}
+                  <Text style={styles.textAvatar}>Tablero actual</Text>
+                )) || <Text style={styles.textAvatar}>Current board</Text>}
                 <Image
                   style={styles.tableroPerfil}
                   source={require("../assets/tableros/" +
@@ -375,13 +403,24 @@ refreshHandler = async () => {
                     ".png")}
                 />
                 {(this.state.español && (
-                  <Text style={styles.textAvatar}>Tablero actual</Text>
-                )) || <Text style={styles.textAvatar}>Current board</Text>}
+                  <Text style={styles.textAvatar}>Dorso actual</Text>
+                )) || <Text style={styles.textAvatar}>Current card back</Text>}
+                <Image
+                  style={styles.dorsoPerfil}
+                  source={require("../assets/dorsos/" +
+                    this.state.cardsId +
+                    ".png")}
+                />
               </View>
               <View style={styles.containerDesbloqueables}>
                 <View>
                   {this.state.unlockedAvatars.length != 4 && (
-                    <>
+                    <View
+                      style={{
+                        alignContent: "center",
+                        justifyContent: "center",
+                      }}
+                    >
                       {(this.state.español && (
                         <Text style={styles.textAvatar}>
                           Avatares desbloqueables (250 monedas)
@@ -395,9 +434,11 @@ refreshHandler = async () => {
                         key={this.state.restart}
                         style={styles.containerListaAvatares}
                       >
-                        <ScrollView horizontal>{this.verAvatares()}</ScrollView>
+                        <ScrollView style={{ alignSelf: "center" }} horizontal>
+                          {this.verAvatares()}
+                        </ScrollView>
                       </View>
-                    </>
+                    </View>
                   )}
                 </View>
                 <View>
@@ -416,7 +457,9 @@ refreshHandler = async () => {
                         key={this.state.restart}
                         style={styles.containerListaTableros}
                       >
-                        <ScrollView horizontal>{this.verTableros()}</ScrollView>
+                        <ScrollView style={{ alignSelf: "center" }} horizontal>
+                          {this.verTableros()}
+                        </ScrollView>
                       </View>
                     </>
                   )}
@@ -437,12 +480,13 @@ refreshHandler = async () => {
                         key={this.state.restart}
                         style={styles.containerListaDorsos}
                       >
-                        <ScrollView horizontal>{this.verDorsos()}</ScrollView>
+                        <ScrollView style={{ alignSelf: "center" }} horizontal>
+                          {this.verDorsos()}
+                        </ScrollView>
                       </View>
                     </>
                   )}
                 </View>
-                <Button title="Añadir Dinero" onPress={() => this.addMoney()} />
               </View>
             </View>
           </View>
@@ -455,17 +499,19 @@ refreshHandler = async () => {
 const styles = StyleSheet.create({
   screen: { padding: 50 },
   textAvatar: {
-    alignSelf: "left",
+    alignSelf: "center",
     fontStyle: "Roboto",
     fontSize: 18,
+    marginTop: 15,
   },
   textTitulo: {
     fontStyle: "Roboto",
     fontSize: 24,
   },
   avatarContainer: {
-    alignSelf: "left",
+    alignSelf: "center",
     width: "30%",
+    alignSelf: "center",
   },
   menu: {
     position: "absolute",
@@ -474,19 +520,19 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255, 255, 255, 0.7)",
   },
   avatarPerfil: {
-    alignSelf: "left",
+    alignSelf: "center",
     height: 141,
     width: 134,
     resizeMode: "contain",
   },
   dorsoPerfil: {
-    alignSelf: "left",
+    alignSelf: "center",
     resizeMode: "contain",
     height: 150,
     width: 120,
   },
   tableroPerfil: {
-    alignSelf: "left",
+    alignSelf: "center",
     resizeMode: "contain",
     height: 140,
     width: 200,
@@ -496,36 +542,51 @@ const styles = StyleSheet.create({
     height: 141,
     width: 134,
     resizeMode: "contain",
+    alignSelf: "center",
   },
   touchable: {
     flex: 1,
+    padding: 10,
   },
   containerListaAvatares: {
     width: 1000,
+    alignSelf: "center",
+    alignContent: "center",
+    justifyContent: "center",
   },
   avatar_desbloqueables: {
     flexDirection: "row",
+    alignSelf: "center",
+    alignContent: "center",
+    justifyContent: "center",
   },
   containerDesbloqueables: {
     flexDirection: "column",
+    alignContent: "center",
   },
   containerListaTableros: {
     width: 1000,
+    alignSelf: "center",
+    alignContent: "center",
   },
   containerListaDorsos: {
     width: 1000,
+    alignSelf: "center",
+    alignContent: "center",
   },
   tableroLista: {
     flex: 1,
     height: 140,
     width: 200,
     resizeMode: "contain",
+    alignSelf: "center",
   },
   dorsoLista: {
     flex: 1,
     height: 120,
     width: 90,
     resizeMode: "contain",
+    alignSelf: "center",
   },
 });
 
